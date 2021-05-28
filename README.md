@@ -52,7 +52,7 @@ be careful not to override you vimrc, it can be merged with it or be linked to,
 
 jBufs at the upper right can be accessed each with, in this order,
 `<S-Home>, <S-End>, <S-PageUp>, <S-PageDown>, <S-C-Home>, <S-C-End>, <S-C-PageUp>, <S-C-PageDown>`
-jBufs lists all but workspaces files, jBufs stands for "last jumped to buffers"
+jBufs lists all but workspaces files, jBufs stands for "last jumped to buffers", hide them by pressing `<F2>`
 
 Save or load current active buffers by using `<F6>` and `<F7>`
 
@@ -66,19 +66,22 @@ custom marks file name are like so, \<filename\>.vim.shortcut, so Dan.vim is Dan
 `<S-Tab>` goes back and forth to the alternate buffer
 
 Workspaces files let you navigate through files,
-go to the basic root workspace by pressing `<C-S-kDel>` or ;ba
-go to this line below and press `<Space>`, this line is just a GNU Tree listing options
+go to the basic root workspace by pressing `<C-S-kDel>` or `;ba`
+go to this line below `[make tree]`and press `<Space>` to toggle expand/contract, this line is just a GNU Tree listing options
 `-x -I "target|.git" -L 2 --filelimit 200`
-it will try to list files from dir stated by `we are here`
+it will try to list files from dir stated by `[we are here]`
 each of the files from the tree can be accessed by putting the cursor over it and pressing `<Space>`
 
 `;cp` or `<F1>` put the current yanked text, at the @" register, to the clipboard,
-`;pt` or `<S-F1>` paste from the clipboard
-when dealing with the clipboard, first pay attention to the entries at the base.vars.vim,
-clipboard_commands should point to the correct commands to copy and paste, if on Xorg it would be like 
+`;pt` or `<S-F1>` paste from the clipboard when dealing with the clipboard, first pay attention to the entries at the base.vars.vim,
+`clipboard_commands` should point to the correct commands to copy and paste, if on Xorg it would be like 
 `xclip -i -selection clipboard` and `xclip -o -selection clipboard` against the default `wl-copy` and `wl-paste`
 
-#### There are plenty of still to document about DanVim, as its docs are being updated
+`;rs` reloads DanVim and all Vim scripts involved
+
+Further understanding can be achieved by reading the `maps.vim` script
+
+#### There are plenty of still to document about DanVim, as these docs are being built
 #### It works well in my environment, please ask whenever the unexpected happen
 
 ### Workspaces
