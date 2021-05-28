@@ -77,6 +77,10 @@ each of the files from the tree can be accessed by putting the cursor over it an
 `clipboard_commands` should point to the correct commands to copy and paste, if on Xorg it would be like 
 `xclip -i -selection clipboard` and `xclip -o -selection clipboard` against the default `wl-copy` and `wl-paste`
 
+You can save a buffer by `<S-Up>`
+
+`<Insert>` can be pressed multiple times and you will still be in INSERT mode, to go to REPLACE mode press `R`
+
 `;rs` reloads DanVim and all Vim scripts involved
 
 Further understanding can be achieved by reading the `maps.vim` script
