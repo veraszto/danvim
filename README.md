@@ -58,10 +58,10 @@ Save or load current active buffers by using `<F6>` and `<F7>`
 
 `<S-F6>` unload all buffers(:%bd)
 
-`<S-Left>` to access custom marks, which are currently set only to Dan.vim, and editable through normal map ;em when in Dan.vim buffer,
-Custom marks file name are like so, <filename>.vim.shortcut, so Dan.vim is Dan.vim.vim.shortcut
+`<S-Left>` to access custom marks, which are currently set only to Dan.vim as the first example and editable through normal map ;em when in Dan.vim buffer,
+Custom marks file name are like so, <filename>.vim.shortcut, so Dan.vim is Dan.vim.vim.shortcut, one can set its own for any file, following with the Dan.vim marks example.
 
-`<S-Down>` access the jump list and `<S-Right>` all buffers
+`<S-Down>` access the jump list(the same jBufs shows) and `<S-Right>` all buffers
 
 Workspaces files let you navigate through files,
 go to the basic root workspace by pressing `<C-S-kDel>` or ;ba
@@ -74,7 +74,7 @@ each of the files from the tree can be accessed by putting the cursor over it an
 `;pt` or `<S-F1>` paste from the clipboard
 when dealing with the clipboard, first pay attention to the entries at the base.vars.vim,
 clipboard_commands should point to the correct commands to copy and paste, if on Xorg it would be like 
-`xclip -i -selection clipboard` and `xclip -o -selection clipboard` against the default wl-copy and wl-paste
+`xclip -i -selection clipboard` and `xclip -o -selection clipboard` against the default `wl-copy` and `wl-paste`
 
 #### There are plenty of still to document about DanVim, as its docs are being updated
 #### It works well in my environment, please ask whenever the unexpected happen
