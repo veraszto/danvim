@@ -1,14 +1,18 @@
 let g:Danvim_current_being_sourced = expand("<SID>")
 
+let s:home_vim = expand( "~" ) . "/.vim"
+let s:workspaces = s:home_vim . "/workspaces"
+
 let s:base_vars = 
 \ {
-	\ "popup_marks_dir": $MY_STUFF . "/vim/popup.shortcuts",
-	\ "base_path": expand("~") . "/git/GracefulGNU/",
+	\ "popup_marks_dir": s:home_vim . "/popup.shortcuts",
+	\ "dictionaries_dir": s:home_vim . "/dictionaries",
 	\ "bridge_file": "/tmp/bridge",
 	\ "clipboard_commands": [ "wl-copy", "wl-paste" ],
-	\ "initial_workspace": $MY_STUFF . "/vim/workspaces/all.workspaces",
-	\ "loaders_dir": $MY_STUFF . "/vim/loaders/trending",
-	\ "basic_structure_initial_dir": expand("~/git"),
+	\ "initial_workspaces": [ s:workspaces . "/all.workspaces", s:workspaces . "/basic.workspaces" ],
+	\ "loaders_dir": s:home_vim . "/loaders/trending",
+	\ "initial_message": [ "DanVim loaded!" ],
+	\ "basic_structure_initial_dir": s:home_vim . "/",
 	\ "last": v:null
 \ }
 

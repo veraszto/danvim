@@ -1,0 +1,18 @@
+Popup Marks Core
+func\(tion\)\?!\?\s\+<SID>PopupMarksShow
+Pertinent jumps
+function!.<SID>CollectPertinentJumps
+OverlaysUpperRight
+func\(tion\)\?!\?\s\+<SID>Refreshing
+Add buffer from this Line
+func\(tion\)\?!\?\s\+<SID>AddBuffer
+
+
+
+
+
+
+
+
+
+

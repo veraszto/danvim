@@ -218,20 +218,9 @@ function! <SID>WriteToFile( content, file )
 	endtry
 endfunction
 
-function! <SID>ReadFromFile( file, create )
+function! <SID>ReadFromFile( file )
 
-	try
 		return readfile( a:file )
-	catch
-		echo "Could not read from file, " . a:file . ", " . v:exception
-	endtry
-
-	if a:create == 1
-		echo "Creating " . a:file
-		call <SID>WriteToFile( [], a:file )
-	endif
-
-	return []
 
 endfunction
 
@@ -526,14 +515,9 @@ function! <SID>GetThisFilePopupMark()
 	endif
 
 	let to_expand = s:popup_marks_dir . "/" . expand("%:t") . ".vim.shortcut"
-
-	try
-		let file = expand( to_expand )
-		echo "GetThisFilePopupMark: " . file
-		return file 
-	catch
-		echo "Could not reach file, " . to_expand . ", " . v:exception
-	endtry
+	let file = expand( to_expand )
+	echo "GetThisFilePopupMark: " . file
+	return file 
 
 endfunction
 
@@ -549,27 +533,18 @@ endfunction
 
 func! <SID>PopupMarksShow()
 
-	if !exists("b:marks")
+	let popup_file = <SID>GetThisFilePopupMark()
 
-		let popup_file = <SID>GetThisFilePopupMark()
-
-		if popup_file == v:false
-			return
+	try
+		let b:marks = <SID>ReadFromFile( popup_file )
+		if len( b:marks ) == 0
+			throw 0
 		endif
-
-		let b:marks = 
-			\ <SID>ReadFromFile
-			\ ( 
-				\ popup_file, 
-				\ v:false 
-			\ )
-
-	endif
-
-	if len( b:marks ) == 0
+	catch
 		echo "Marks' empty"
 		return
-	endif
+	endtry
+
 
 	try
 		nunme mightynimble
@@ -760,18 +735,23 @@ function! <SID>SpaceBarAction_maketree( line_number, line )
 	endif
 
 	let toTree = "tree -a " . a:line . " " . <SID>GetRoofDir()
-	let tree = systemlist( toTree )
-	call remove( tree, 0 )
-	let len_tree = len( tree )
-	call remove( tree, len_tree - 2, len_tree - 1 )
-"	if len( tree ) > 900
-"		echo "The tree returned is huge, please refine better using the make tree parameters or scoping [we are here]"
-"		return
-"	endif
-	let append = append( line(".") + 1, tree )
-	if append > 0
-		echo "Please make room of at least two lines after the [make tree] parameters"
-	endif
+	
+	try
+		let tree = systemlist( toTree )
+		call remove( tree, 0 )
+		let len_tree = len( tree )
+		if len_tree < 3
+			echo "Could not draw tree, please tune these parameters: " . a:line
+			return
+		endif
+		call remove( tree, len_tree - 2, len_tree - 1 )
+		let append = append( line(".") + 1, tree )
+		if append > 0
+			echo "Please make room of at least two lines after the [make tree] parameters"
+		endif
+	catch
+		echo "Could not draw tree, vim says: " . v:exception
+	endtry
 	
 endfunction
 
@@ -1082,7 +1062,7 @@ function! <SID>WriteBasicStructure()
 			\ "-i \"\"",
 			\ "",
 			\ "[make tree]",
-			\ "-x -I \"node_modules|.git\" --filelimit 50", "", ""
+			\ "-x -I \"target|.git\" --filelimit 50", "", ""
 		\ ]
 	\ )
 
@@ -1520,18 +1500,30 @@ function! <SID>WrapperHideAndShowPopups()
 endfunction
 
 function! <SID>ViInitialWorkspace()
+
+	let tried = 0
 	try
-		execute "vi" . " " . s:initial_workspace
+		for a in s:initial_workspaces
+			if file_readable( a ) == 1
+				execute "vi" . " " . a
+				let tried = 1
+				break
+			endif
+		endfor
+		if tried == 0
+			echo "Could not find any of these: " . join( s:initial_workspaces, ", " )
+		endif
 	catch
 		echo "Could not jump to initial workspace, " .
 			\ "maybe you need to save first, vim says: " . v:exception
 	endtry
+
 endfunction
 
 function! <SID>SetDict( )
 
 	let potential_dicts = expand
-			\ ( s:base_path . "/vim/vim_dictionary/*", 1, 1)
+			\ ( s:dictionaries_dir . "/*", 1, 1)
 
 	let selected = []
 	let this_type = matchstr( expand("<afile>"), s:file_extension )
@@ -2075,11 +2067,10 @@ function! <SID>SaveLoader( )
 
 	let trimmed_input = trim( input )
 
-	echohl MyActivities 
+	echohl None
 
 	if len( trimmed_input ) <= 0
 		echo "Could not save to a empty name"
-		echohl None
 		return
 	endif
 
@@ -2113,7 +2104,6 @@ function! <SID>SaveLoader( )
 
 	echo "Saved loader to " . file_name
 
-	echohl none
 
 endfunction
 
@@ -2161,11 +2151,10 @@ function! <SID>LoadLoader( )
 
 	let trimmed_input = trim( input )
 
-	echohl MyActivities 
+	echohl None 
 
 	if len( trimmed_input ) <= 0
 		echo "Could not load from an empty name"
-		echohl None
 		return
 	endif
 
@@ -2202,6 +2191,7 @@ function! <SID>LoadLoader( )
 		catch
 		endtry
 	endif
+
 		
 endfunction
 
@@ -2277,7 +2267,7 @@ if exists("s:this_has_been_loaded") == v:false
 	let s:last_win_tab = [0, 0]
 	echo "As its the first time for this instance, then we call StartUp"
 	call <SID>StartUp()
-	call <SID>SayHello( ["Hello are you good?", "What are you up to today?", "Great!"] )
+	call <SID>SayHello( s:initial_message )
 endif
 
 

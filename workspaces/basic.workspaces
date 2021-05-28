@@ -1,0 +1,16 @@
+
+
+
+
+[we are here]
+/home/
+
+[search]
+-i ""
+
+[make tree]
+-x -I "target|.git" -L 2 --filelimit 200
+
+
+
+

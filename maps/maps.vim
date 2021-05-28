@@ -99,6 +99,7 @@ function! <SID>MakeMappings()
 	endfor
 
 	call <SID>MapShortcut( "<C-S-kDel>", "ViInitialWorkspace()" )
+	call <SID>MapShortcut( ";ba", "ViInitialWorkspace()" )
 	call <SID>MapShortcut( "<Del>", 'ShortcutToNthPertinentJump(1, "Workspaces")' )
 	call <SID>MapShortcut( "<S-kDel>", 'ShortcutToNthPertinentJump(2, "Workspaces")' )
 
@@ -116,6 +117,8 @@ function! <SID>MakeMappings()
 
 	call <SID>MapShortcut( "<F1>", 'CopyRegisterToFileAndClipboard()' )
 	call <SID>MapShortcut( "[1;2P", 'PasteFromClipboard( v:false )' )
+	call <SID>MapShortcut( ";cp", 'CopyRegisterToFileAndClipboard()' )
+	call <SID>MapShortcut( ";pt", 'PasteFromClipboard( v:false )' )
 	call <SID>MapShortcut( "[1;6P", 'PasteFromClipboard( 1 )' )
 	call <SID>MapShortcut( "<F2>", 'WrapperHideAndShowPopups()' )
 	call <SID>MapShortcut( "<F3>", 'MarkNext()' )
@@ -142,7 +145,7 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( ";lf", "LocalCDAtThisFile()" )
 	call <SID>MapShortcut( ";u", "LocalCDAtFirstRoof()" )
 	map ;pw :pwd<CR>
-	call <SID>MapShortcut( ";pt", "GetThisFilePopupMark()" )
+"	call <SID>MapShortcut( ";pt", "GetThisFilePopupMark()" )
 	map ;q :quit<CR>
 	map ;r :reg<CR>
 	map ;sm :marks<CR>
