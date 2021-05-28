@@ -59,7 +59,7 @@ Save or load current active buffers by using `<F6>` and `<F7>`
 `<S-F6>` unload all buffers(:%bd)
 
 `<S-Left>` to access custom marks, which are currently set only to Dan.vim as the first example and editable through normal map `;em` when in Dan.vim buffer,
-Custom marks file name are like so, <filename>.vim.shortcut, so Dan.vim is Dan.vim.vim.shortcut, one can set its own for any file, following with the Dan.vim marks example.
+custom marks file name are like so, \<filename\>.vim.shortcut, so Dan.vim is Dan.vim.vim.shortcut, one can set its own for any file, following with the Dan.vim marks example.
 
 `<S-Down>` access the jump list(the same jBufs shows) and `<S-Right>` all buffers
 
