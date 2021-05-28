@@ -1,7 +1,7 @@
 
 <img src="images/vim.logo.png" alt="Vim logo" height="200" /> 
 
-# DanVim is an extandable Vim framework, written in Vim script
+# DanVim is an extendable Vim framework, written in Vim script
 a proposed way of using Vim, with the intent to make Vim usage better and faster.
 
 ### This documentation is ongoing
