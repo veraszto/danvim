@@ -21,6 +21,7 @@ a proposed way of using Vim, with the intent to make Vim usage better and faster
 - [Statusline](#statusline)
 - [Tabline](#tabline)
 - [Highlights](#highlights)
+- [Contribute](#contribute)
 - [Donate](#donate)
 
 
@@ -98,7 +99,14 @@ Further understanding can be achieved by reading the `maps.vim` script
 ### Statusline
 ### Tabline
 ### Highlights
-### Donate
+### Contribute
+Please show me your proposal/VimScript to make Vim usage faster and better, so that we can merge it in the architecture
+### Donate per contributor
+#### Danilo G. Veraszto
+- Channels
+  1. 1
+  2. 2
+
 
 
 
