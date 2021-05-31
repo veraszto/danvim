@@ -33,7 +33,9 @@ be careful not to override any current config you already have, it can be merged
 `ln -s .../git/DanVim ~/.vim`
 
 > A buffer is the in-memory text of a file.
+
 > A window is a viewport on a buffer.
+
 > A tab page is a collection of viewports.
 
 ### Requirements
@@ -53,7 +55,7 @@ now on its own repo
 
 ### Workspaces
 
-With workspaces you are able to enter a buffer by pressing <Space> over its name,
+With workspaces you are able to enter a buffer by pressing `<Space>` over its name,
 in workspaces, GNU Tree is is used to draw a file tree inside Vim
 
 Go to the basic root workspace by pressing `<C-S-kDel>` or `;ba`,
@@ -61,6 +63,8 @@ go to the line below `[make tree]` and press `<Space>` to toggle expand/contract
 `-x -I "target|.git" -L 2 --filelimit 200`
 it will try to list files from dir stated by `[we are here]`
 each of the files from the tree can be accessed by putting the cursor over it and pressing `<Space>`
+
+<img src="images/Workspaces.sample.2.png" alt="Vim logo" height="400" /> 
 
 ### jBufs
 
@@ -86,7 +90,7 @@ the purpose of them is to reach buffers in different ways, through custom marks,
 1. `<S-Left>` to access custom marks, which are currently set only to Dan.vim as an example and editable through normal map `;em` when in Dan.vim buffer,
 custom marks file name are like so, \<filename\>.vim.shortcut, so Dan.vim is Dan.vim.vim.shortcut, one can set its own for any file, following with the Dan.vim marks example.
 
-The structure of a marks file is so that each mark is built with two adjacent lines, a descriptive one and a Vim pattern(regex), which will be used to reach the desired line, below is an example
+  * The structure of a marks file is so that each mark is built with two adjacent lines, a descriptive one and a Vim pattern(regex), which will be used to reach the desired line, below is an example
 ````
 Popup Marks Core
 func\(tion\)\?!\?\s\+<SID>PopupMarksShow
@@ -97,9 +101,9 @@ func\(tion\)\?!\?\s\+<SID>Refreshing
 Add buffer from this Line
 func\(tion\)\?!\?\s\+<SID>AddBuffer
 ````
-If a regex matches multiple times, each selection of the option will reach to the next match.
+  * If a regex matches multiple times, each selection of the option will reach to the next match.
 
-These custom marks are stored at DanVim/popup.shortcuts
+  * These custom marks are stored at DanVim/popup.shortcuts
 
 2. `<S-Down>` access the jump list(the same jBufs shows) 
 3. `<S-Right>` all buffers
