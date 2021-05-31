@@ -55,7 +55,7 @@ now on its own repo
 ### Workspaces
 
 With workspaces you are able to enter a buffer by pressing `<Space>` over its name,
-in workspaces, GNU Tree is is used to draw a file tree inside Vim
+in workspaces, GNU Tree is used to draw a file tree inside Vim
 
 Go to the basic root workspace by pressing `<C-S-kDel>` or `;ba`,
 go to the line below `[make tree]` and press `<Space>` to toggle expand/contract, this line is just a GNU Tree listing options
@@ -74,7 +74,7 @@ jBufs lists all but workspaces files, jBufs stands for "last jumped to buffers",
 ### BufStack loader
 
 Load and save current active buffers by using `<F6>` and `<F7>`,
-After exiting Vim, it may be desired, to have back all opened tabs with theirs buffers, 
+after exiting Vim, it may be desired, to have back all opened tabs with theirs buffers, 
 or to merge buffers with the current ones, this is the goal of BufStack loader
 
 ### Dynamic Marking
