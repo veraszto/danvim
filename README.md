@@ -5,8 +5,6 @@
 a proposed way of using Vim, with the intent to make Vim usage better and faster.
 
 #### This documentation is ongoing
-#### There are plenty of still to document about DanVim, as these docs are being built
-#### It works well in my environment, please ask whenever the unexpected happen
 
 
 - [Introduction](#introduction)
@@ -151,11 +149,6 @@ Checkout DanVim/highlight/highlight.vim to a complete list of highlights
 ### Contribute
 Please show me your proposal/VimScript to make Vim usage faster and better, so that we can merge it in the architecture
 ### Donate per contributor
-#### Danilo G. Veraszto
-- Channels
-  1. 1
-  2. 2
-
-
-
-
+#### There are plenty of still to be documented about DanVim, as these docs are being built
+#### Please ask whenever the unexpected happen or in doubt
+#### Thank you!

@@ -1051,6 +1051,11 @@ endfunction
 
 function! <SID>WriteBasicStructure()
 
+	if <SID>AreWeInAnWorkspaceFile() < 0
+		echo "This makes sense only in a .workspaces buffer"
+		return
+	endif
+
 	call append
 	\ (
 		\ line("."),
@@ -1208,13 +1213,19 @@ function! <SID>OpenWorkspace()
 
 endfunction
 
+function! <SID>AreWeInAnWorkspaceFile()
+	
+	return match( bufname(), s:workspaces_pattern )
+
+endfunction
+
 function! <SID>WorkspacesFilesToBuffer()
 
 	let this_file = expand("%")
-	let is_workspace = match( this_file, s:workspaces_pattern ) 
-	if is_workspace < 0
+
+	if <SID>AreWeInAnWorkspaceFile() < 0
 		echo "We are not in a workspace file " . s:workspaces_pattern
-			return {}
+		return {}
 	endif
 
 	let this_line = line(".")
