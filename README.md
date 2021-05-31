@@ -4,7 +4,6 @@
 # DanVim is an extendable Vim framework, written in Vim script
 a proposed way of using Vim, with the intent to make Vim usage better and faster.
 
-#### This documentation is ongoing
 
 
 - [Introduction](#introduction)
@@ -143,6 +142,10 @@ set winheight=999
 ````
 so viewports are making the maximum room when focused
 
+`<Del>` goes to the last workspaces' file
+
+`<S-Del>` goes to the last but one workspaces' file
+
 `jj` in INSERT mode, does an omni completion
 
 
@@ -153,6 +156,6 @@ Checkout DanVim/highlight/highlight.vim to a complete list of highlights
 ### Contribute
 Please show me your proposal/VimScript to make Vim usage faster and better, so that we can merge it in the architecture
 ### Donate per contributor
-#### There are plenty of still to be documented about DanVim, as these docs are being built
+#### There are several features still to be documented about DanVim, as these docs are ongoing
 #### Please ask whenever the unexpected happen or in doubt
 #### Thank you!
