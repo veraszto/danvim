@@ -63,7 +63,7 @@ go to the line below `[make tree]` and press `<Space>` to toggle expand/contract
 it will try to list files from dir stated by `[we are here]`
 each of the files from the tree can be accessed by putting the cursor over it and pressing `<Space>`
 
-<img src="images/Workspaces.sample.2.png" alt="Vim logo" height="400" /> 
+<img src="images/Workspaces.sample.2.png" alt="Workspaces sample" height="400" /> 
 
 ### jBufs
 
@@ -84,7 +84,8 @@ or to merge buffers with the current ones, this is the goal of BufStack loader
 ### Popup menus
 
 #### There are three popup menus,
-the purpose of them is to reach buffers in different ways, through custom marks, jumps' list and all buffers
+the purpose of them is to reach buffers in different ways, through custom marks, jumps' list and all buffers, 
+once launched they are navigated through up and down arrows
 
 1. `<S-Left>` to access custom marks, which are currently set only to Dan.vim as an example and editable through normal map `;em` when in Dan.vim buffer,
 custom marks file name are like so, \<filename\>.vim.shortcut, so Dan.vim is Dan.vim.vim.shortcut, one can set its own for any file, following with the Dan.vim marks example.

@@ -3,6 +3,9 @@ let g:Danvim_current_being_sourced = expand("<SID>")
 let s:home_vim = expand( "~" ) . "/.vim"
 let s:workspaces = s:home_vim . "/workspaces"
 
+" In Xorg, wl-paste and wl-copy could be xclip -o and xcli -i
+" Empty the initial_message to turn it off
+
 let s:base_vars = 
 \ {
 	\ "popup_marks_dir": s:home_vim . "/popup.shortcuts",

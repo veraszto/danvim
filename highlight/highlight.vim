@@ -28,6 +28,7 @@ function! <SID>HighLight()
 	execute "highlight DiaryDivisor ctermbg=" . choose_separator_color . " ctermfg=" . choose_separator_color
 	execute "highlight CallingAttention ctermbg=" . choose_separator_color . " ctermfg=197"
 
+	highlight InitialMessage ctermfg=242
 	highlight MyLightGray ctermfg=242
 	highlight MyLightGrayForText ctermfg=246
 	highlight MyActivities ctermfg=177

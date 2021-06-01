@@ -1656,14 +1656,18 @@ endfunction
 
 function! <SID>SayHello( msg )
 
+	if len( a:msg ) <= 0
+		return
+	endif
+
 	call popup_create
 		\(
 			\ a:msg,
 			\ #{
-				\ time: 15000,
-				\ line:6,
-				\ highlight: "Extension",
-				\ padding: [ 2, 2, 1, 2 ],
+				\ time: 3000,
+				\ line:13,
+				\ highlight: "InitialMessage",
+				\ padding: [ 2, 6, 1, 6 ],
 				\ border: [ 0, 0, 1, 0],
 				\ borderchars: ["_", "", "_", ""]
 			\ }

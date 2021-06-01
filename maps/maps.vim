@@ -149,6 +149,7 @@ function! <SID>MakeMappings()
 	map ;q :quit<CR>
 	map ;r :reg<CR>
 	map ;sm :marks<CR>
+	call <SID>MapShortcut( ";sh", "SayHello( [ \"DanVim loaded\" ] )" )
 	call <SID>MapShortcut( ";std", "StampThisTypeToStatusLine()" )
 	map ;stc :try <Bar> unlet w:stamp_name <Bar> catch <Bar> echo "Already unstamped" <Bar> endtry<CR>
 	"Remember todo Tab moves back and forth
