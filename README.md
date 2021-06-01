@@ -63,7 +63,7 @@ go to the line below `[make tree]` and press `<Space>` to toggle expand/contract
 it will try to list files from dir stated by `[we are here]`
 each of the files from the tree can be accessed by putting the cursor over it and pressing `<Space>`
 
-<img src="images/Workspaces.sample.2.png" alt="Workspaces sample" height="600" /> 
+<img src="images/Workspaces.sample.2.png" alt="Workspaces sample" /> 
 
 ### jBufs
 
