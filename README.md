@@ -25,7 +25,7 @@ a proposed way of using Vim, with the intent to make Vim usage better and faster
 
 ### Introduction/Acknowledgements
 
-It is expected a basic Vim experience, this can be achieved typing :help just after entering Vim.
+It is expected a basic Vim experience, this can be achieved by typing :help just after entering Vim.
 
 This repo root is suposed to be in your home folder inside the .vim folder,
 be careful not to override any current config you already have, it can be merged with it or be linked to.
