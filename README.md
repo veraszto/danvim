@@ -63,7 +63,7 @@ go to the line below `[make tree]` and press `<Space>` to toggle expand/contract
 it will try to list files from dir stated by `[we are here]`
 each of the files from the tree can be accessed by putting the cursor over it and pressing `<Space>`
 
-<img src="images/Workspaces.sample.2.png" alt="Workspaces sample" height="400" /> 
+<img src="images/Workspaces.sample.2.png" alt="Workspaces sample" height="600" /> 
 
 ### jBufs
 
@@ -87,10 +87,13 @@ or to merge buffers with the current ones, this is the goal of BufStack loader
 the purpose of them is to reach buffers in different ways, through custom marks, jumps' list and all buffers, 
 once launched they are navigated through up and down arrows
 
-1. `<S-Left>` to access custom marks, which are currently set only to Dan.vim as an example and editable through normal map `;em` when in Dan.vim buffer,
-custom marks file name are like so, \<filename\>.vim.shortcut, so Dan.vim is Dan.vim.vim.shortcut, one can set its own for any file, following with the Dan.vim marks example.
+1. `<S-Left>` to access custom marks, 
+which are currently set only to Dan.vim as an example and editable through normal map `;em` when in Dan.vim buffer,
+custom marks file name are like so, \<filename\>.vim.shortcut, so Dan.vim is Dan.vim.vim.shortcut, 
+one can set its own for any file, following with the Dan.vim marks example.
 
-  * The structure of a marks file is so that each mark is built with two adjacent lines, a descriptive one and a Vim pattern(regex), which will be used to reach the desired line, below is an example
+  * The structure of a marks file is so that each mark is built with two adjacent lines, 
+  a descriptive one and a Vim pattern(regex), which will be used to reach the desired line, below is an example
 ````
 Popup Marks Core
 func\(tion\)\?!\?\s\+<SID>PopupMarksShow
