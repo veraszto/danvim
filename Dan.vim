@@ -2225,6 +2225,67 @@ endfunction
 
 
 
+function <SID>JobStart()
+
+
+	if exists("b:response_file")
+
+		let vi_to = b:response_file
+		unlet b:response_file
+		execute "vi " . vi_to
+		return
+
+	endif
+
+
+	let pattern =  '#\sDanVim:'
+
+	let job_line = search( pattern )
+	if  job_line <= 0
+		echo "Job to start not found by " . pattern
+		return
+	endif
+
+	let dir = "/tmp/vim.jobs/"
+
+	if isdirectory( dir ) == 0
+		call mkdir( dir )	
+	endif
+
+	let job_build = split( getline( job_line ), ':' )
+
+	let save_to = dir . expand("%:t") . "." . localtime() . "." . job_build[ 1 ]
+
+"	call <SID>WriteToFile( ["Job is ongoing, please update ..."], save_to )
+
+	let job_cmd = expand("%")
+
+	function! Ended( channel ) closure
+
+		let cmd = job_build[ 2 ] . " " . save_to
+		echo a:channel . ", done!"
+		echo "Running " . cmd
+		call system( cmd )
+		echo "Done with " . cmd
+
+	endfunction
+
+	let job = job_start
+	\ ( 
+		\ job_cmd, 
+		\ { "out_name": save_to, "out_io": "file", "close_cb":"Ended" } 
+	\ )
+
+	echo "Job started " . job_cmd
+
+	call foreground()
+
+	let b:response_file = save_to
+
+endfunction
+
+
+
 
 "Custom Vars
 

@@ -78,6 +78,7 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( "<C-S-Down>", 'LocalMarksAutoJumping( 13487, "down" )' )
 	call <SID>MapShortcut( "<C-S-Up>", 'LocalMarksAutoJumping( 9750, "up" )' )
 
+	call <SID>MapShortcut( "<C-Home>", 'JobStart()' )
 
 	let types = [ "Traditional", "Workspaces" ]
 
