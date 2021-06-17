@@ -49,7 +49,7 @@ function! <SID>MakeMappings()
 
 
 "	Easy save
-	imap 	<S-Up> <Cmd>:wa<CR>
+	imap 	<S-Up> <Cmd>wa<CR>
 	map 	<S-Up> <Cmd>wa<CR>
 
 "	ChangeList
