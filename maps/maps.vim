@@ -124,8 +124,9 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( "<F2>", 'WrapperHideAndShowPopups()' )
 	call <SID>MapShortcut( "<F3>", 'MarkNext()' )
 	call <SID>MapShortcut( "<F4>", 'WriteBasicStructure()' )
+	call <SID>MapShortcut( "<F5>", 'CloseAllTrees()' )
 
-	map <F5> <Cmd>echo "Searching for >>>>>, <<<<<<, \|\|\|\|\|\|" <Bar> call search( '\(<\\|>\\|=\)\{6,}' )<CR>
+	map ;/ <Cmd>echo "Searching for >>>>>, <<<<<<, \|\|\|\|\|\|" <Bar> call search( '\(<\\|>\\|=\)\{6,}' )<CR>
 	
 	call <SID>MapShortcut( "<F6>", 'LoadLoader( )' )
 	map <silent> <S-F6> :try \| %bd \| catch \| echo "Tryied to unload all buffers, has it been enough?" \| endtry<CR>

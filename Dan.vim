@@ -9,7 +9,6 @@ function! <SID>BuildTabLine2()
 				\ settabvar
 					\( 
 							\ i + 1, "cur_buf_name", 
-							\ <SID>LastDir( getcwd() ) . "/" . 
 							\ <SID>ExtractExtension( bufname( winbufnr(buf) ) ) 
 					\)
 
@@ -32,19 +31,6 @@ function! <SID>BuildTabLine2()
 	return l:line
 endfunction
 
-
-
-"Jumplist cleaner and status
-function! <SID>StatusLineNativeJumpList()
-	let list = getjumplist()
-	let pos = list[1]
-	let length = len(list[0])
-	let state = "overflowing"
-	if pos < length
-		let state = "tectonic"
-	endif
-	return "[" . pos . "/" . length . ", " . state . "]"
-endfunction
 
 
 function! <SID>ShowType()
@@ -1049,10 +1035,21 @@ function! <SID>BuFromGNUTree( line_number, line, len_tree_prefix, roof_dir )
 endfunction
 
 
+function! <SID>CloseAllTrees()
+
+	if <SID>AreWeInAnWorkspaceFile() < 0
+		echo s:when_only_at_workspaces_message
+		return
+	endif
+
+	execute "g/" . s:tree_special_chars . "/normal \"_dd"
+	
+endfunction
+
 function! <SID>WriteBasicStructure()
 
 	if <SID>AreWeInAnWorkspaceFile() < 0
-		echo "This makes sense only in a .workspaces buffer"
+		echo s:when_only_at_workspaces_message
 		return
 	endif
 
@@ -2321,7 +2318,8 @@ let s:elligible_auto_global_marks_letters = [ "L", "V", "R", "W", "D", "G" ]
 let s:elligible_auto_cycle_local_marks_letters = 
 	\ ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "a", "s", "d", "f", "g", "h", "j", "k", "l", "z", "x", "c", "v", "b", "n", "m"]
 
-let s:tree_special_chars = '^\(\%u2500\|\%u2502\|\%u251C\|\%u2514\|\%xA0\|[[:space:]]\)\+'
+"let s:tree_special_chars = '^\(\%u2500\|\%u2502\|\%u251C\|\%u2514\|\%xA0\|[[:space:]]\)\+'
+let s:tree_special_chars = '^\(\s\{-}\(\%u2500\|\%u2502\|\%u251C\|\%u2514\|\%xA0\)\+\s\+\)\+'
 let s:tree_len_each_level = 4
 
 let s:add_as_bufvar = '__\\#{.\+$'
@@ -2334,6 +2332,8 @@ let s:types_of_overlays = [ "Traditional" ]
 let s:overlay_allowed_to_show = v:true
 
 let s:tmp_vim_script_buffers_loader = "/tmp/buffers.loader.vim"
+
+let s:when_only_at_workspaces_message = "This makes sense only in a .workspaces buffer"
 
 echo "DanVim has just been loaded"
 
