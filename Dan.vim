@@ -1,29 +1,17 @@
 function! <SID>BuildTabLine2()
 	let l:line = ""
 	for i in range(tabpagenr('$'))
-		let buf = tabpagewinnr(i + 1)
 		let focused = " . "
-		if i + 1 == tabpagenr()
-
-			call
-				\ settabvar
-					\( 
-							\ i + 1, "cur_buf_name", 
-							\ <SID>ExtractExtension( bufname( winbufnr(buf) ) ) 
-					\)
-
-			let title = gettabvar(i + 1, "cur_buf_name")
-			if len( title ) > 0
-				let focused = "%#TabLineSel# " .  ( title ) . " %0*"
-			else
-				let focused = "%#TabLineSel# . %0*"
-			endif
+		let added_one = i + 1
+		let title = gettabvar
+		\ ( 
+			\ added_one, "title", 
+			\ <SID>ExtractExtension(bufname(tabpagebuflist(added_one)[tabpagewinnr(added_one) - 1]))
+		\ )
+		if added_one == tabpagenr()
+			let focused = "%#TabLineSel# " .  ( title ) . " %0*"
 		else
-			let other_title = gettabvar( i + 1, "cur_buf_name")
-			if len(other_title) > 0
-				let focused = " " . other_title . " "
-			endif
-
+			let focused = " " . ( title ) . " "
 		endif
 		let block = l:line . focused
 		let l:line = block
@@ -347,17 +335,15 @@ endfunction
 
 function! <SID>ChooseBestPlaceToGetJumps( limit, type )
 
-	return <SID>CollectPertinentJumps( a:limit, a:type )
+	let popup_and_jumps = <SID>PopupExists( <SID>BuildOverlayNameArray(a:type) )
 
-	let name = <SID>BuildOverlayNameArray( a:type )
-
-	let popup_exists = <SID>PopupExists( name )
-
-	if len( popup_exists ) == 0
-		return <SID>CollectPertinentJumps( a:limit, a:type )
-	else
-		return popup_exists[ 1 ]
+	if 
+		\ len( popup_and_jumps ) > 0 &&
+		\ ( s:last_win_tab[ 0 ] != winnr() || s:last_win_tab[ 1 ] != tabpagenr() )
+		return popup_and_jumps[ 1 ]
 	endif
+
+	return <SID>CollectPertinentJumps( a:limit, a:type )
 
 endfunction
 
@@ -1815,10 +1801,8 @@ function! <SID>RefreshingOverlays( type )
 	let increase = a:type + 1
 	call <SID>RefreshingOverlays( increase )
 
-	if ( increase + 1 ) == len( types )
-
+	if ( increase ) == len( types )
 		let s:last_win_tab = [ winnr(), tabpagenr() ]
-
 	endif
 
 endfunction
@@ -1866,16 +1850,7 @@ endfunction
 
 function! <SID>BuildJBufs( type )
 
-	if s:last_win_tab[ 0 ] == winnr() &&
-		\ s:last_win_tab[ 1 ] == tabpagenr()
-
-		let jumps = <SID>CollectPertinentJumps( -1, a:type )
-	else
-
-		let jumps = <SID>ChooseBestPlaceToGetJumps( -1, a:type )
-
-	endif
-
+	let jumps = <SID>ChooseBestPlaceToGetJumps( -1, a:type )
 	return <SID>JBufsViewAndRaw( jumps, a:type )
 
 endfunction
@@ -1895,13 +1870,6 @@ function! <SID>JBufsViewAndRaw( jumps, type )
 
 	let bufname = bufname()
 	
-"	if bufname =~ '^/'
-"		let current = matchstr( bufname, s:tail_with_upto_two_dirs )
-"	else
-"		let current = "@ " . bufname
-"	endif
-"
-
 	return [ jumps_improved, a:jumps ]
 
 endfunction
@@ -2003,6 +1971,13 @@ function! <SID>GenerateVimScriptToLoadBuffersOfATab( which )
 
 	call add( list, "try" )
 	call add( list, "\t" . <SID>BaseDirToSaveLoader() )
+	let tab_title = gettabvar( a:which, "title")
+	if len(tab_title) > 0
+		call add
+		\ ( 
+			\ list, "\t" . "let t:title = \"" . tab_title . "\""
+		\ )
+	endif
 
 	let buffers = reverse( tabpagebuflist( a:which ) )
 	for a in buffers 

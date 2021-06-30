@@ -49,7 +49,7 @@ function! <SID>MakeMappings()
 
 
 "	Easy save
-	imap 	<S-Up> <Cmd>wa<CR>
+	imap	<S-Up> <Cmd>wa<CR>
 	map 	<S-Up> <Cmd>wa<CR>
 
 "	ChangeList
@@ -123,6 +123,7 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( "[1;6P", 'PasteFromClipboard( 1 )' )
 	call <SID>MapShortcut( "<F2>", 'WrapperHideAndShowPopups()' )
 	call <SID>MapShortcut( "<F3>", 'MarkNext()' )
+	map [1;2R <Cmd>delmarks!<CR>
 	call <SID>MapShortcut( "<F4>", 'WriteBasicStructure()' )
 	call <SID>MapShortcut( "<F5>", 'CloseAllTrees()' )
 
