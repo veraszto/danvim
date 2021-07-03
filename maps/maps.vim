@@ -131,8 +131,9 @@ function! <SID>MakeMappings()
 	
 	call <SID>MapShortcut( "<F6>", 'LoadLoader( )' )
 	map <silent> <S-F6> :try \| %bd \| catch \| echo "Tryied to unload all buffers, has it been enough?" \| endtry<CR>
-	call <SID>MapShortcut( "<F7>", 'SaveLoader( )' )
-	call <SID>MapShortcut( "<S-F7>", 'SaveBuffersOfThisTab( )' )
+	call <SID>MapShortcut( "<F7>", 'SaveLoader(1)' )
+	call <SID>MapShortcut( "<S-F7>", "SaveLoader(" . tabpagenr() . ")" )
+	call <SID>MapShortcut( "<C-S-F7>", 'SaveBuffersOfThisTab( )' )
 
 "	=======
 

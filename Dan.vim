@@ -3,11 +3,18 @@ function! <SID>BuildTabLine2()
 	for i in range(tabpagenr('$'))
 		let focused = " . "
 		let added_one = i + 1
+		let bufname = bufname(tabpagebuflist(added_one)[tabpagewinnr(added_one) - 1])
 		let title = gettabvar
 		\ ( 
 			\ added_one, "title", 
-			\ <SID>ExtractExtension(bufname(tabpagebuflist(added_one)[tabpagewinnr(added_one) - 1]))
+			\ <SID>ExtractExtension(bufname)
 		\ )
+		if len(title) <= 0
+			let title = matchstr(bufname, '\(/\)\@<=.\{,7}$')
+			if len(title) <= 0
+				let title = "[Empty]"
+			endif
+		endif
 		if added_one == tabpagenr()
 			let focused = "%#TabLineSel# " .  ( title ) . " %0*"
 		else
@@ -2018,7 +2025,7 @@ function! <SID>ReadDirs( which )
 
 endfunction
 
-function! <SID>SaveLoader( )
+function! <SID>SaveLoader( from  )
 
 	try
 		let suggestions = <SID>ReadDirs( s:loaders_dir )
@@ -2038,10 +2045,20 @@ function! <SID>SaveLoader( )
 
 	echohl MyActivities 
 
-	echo "Please type a new name " .
+	let msg = "Please type a new name " .
 		\ "or at least a name match of an existing entry " .
-		\ "listed below(if any) to overwrite, to " .
-		\ "save the current active buffers."
+		\ "listed below(if any) to overwrite, to save "
+
+	let complement_msg = "ALL current active buffers"
+
+	if ( a:from > 1 )
+		let complement_msg = "from current tabpage " . a:from . " up to including the last"
+	endif
+
+	let msg = msg . complement_msg
+
+	echo msg
+
 	echohl WarningMsg
 	echo "SAVE to:"
 
@@ -2075,7 +2092,7 @@ function! <SID>SaveLoader( )
 	let last_tab = tabpagenr( "$" )
 	let commands = []
 
-	for a in range( 1, last_tab )
+	for a in range( a:from, last_tab )
 		
 		let for_this_tab = <SID>GenerateVimScriptToLoadBuffersOfATab( a )
 		call extend( commands,   for_this_tab )
