@@ -132,7 +132,7 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( "<F6>", 'LoadLoader( )' )
 	map <silent> <S-F6> :try \| %bd \| catch \| echo "Tryied to unload all buffers, has it been enough?" \| endtry<CR>
 	call <SID>MapShortcut( "<F7>", 'SaveLoader(1)' )
-	call <SID>MapShortcut( "<S-F7>", "SaveLoader(" . tabpagenr() . ")" )
+	call <SID>MapShortcut( "<S-F7>", "SaveLoader( tabpagenr() )" )
 	call <SID>MapShortcut( "<C-S-F7>", 'SaveBuffersOfThisTab( )' )
 
 "	=======
@@ -157,7 +157,10 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( ";std", "StampThisTypeToStatusLine()" )
 	map ;stc :try <Bar> unlet w:stamp_name <Bar> catch <Bar> echo "Already unstamped" <Bar> endtry<CR>
 	"Remember todo Tab moves back and forth
-	map ;, :tabm0<CR>
+	map ;, <Cmd>try \| tabm- \| catch \| echo "Even more?" \| endtry <CR>
+	map ;. <Cmd>try \| tabm+ \| catch \| echo "Even more?" \| endtry <CR>
+	map ;< <Cmd>tabm0<CR>
+	map ;> <Cmd>tabm$<CR>
 	call <SID>MapShortcut( ";t", "ViInitialWorkspace()", "<Cmd>tabnew", "clearjumps" )
 	map ;vn :vertical new<CR>
 	map ;vs :vertical split<CR>
