@@ -90,7 +90,8 @@ function! <SID>AutoCommands()
 		au!
 	aug END
 
-	autocmd DanVim BufReadPost * normal g'"zz
+	autocmd DanVim BufReadPost * 
+		\ try | execute "normal g'\"zz" | catch | echo "Could not jump to last position" | endtry
 
 	autocmd DanVim BufRead *.yaml,*.yml setlocal expandtab | setlocal tabstop=2 | echo "Its a YAML!"
 	
@@ -2254,7 +2255,7 @@ function <SID>JobStart()
 		let cmd = job_build[ 2 ] . " " . save_to
 		echo a:channel . ", done!"
 		echo "Running " . cmd
-		call system( cmd )
+		call job_start( cmd )
 		echo "Done with " . cmd
 
 	endfunction

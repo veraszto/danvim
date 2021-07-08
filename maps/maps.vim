@@ -46,6 +46,7 @@ function! <SID>MakeMappings()
 "	Instant reloads
 	call <SID>MapShortcutButFirstRuntimeDanVim( ";rs", "StartUp()" )
 	call <SID>MapShortcutButFirstRuntimeDanVim( ";rm", "MakeMappings()" )
+	call <SID>MapShortcutButFirstRuntimeDanVim( ";ra", "AutoCommands()" )
 
 
 "	Easy save
