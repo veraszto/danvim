@@ -76,8 +76,8 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( "<S-Right>", "PopupBuffers()" )
 	call <SID>MapShortcut( "<S-Down>", "PopupJumps()" )
 
-	call <SID>MapShortcut( "<C-S-Down>", 'LocalMarksAutoJumping( 13487, "down" )' )
-	call <SID>MapShortcut( "<C-S-Up>", 'LocalMarksAutoJumping( 9750, "up" )' )
+	call <SID>MapShortcut( "<C-S-Down>", 'NavigateThroughLocalMarksAndWorkspaces( "down" )' )
+	call <SID>MapShortcut( "<C-S-Up>", 'NavigateThroughLocalMarksAndWorkspaces( "up" )' )
 
 	call <SID>MapShortcut( "<C-Home>", 'JobStart()' )
 
@@ -100,10 +100,7 @@ function! <SID>MakeMappings()
 
 	endfor
 
-	call <SID>MapShortcut( "<C-S-kDel>", "ViInitialWorkspace()" )
-	call <SID>MapShortcut( ";ba", "ViInitialWorkspace()" )
-	call <SID>MapShortcut( "<Del>", 'ShortcutToNthPertinentJump(1, "Workspaces")' )
-	call <SID>MapShortcut( "<S-kDel>", 'ShortcutToNthPertinentJump(2, "Workspaces")' )
+	call <SID>MapShortcut( "<Del>", 'SmartReachWorkspace()' )
 
 	call <SID>MapShortcut( ";J", 'SharpSplits("J")' )
 	call <SID>MapShortcut( ";K", 'SharpSplits("K")' )
@@ -124,7 +121,7 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( "[1;6P", 'PasteFromClipboard( 1 )' )
 	call <SID>MapShortcut( "<F2>", 'WrapperHideAndShowPopups()' )
 	call <SID>MapShortcut( "<F3>", 'MarkNext()' )
-	map [1;2R <Cmd>delmarks!<CR>
+	map [1;2R <Cmd>delmarks! \| marks<CR>
 	call <SID>MapShortcut( "<F4>", 'WriteBasicStructure()' )
 	call <SID>MapShortcut( "<F5>", 'CloseAllTrees()' )
 
@@ -152,7 +149,7 @@ function! <SID>MakeMappings()
 	map ;pw :pwd<CR>
 "	call <SID>MapShortcut( ";pt", "GetThisFilePopupMark()" )
 	map ;q :quit<CR>
-	map ;r :reg<CR>
+	map ;rg :reg<CR>
 	map ;sm :marks<CR>
 	call <SID>MapShortcut( ";sh", "SayHello( [ \"DanVim loaded\" ] )" )
 	call <SID>MapShortcut( ";std", "StampThisTypeToStatusLine()" )

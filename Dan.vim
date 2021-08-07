@@ -49,7 +49,7 @@ function! <SID>LastDir( matter )
 endfunction
 
 function! <SID>BuildStatusLine2()
-	return "%m%#SameAsExtensionToStatusLine#%n%*)%#SameAsExtensionToStatusLine#%F%*" . 
+	return "%m%#SameAsExtensionToStatusLine#%n%*) %#SameAsExtensionToStatusLine#%f%*" . 
 		\ " / %#SameAsExtensionToStatusLine#%{". s:GetSNR() ."getStamp()}%*%=(%c/%l/%L) byte:%B, %b"
 endfunction
 
@@ -386,11 +386,12 @@ function! <SID>ShortcutToNthPertinentJump( nth, filter )
 	let jump = get( jumps, a:nth - 1, {} )
 	if jump == {} 
 		echo "JBufs did not reach length of " . a:nth
-		return
+		return 0
 	endif
 
 	execute "try | wa | buffer " . jump["bufnr"] . 
 				\ " | catch | echo \"Could not buf:\" . v:exception | endtry" 
+	return 1
 
 endfunction
 
@@ -646,7 +647,6 @@ endfunction
 function! <SID>GoAfterAWorkSpace()
 
 	let counter = winnr("$")
-
 	while counter > 0
 		
 		let buf_name = bufname( winbufnr( counter ) )
@@ -660,7 +660,7 @@ function! <SID>GoAfterAWorkSpace()
 
 	split
 	wincmd J
-	call <SID>ShortcutToNthPertinentJump(1, "Workspaces")
+	call <SID>SmartReachWorkspace()
 
 "	echo "An active workspace buffer is currently no present at this tab"
 
@@ -1501,6 +1501,31 @@ function! <SID>WrapperHideAndShowPopups()
 
 endfunction
 
+function! <SID>LastOrInitial()
+	let got_it = <SID>ShortcutToNthPertinentJump( 1, "Workspaces" )
+	if got_it == 0
+		call <SID>ViInitialWorkspace()
+	endif
+endfunction
+
+function! <SID>SmartReachWorkspace()
+
+	wa
+	if <SID>AreWeInAnWorkspaceFile() >= 0
+		call <SID>LastOrInitial()
+		return
+	endif
+
+	let tab_workspaces = gettabvar(tabpagenr(), "workspaces") 
+	if len( tab_workspaces ) > 0
+		execute "vi " . t:workspaces
+		return
+	endif
+
+	call <SID>LastOrInitial()
+
+endfunction
+
 function! <SID>ViInitialWorkspace()
 
 	let tried = 0
@@ -1917,36 +1942,51 @@ function! <SID>UpdateOverlay( which, content, type )
 
 endfunction
 
-function! <SID>LocalMarksAutoJumping( iteration_count, go )
+function! <SID>NavigateThroughLocalMarksAndWorkspaces( go )
 
-	if a:iteration_count >= 5000
-		let copy_iteration_count = len( s:elligible_auto_cycle_local_marks_letters )
-	else
-		let copy_iteration_count = a:iteration_count
-	endif
+	if <SID>AreWeInAnWorkspaceFile() > 0
 
-
-	if ! exists("b:local_marks_auto_jumping")
-		let b:local_marks_auto_jumping = 0
-	endif
-
-	if a:iteration_count <= 0
-		echo "No local marks found!"
+		if a:go =~ '^up$'
+			call cursor(line(".") - 1, 1)
+			let line = search( s:we_are_here, "bnw" )
+		else
+			let line = search( s:we_are_here, "nw" )
+		endif
+		let line += 1
+		call cursor( line, 1 )
 		return
 	endif
 
-	let iteration_count_partner = copy_iteration_count - 1
+	call <SID>LocalMarksAutoJumping( a:go )
+
+endfunction
+
+
+function! <SID>LocalMarksAutoJumping( go )
+
+
+	if ! exists("b:local_marks_auto_jumping")
+		let b:local_marks_auto_jumping = [ 0, 0 ]
+	endif
+
+	let len_elligible = len( s:elligible_auto_cycle_local_marks_letters )
+
+	if b:local_marks_auto_jumping[ 1 ] >= len_elligible
+		echo "No marks found"
+		let b:local_marks_auto_jumping[ 1 ] = 0
+		return
+	endif
 
 	if a:go =~ '^up$'
-		let b:local_marks_auto_jumping += 1
+		let b:local_marks_auto_jumping[ 0 ] += 1
 	else
-		let b:local_marks_auto_jumping -= 1
+		let b:local_marks_auto_jumping[ 0 ] -= 1
 	endif
 
 	let letter = 
 		\ s:elligible_auto_cycle_local_marks_letters
 		\[ 
-			\ b:local_marks_auto_jumping % len( s:elligible_auto_cycle_local_marks_letters ) 
+			\ b:local_marks_auto_jumping[ 0 ] % len_elligible
 		\]
 
 	normal m'
@@ -1957,12 +1997,13 @@ function! <SID>LocalMarksAutoJumping( iteration_count, go )
 		redraw
 		echo "At mark: " . letter . ") " . getline( mark_pos[ 1 ] ) 
 		normal zz
+		let b:local_marks_auto_jumping[ 1 ] = 0
 		return
 	endif
 
-"	echo iteration_count_partner
+	let b:local_marks_auto_jumping[ 1 ] += 1
 
-	call <SID>LocalMarksAutoJumping( iteration_count_partner, a:go )
+	call <SID>LocalMarksAutoJumping( a:go )
 
 endfunction
 
@@ -1979,13 +2020,19 @@ function! <SID>GenerateVimScriptToLoadBuffersOfATab( which )
 
 	call add( list, "try" )
 	call add( list, "\t" . <SID>BaseDirToSaveLoader() )
-	let tab_title = gettabvar( a:which, "title")
-	if len(tab_title) > 0
-		call add
-		\ ( 
-			\ list, "\t" . "let t:title = \"" . tab_title . "\""
-		\ )
-	endif
+
+	for name in s:tab_vars_names
+
+		let tab_var = gettabvar( a:which, name )
+		if len( tab_var ) > 0
+			call add
+			\ ( 
+				\ list, "\t" . "let t:" . name  . " = \"" . tab_var . "\""
+			\ )
+		endif
+
+	endfor
+
 
 	let buffers = reverse( tabpagebuflist( a:which ) )
 	for a in buffers 
@@ -2309,7 +2356,7 @@ let s:traditional_keybinds = [ "Home", "End", "pgUp", "pgDown" ]
 let s:len_traditional_keybinds = len( s:traditional_keybinds )
 let s:elligible_auto_global_marks_letters = [ "L", "V", "R", "W", "D", "G" ]
 let s:elligible_auto_cycle_local_marks_letters = 
-	\ ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "a", "s", "d", "f", "g", "h", "j", "k", "l", "z", "x", "c", "v", "b", "n", "m"]
+	\ ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
 
 "let s:tree_special_chars = '^\(\%u2500\|\%u2502\|\%u251C\|\%u2514\|\%xA0\|[[:space:]]\)\+'
 let s:tree_special_chars = '^\(\s\{-}\(\%u2500\|\%u2502\|\%u251C\|\%u2514\|\%xA0\)\+\s\+\)\+'
@@ -2321,6 +2368,8 @@ let s:cmd_buf_pattern = '\(\s\|\t\)*+\(/\|\d\).\{-}\s\+'
 
 "let s:types_of_overlays = [ "Traditional", "Workspaces" ]
 let s:types_of_overlays = [ "Traditional" ]
+
+let s:tab_vars_names = ["title", "workspaces"]
 
 let s:overlay_allowed_to_show = v:true
 
