@@ -57,7 +57,6 @@ function! <SID>MakeMappings()
 	map { g;
 	map } g,
 
-
 	map <C-S-Left>	:previous<CR>
 	map <C-S-Right>	:next<CR>
 
@@ -113,6 +112,7 @@ function! <SID>MakeMappings()
 			\ if &paste == 0 <Bar> echo "Paste mode is OFF" 
 			\ <Bar> else <Bar> echo "Paste mode is ON" <Bar> endif <CR>
 
+"	=======
 
 	call <SID>MapShortcut( "<F1>", 'CopyRegisterToFileAndClipboard()' )
 	call <SID>MapShortcut( "[1;2P", 'PasteFromClipboard( v:false )' )
@@ -128,10 +128,12 @@ function! <SID>MakeMappings()
 	map ;/ <Cmd>echo "Searching for >>>>>, <<<<<<, \|\|\|\|\|\|" <Bar> call search( '\(<\\|>\\|=\)\{6,}' )<CR>
 	
 	call <SID>MapShortcut( "<F6>", 'LoadLoader( )' )
-	map <silent> <S-F6> :try \| %bd \| catch \| echo "Tryied to unload all buffers, has it been enough?" \| endtry<CR>
+	map <silent> <S-F6> :try \| tabnew \| %bd \| catch \| echo "Tryied to unload all buffers, has it been enough?" \| endtry<CR>
 	call <SID>MapShortcut( "<F7>", 'SaveLoader(1)' )
 	call <SID>MapShortcut( "<S-F7>", "SaveLoader( tabpagenr() )" )
 	call <SID>MapShortcut( "<C-S-F7>", 'SaveBuffersOfThisTab( )' )
+	call <SID>MapShortcut( "<F8>", 'RunAuScript( 1 )' )
+	call <SID>MapShortcut( "<S-F8>", 'RunAuScript( 0 )' )
 
 "	=======
 

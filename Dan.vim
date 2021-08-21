@@ -49,8 +49,12 @@ function! <SID>LastDir( matter )
 endfunction
 
 function! <SID>BuildStatusLine2()
-	return "%m%#SameAsExtensionToStatusLine#%n%*) %#SameAsExtensionToStatusLine#%f%*" . 
-		\ " / %#SameAsExtensionToStatusLine#%{". s:GetSNR() ."getStamp()}%*%=(%c/%l/%L) byte:%B, %b"
+
+	let snr = s:GetSNR()
+	return "%m%#SameAsExtensionToStatusLine#%n%*)%{". snr  ."GetAutoScp()}" .
+		\ "%#SameAsExtensionToStatusLine#%f%*" . 
+		\ " / %#SameAsExtensionToStatusLine#%{". snr ."getStamp()}%*" .
+		\ "%=%*(%c/%l/%L) byte:%B, %b"
 endfunction
 
 
@@ -74,6 +78,51 @@ function! <SID>CropAsYouWill(matter, replace, match)
 			\),
 			\a:match
 		\)
+endfunction
+
+function! <SID>StartJob( job )
+
+	function! CloseHandler( channel )
+
+		let msg = []
+		while ch_status(a:channel) == "buffered"
+			call add(msg, ch_read(a:channel))
+		endwhile
+		echo msg
+	endfunction
+
+	let job = job_start( [ a:job, expand("%:p") ], {"err_io": "out", "close_cb": "CloseHandler"})
+
+endfunction
+
+function! <SID>RunAuScript( on_off )
+
+	augroup my_scripts
+		au!
+	augroup END
+
+	if a:on_off == 0
+		echo "AuScripts not running"
+		let s:automatic_scp = 0
+		return
+	endif
+
+	let au_script = "g:au_script"
+
+	if ! exists( au_script ) == 1
+		echo "Please map script path at " . au_script . " like this: BufWritePost|~/script.sh"
+		return
+	endif
+
+	let event_and_script = split( g:au_script, '|' )
+
+	let s:automatic_scp = 1
+
+	augroup my_scripts
+		execute "au " . event_and_script[ 0 ]  . " * call <SID>StartJob(\"" . event_and_script[ 1 ]  . "\")"
+	augroup END
+	 
+
 endfunction
 
 function! <SID>AutoCommands()
@@ -1106,6 +1155,15 @@ function! <SID>getStamp()
 		return w:stamp_name
 	endif
 	return ""
+endfunction
+
+function! <SID>GetAutoScp()
+
+	if s:automatic_scp == 0
+		return ""
+	endif
+	return " AuScriptON "
+
 endfunction
 
 "\MakeEscape
@@ -2307,7 +2365,7 @@ function <SID>JobStart()
 
 	endfunction
 
-	let job = job_start
+	call job_start
 	\ ( 
 		\ job_cmd, 
 		\ { "out_name": save_to, "out_io": "file", "close_cb":"Ended" } 
@@ -2362,6 +2420,7 @@ let s:elligible_auto_cycle_local_marks_letters =
 let s:tree_special_chars = '^\(\s\{-}\(\%u2500\|\%u2502\|\%u251C\|\%u2514\|\%xA0\)\+\s\+\)\+'
 let s:tree_len_each_level = 4
 
+
 let s:add_as_bufvar = '__\\#{.\+$'
 let s:add_as_bufvar_missing_bar = '\(\\\)\@<!#.*{.\+$'
 let s:cmd_buf_pattern = '\(\s\|\t\)*+\(/\|\d\).\{-}\s\+'
@@ -2383,6 +2442,7 @@ if exists("s:this_has_been_loaded") == v:false
 	let s:this_has_been_loaded = v:true
 	let s:popup_winids = {}
 	let s:last_win_tab = [0, 0]
+	let s:automatic_scp = 0
 	echo "As its the first time for this instance, then we call StartUp"
 	call <SID>StartUp()
 	call <SID>SayHello( s:initial_message )
