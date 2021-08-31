@@ -171,9 +171,9 @@ so viewports are making the maximum room when focused
 Checkout DanVim/highlight/highlight.vim to a complete list of highlights 
 ### Contribute
 Please consider donating,
-<table>
+<table style="border:0;">
 <tr>
-<td>![Ethereum](images/ethereum.png)
+<td><img src="images/ethereum.png" />
 </td>
 <td style="vertical-align:center;">0x2cEa306F7c19597f9fb0c55F7296916088a55d91
 </td>
