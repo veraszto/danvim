@@ -1,7 +1,7 @@
-Popup Marks Core
-func\(tion\)\?!\?\s\+<SID>PopupMarksShow
 Pertinent jumps
 function!.<SID>CollectPertinentJumps
+Popup Marks Core
+func\(tion\)\?!\?\s\+<SID>PopupMarksShow
 OverlaysUpperRight
 func\(tion\)\?!\?\s\+<SID>Refreshing
 Add buffer from this Line

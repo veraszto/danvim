@@ -119,7 +119,8 @@ function! <SID>RunAuScript( on_off )
 	let s:automatic_scp = 1
 
 	augroup my_scripts
-		execute "au " . event_and_script[ 0 ]  . " * call <SID>StartJob(\"" . event_and_script[ 1 ]  . "\")"
+		execute "au " . event_and_script[ 0 ]  . 
+			\ " * call <SID>StartJob(\"" . expand(event_and_script[ 1 ])  . "\")"
 	augroup END
 	 
 
@@ -145,6 +146,14 @@ function! <SID>AutoCommands()
 	autocmd DanVim BufRead *.yaml,*.yml setlocal expandtab | setlocal tabstop=2 | echo "Its a YAML!"
 	
 	autocmd DanVim BufRead * call <SID>SetDict( )
+
+	autocmd DanVim BufLeave *.workspaces let s:used_workspace = [ bufnr(), winnr() ] 
+
+	autocmd DanVim BufEnter * 
+		\ if exists("s:used_workspace") | 
+			\ if winnr() != s:used_workspace[ 1 ] | execute "bd " . s:used_workspace[ 0 ] | endif |
+			\ unlet s:used_workspace |
+		\ endif
 	
 "	autocmd mine CompleteDonePre * call <SID>InsMenuSelected()
 
@@ -220,6 +229,12 @@ endfunction
 function! <SID>Sets()
 
 	runtime! sets/**/*.vim
+
+endfunction
+
+function! <SID>CallAFunction()
+
+	echo expand("<stack>")
 
 endfunction
 
@@ -537,14 +552,27 @@ function! <SID>BuildBufferPopupItem( buffer )
 
 endfunction
 
+function! <SID>FindMyDirFromBaseVars( from )
+
+	for a in a:from
+		if isdirectory(a)
+			return a
+		endif
+	endfor
+	throw "Could not find a dir from any of " . string(a:from)
+
+endfunction
+
 function! <SID>GetThisFilePopupMark()
 
-	if ! exists( "s:popup_marks_dir" )
-		echo "Please define s:popup_marks_dir, like s:popup_marks_dir=~/.vim/popup_marks"
-		return 
-	endif
+	try
+		let dir = <SID>FindMyDirFromBaseVars(s:popup_marks_dir)
+	catch
+		echo v:exception
+		return 0
+	endtry
 
-	let to_expand = s:popup_marks_dir . "/" . expand("%:t") . ".vim.shortcut"
+	let to_expand = dir . "/" . expand("%:t") . ".vim.shortcut"
 	let file = expand( to_expand )
 	echo "GetThisFilePopupMark: " . file
 	return file 
@@ -695,21 +723,9 @@ endfunction
 
 function! <SID>GoAfterAWorkSpace()
 
-	let counter = winnr("$")
-	while counter > 0
-		
-		let buf_name = bufname( winbufnr( counter ) )
-		if match( buf_name, s:workspaces_pattern ) > -1
-			execute counter . "wincmd w"
-			return
-		endif
-		let counter -= 1
-
-	endwhile
-
 	split
 	wincmd J
-	call <SID>SmartReachWorkspace()
+	call <SID>SmartReachWorkspace( )
 
 "	echo "An active workspace buffer is currently no present at this tab"
 
@@ -1091,6 +1107,13 @@ endfunction
 
 function! <SID>WriteBasicStructure()
 
+	try
+		let dir = <SID>FindMyDirFromBaseVars(s:basic_structure_initial_dir)
+	catch
+		echo v:exception
+		return 0
+	endtry
+
 	if <SID>AreWeInAnWorkspaceFile() < 0
 		echo s:when_only_at_workspaces_message
 		return
@@ -1101,13 +1124,13 @@ function! <SID>WriteBasicStructure()
 		\ line("."),
 		\ [
 	 		\ "[we are here]",
-			\ expand( s:basic_structure_initial_dir ),
+			\ expand( dir ) . "/",
 			\ "",
 			\ "[search]",
 			\ "-i \"\"",
 			\ "",
 			\ "[make tree]",
-			\ "-x -I \"target|.git\" --filelimit 50", "", ""
+			\ "-x -I \"target|.git|node_modules|build|target\" --filelimit 50", "", ""
 		\ ]
 	\ )
 
@@ -1559,56 +1582,85 @@ function! <SID>WrapperHideAndShowPopups()
 
 endfunction
 
-function! <SID>LastOrInitial()
-	let got_it = <SID>ShortcutToNthPertinentJump( 1, "Workspaces" )
-	if got_it == 0
-		call <SID>ViInitialWorkspace()
-	endif
-endfunction
+function! <SID>SmartReachWorkspace( )
 
-function! <SID>SmartReachWorkspace()
+	try
+		let dir = <SID>FindMyDirFromBaseVars(s:workspaces_dir)
+	catch
+		echo v:exception
+		return 0
+	endtry
 
 	wa
 	if <SID>AreWeInAnWorkspaceFile() >= 0
-		call <SID>LastOrInitial()
-		return
+		let starting_from_this = expand("%:t")
+		let without_workspaces = substitute(starting_from_this, '.workspaces', "", "")
+		let one_dir_up = substitute(without_workspaces, '\.[^\.]\{-}$', "", "")
+		let to_bars = "/" . substitute(one_dir_up, '\.', "/", "g")
+		let starting_from_this = to_bars
+	else
+		let starting_from_this = expand("%:p:h")
 	endif
+	let to_points = substitute(starting_from_this, '/', ".", "g")
+	let build_file_name = matchstr(to_points, '\(^.\)\@<=.\+')
 
-	let tab_workspaces = gettabvar(tabpagenr(), "workspaces") 
-	if len( tab_workspaces ) > 0
-		execute "vi " . t:workspaces
-		return
-	endif
+	let safe_guard = 0
 
-	call <SID>LastOrInitial()
+	while 1
+		let searching = dir . "/" . build_file_name . ".workspaces"
+		if filereadable( searching  ) 
+			execute "vi " . searching
+			break
+		endif
+		let one_dir_up = substitute(build_file_name, '\.[^\.]\{-}$', "", "")
+		if match(one_dir_up, '\.') < 0
+			call <SID>ViInitialWorkspace()
+			break
+		endif
+		let build_file_name = one_dir_up
+		let safe_guard += 1
+		if safe_guard > 10
+			break
+		endif
+	endwhile
 
 endfunction
 
+
 function! <SID>ViInitialWorkspace()
 
-	let tried = 0
 	try
-		for a in s:initial_workspaces
-			if file_readable( a ) == 1
-				execute "vi" . " " . a
-				let tried = 1
-				break
-			endif
-		endfor
-		if tried == 0
-			echo "Could not find any of these: " . join( s:initial_workspaces, ", " )
-		endif
+		let dir = <SID>FindMyDirFromBaseVars( s:workspaces_dir )
 	catch
-		echo "Could not jump to initial workspace, " .
-			\ "maybe you need to save first, vim says: " . v:exception
+		echo v:exception
+		return 0
 	endtry
+
+	let guesses = []
+	for a in s:initial_workspace_tries	
+		let guess = dir . "/" . a . ".workspaces"
+		call add(guesses, guess)
+		if file_readable( guess  )
+			execute "vi " . guess
+			return
+		endif
+	endfor
+
+	echo "Could not reach initial workspace, looked for in: " . string(guesses)
+
 
 endfunction
 
 function! <SID>SetDict( )
 
-	let potential_dicts = expand
-			\ ( s:dictionaries_dir . "/*", 1, 1)
+	try
+		let dir = <SID>FindMyDirFromBaseVars(s:dictionaries_dir)
+	catch
+		echo v:exception
+		return 0
+	endtry
+
+	let potential_dicts = expand( dir . "/*", 1, 1)
 
 	let selected = []
 	let this_type = matchstr( expand("<afile>"), s:file_extension )
@@ -2134,7 +2186,8 @@ endfunction
 function! <SID>SaveLoader( from  )
 
 	try
-		let suggestions = <SID>ReadDirs( s:loaders_dir )
+		let dir = <SID>FindMyDirFromBaseVars(s:loaders_dir)
+		let suggestions = <SID>ReadDirs( dir  )
 	catch
 		echo v:exception
 		return
@@ -2208,7 +2261,7 @@ function! <SID>SaveLoader( from  )
 
 	call remove( commands, len( commands ) - 1 )
 
-	let file_name = s:loaders_dir . "/" . trimmed_input . ".vim"
+	let file_name = dir . "/" . trimmed_input . ".vim"
 
 	call <SID>WriteToFile( commands,  file_name )
 
@@ -2228,7 +2281,8 @@ endfunction
 function! <SID>LoadLoader( )
 
 	try
-		let suggestions = <SID>ReadDirs( s:loaders_dir )
+		let dir = <SID>FindMyDirFromBaseVars(s:loaders_dir)
+		let suggestions = <SID>ReadDirs( dir )
 	catch
 		echo v:exception
 		return
@@ -2275,7 +2329,7 @@ function! <SID>LoadLoader( )
 	endif
 
 
-	let file_name = s:loaders_dir . "/" . trimmed_input . ".vim"
+	let file_name = dir . "/" . trimmed_input . ".vim"
 
 	if filereadable( file_name ) == 0
 		echo "\nThe file " . file_name . " is not readable"

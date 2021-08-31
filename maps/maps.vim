@@ -139,6 +139,7 @@ function! <SID>MakeMappings()
 
 	call <SID>MapShortcut( "<Space>", 'SpacebarActionAtWorkspaces()' )
 	call <SID>MapShortcut( ";hi", 'HiLight()' )
+	call <SID>MapShortcut( ";cf", 'GetThisFilePopupMark()' )
 	map ;hn :new<CR>
 	map ;ju :jumps<CR>
 	map ;hs :split<CR>

@@ -25,24 +25,19 @@ a proposed way of using Vim, with the intent to make Vim usage better and faster
 
 ### Introduction/Acknowledgements
 
-It is expected a basic Vim experience, this can be achieved by typing :help just after entering Vim.
+It is expected a basic Vim experience, this can be achieved by reading some vim docs,
+type :help just after entering Vim.
 
 This repo root is suposed to be in your home folder inside the .vim folder,
 be careful not to override any current config you already have, it can be merged with it or be linked to.
-`ln -s .../git/DanVim ~/.vim`
-
-> A buffer is the in-memory text of a file.
-
-> A window is a viewport on a buffer.
-
-> A tab page is a collection of viewports.
+`ln -s [DanVim repo dir] ~/.vim`
 
 ### Requirements
 
 - GNU/Linux
 - xterm-256color
 - gnome-terminal
-- Recent Vim editor, terminal VIM only
+- Recent Vim editor, terminal VIM only, with \<Cmd\> option available, check by `:help <Cmd>`
 - GNU Tree
 - wl-paste/wl-copy to Wayland display server, xclip to Xorg
 
@@ -57,11 +52,26 @@ now on its own repo
 With workspaces you are able to enter a buffer by pressing `<Space>` over its name,
 in workspaces, GNU Tree is used to draw a file tree inside Vim
 
-Go to the basic root workspace by pressing `<C-S-kDel>` or `;ba`,
+Go to the basic root workspace by pressing `<Del>` on normal mode,
 go to the line below `[make tree]` and press `<Space>` to toggle expand/contract, this line is just a GNU Tree listing options
 `-x -I "target|.git" -L 2 --filelimit 200`
 it will try to list files from dir stated by `[we are here]`
 each of the files from the tree can be accessed by putting the cursor over it and pressing `<Space>`
+
+#### Smart workspaces reach
+
+While in a non workspaces file, `<Space>` will launch a new window with the "best" workspace available 
+and `<Del>` will do the the same but in the current window.
+By "best" I mean the most probable desired workspace, this is how it works,
+supose you are editing a file at /home/you/git/Awesome-Mine/js/file.js and press `<Del>`, 
+this will trigger workspaces search in this order from your workspaces dir(customizable but set at DanVim/workspaces)
+- home.you.git.Awesome-Mine.js.workspaces
+- home.you.git.Awesome-Mine.workspaces
+- home.you.git.workspaces
+- home.you.workspaces
+the first found will be brought, and once editing it, another `<Del>` will trigger the chain from where it stopped,
+falling back to the root.workspaces or basic.workspaces
+This has been thought this way because it is common when editing a file to open another file that is nearby
 
 <img src="images/Workspaces.sample.2.png" alt="Workspaces sample" /> 
 
@@ -146,11 +156,12 @@ set winheight=999
 ````
 so viewports are making the maximum room when focused
 
-`<Del>` goes to the last workspaces' file
-
-`<S-Del>` goes to the last but one workspaces' file
-
 `jj` in INSERT mode, does an omni completion
+
+`jf` complete with a filename from the current dir
+
+`jk` searches the dictionary(that has to be manually set)
+
 
 
 ### Statusline
@@ -158,8 +169,8 @@ so viewports are making the maximum room when focused
 ### Highlights
 Checkout DanVim/highlight/highlight.vim to a complete list of highlights 
 ### Contribute
-Please show me your proposal/VimScript to make Vim usage faster and better, so that we can merge it in the architecture
-### Donate per contributor
+Please consider donating,
+- ![Ethereum](images/etehereum.png): 0x2cEa306F7c19597f9fb0c55F7296916088a55d91
 #### There are several features still to be documented about DanVim, as these docs are ongoing
 #### Please ask whenever the unexpected happen or in doubt
 #### Thank you!
