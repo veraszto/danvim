@@ -69,6 +69,7 @@ this will trigger workspaces search in this order from your workspaces dir(custo
 - home.you.git.Awesome-Mine.workspaces
 - home.you.git.workspaces
 - home.you.workspaces
+
 the first found will be brought, and once editing it, another `<Del>` will trigger the chain from where it stopped,
 falling back to the root.workspaces or basic.workspaces
 This has been thought this way because it is common when editing a file to open another file that is nearby
@@ -170,7 +171,7 @@ so viewports are making the maximum room when focused
 Checkout DanVim/highlight/highlight.vim to a complete list of highlights 
 ### Contribute
 Please consider donating,
-- ![Ethereum](images/etehereum.png): 0x2cEa306F7c19597f9fb0c55F7296916088a55d91
+- ![Ethereum](images/ethereum.png): 0x2cEa306F7c19597f9fb0c55F7296916088a55d91
 #### There are several features still to be documented about DanVim, as these docs are ongoing
 #### Please ask whenever the unexpected happen or in doubt
 #### Thank you!
