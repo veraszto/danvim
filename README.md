@@ -19,7 +19,6 @@ a proposed way of using Vim, with the intent to make Vim usage better and faster
 - [Statusline](#statusline)
 - [Tabline](#tabline)
 - [Highlights](#highlights)
-- [Contribute](#contribute)
 - [Donate](#donate)
 
 
@@ -169,7 +168,7 @@ so viewports are making the maximum room when focused
 ### Tabline
 ### Highlights
 Checkout DanVim/highlight/highlight.vim to a complete list of highlights 
-### Contribute
+### Donate
 Please consider donating,
 <table style="border:none;border-collapse:collapse;">
 <tr>
