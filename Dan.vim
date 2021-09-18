@@ -126,6 +126,13 @@ function! <SID>RunAuScript( on_off )
 
 endfunction
 
+function! <SID>FileTypeSet()
+
+	" Syntax from DanVim/syntax/syntax.vim
+	runtime syntax/syntax.vim 
+	
+endfunction
+
 function! <SID>AutoCommands()
 
 	aug mine
@@ -140,6 +147,8 @@ function! <SID>AutoCommands()
 		au!
 	aug END
 
+	autocmd DanVim FileType * call <SID>FileTypeSet()
+
 	autocmd DanVim BufReadPost * 
 		\ try | execute "normal g'\"zz" | catch | echo "Could not jump to last position" | endtry
 
@@ -151,7 +160,9 @@ function! <SID>AutoCommands()
 
 	autocmd DanVim BufEnter * 
 		\ if exists("s:used_workspace") | 
-			\ if winnr() != s:used_workspace[ 1 ] | execute "bd " . s:used_workspace[ 0 ] | endif |
+			\ if winnr() != s:used_workspace[ 1 ] | 
+				\ try | execute "bd " . s:used_workspace[ 0 ] | catch | endtry | 
+			\ endif |
 			\ unlet s:used_workspace |
 		\ endif
 	
@@ -555,8 +566,9 @@ endfunction
 function! <SID>FindMyDirFromBaseVars( from )
 
 	for a in a:from
-		if isdirectory(a)
-			return a
+		let expanded = expand( a )
+		if isdirectory( expanded  )
+			return expanded
 		endif
 	endfor
 	throw "Could not find a dir from any of " . string(a:from)
@@ -1591,7 +1603,6 @@ function! <SID>SmartReachWorkspace( )
 		return 0
 	endtry
 
-	wa
 	if <SID>AreWeInAnWorkspaceFile() >= 0
 		let starting_from_this = expand("%:t")
 		let without_workspaces = substitute(starting_from_this, '.workspaces', "", "")

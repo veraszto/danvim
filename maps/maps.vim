@@ -34,6 +34,7 @@ function! <SID>MakeMappings()
 	"Buffer navigation
 	map <Bar> :bprevious<CR>
 	map Z :bnext<CR>
+	
 
 
 	"Commenting and uncommenting
@@ -162,7 +163,7 @@ function! <SID>MakeMappings()
 	map ;. <Cmd>try \| tabm+ \| catch \| echo "Even more?" \| endtry <CR>
 	map ;< <Cmd>tabm0<CR>
 	map ;> <Cmd>tabm$<CR>
-	call <SID>MapShortcut( ";t", "ViInitialWorkspace()", "<Cmd>tabnew", "clearjumps" )
+	call <SID>MapShortcut( ";t", "ViInitialWorkspace()", "tabnew", "clearjumps" )
 	map ;vn :vertical new<CR>
 	map ;vs :vertical split<CR>
 	call <SID>MapShortcut( ";so", "SourceCurrent_ifVim()" )
@@ -181,7 +182,7 @@ endfunction
 
 function! <SID>MapShortcutButFirstRuntimeDanVim( sequence, action )
 
-	call <SID>MapShortcut( a:sequence, a:action, "<Cmd>runtime Dan.vim" )
+	call <SID>MapShortcut( a:sequence, a:action, "runtime Dan.vim" )
 
 endfunction
 
@@ -217,17 +218,13 @@ function! <SID>MapShortcutCore( map, sequence, action, prepend_cmds, append_cmds
 
 	while counter < len_prepends
 		
-		call extend( make, [ a:prepend_cmds[ counter ] . " <Bar>" ] )
+		call extend( make, [ cmd . a:prepend_cmds[ counter ] . " <Bar>" ] )
+		let cmd = ""
 		let counter += 1
 
 	endwhile
 
-	if counter > 0
-		let cmd = ""
-	endif
-	
 	let counter = 0
-
 
 	call extend( make, [ cmd . "call", g:Danvim_SID . a:action . "<CR>" ] )
 	
