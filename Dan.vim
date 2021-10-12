@@ -152,7 +152,7 @@ function! <SID>AutoCommands()
 	autocmd DanVim BufReadPost * 
 		\ try | execute "normal g'\"zz" | catch | echo "Could not jump to last position" | endtry
 
-	autocmd DanVim BufRead *.yaml,*.yml setlocal expandtab | setlocal tabstop=2 | echo "Its a YAML!"
+	autocmd DanVim BufRead *.yaml,*.yml setlocal expandtab | setlocal tabstop=2 
 	
 	autocmd DanVim BufRead * call <SID>SetDict( )
 
@@ -261,7 +261,6 @@ function! <SID>StartUp()
 	call <SID>HiLight()
 	call <SID>MakeAbbreviations()
 	call <SID>MakeMappings()
-	echo "StartUp has been called"
 
 endfunction
 
@@ -2383,9 +2382,21 @@ function! <SID>SaveBuffersOfThisTab()
 
 endfunction
 
+function! <SID>TabJump()
+
+	let l:count = tabpagenr("$")	
+	let current = tabpagenr()
+	let middle = l:count / 2 + 1
+	if current != middle
+		execute "normal " . middle  . "gt"
+	else
+		tabrewind
+	endif
 
 
-function <SID>JobStart()
+endfunction
+
+function! <SID>JobStart()
 
 
 	if exists("b:response_file")
@@ -2485,7 +2496,6 @@ let s:elligible_auto_cycle_local_marks_letters =
 let s:tree_special_chars = '^\(\s\{-}\(\%u2500\|\%u2502\|\%u251C\|\%u2514\|\%xA0\)\+\s\+\)\+'
 let s:tree_len_each_level = 4
 
-
 let s:add_as_bufvar = '__\\#{.\+$'
 let s:add_as_bufvar_missing_bar = '\(\\\)\@<!#.*{.\+$'
 let s:cmd_buf_pattern = '\(\s\|\t\)*+\(/\|\d\).\{-}\s\+'
@@ -2501,14 +2511,11 @@ let s:tmp_vim_script_buffers_loader = "/tmp/buffers.loader.vim"
 
 let s:when_only_at_workspaces_message = "This makes sense only in a .workspaces buffer"
 
-echo "DanVim has just been loaded"
-
 if exists("s:this_has_been_loaded") == v:false
 	let s:this_has_been_loaded = v:true
 	let s:popup_winids = {}
 	let s:last_win_tab = [0, 0]
 	let s:automatic_scp = 0
-	echo "As its the first time for this instance, then we call StartUp"
 	call <SID>StartUp()
 	call <SID>SayHello( s:initial_message )
 endif

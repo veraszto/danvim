@@ -80,6 +80,7 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( "<C-S-Up>", 'NavigateThroughLocalMarksAndWorkspaces( "up" )' )
 
 	call <SID>MapShortcut( "<C-Home>", 'JobStart()' )
+	call <SID>MapShortcut( "<C-End>", 'TabJump()' )
 
 	let types = [ "Traditional", "Workspaces" ]
 
@@ -174,9 +175,6 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( ";OO", "ShowPopups()" )
 	noremap <expr> ;i ":vi " . getcwd() . "/"
 	noremap <expr> ;I ":vi " . expand("%")
-
-	echo "Maps done!"
-
 
 endfunction
 
