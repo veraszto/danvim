@@ -156,18 +156,6 @@ function! <SID>AutoCommands()
 	
 	autocmd DanVim BufRead * call <SID>SetDict( )
 
-	autocmd DanVim BufLeave *.workspaces let s:used_workspace = [ bufnr(), winnr() ] 
-
-	autocmd DanVim BufEnter * 
-		\ if exists("s:used_workspace") | 
-			\ if winnr() != s:used_workspace[ 1 ] | 
-				\ try | execute "bd " . s:used_workspace[ 0 ] | catch | endtry | 
-			\ endif |
-			\ unlet s:used_workspace |
-		\ endif
-	
-"	autocmd mine CompleteDonePre * call <SID>InsMenuSelected()
-
 	call <SID>AutoCommandsOverlay( 0 ) 
 
 endfunction
@@ -718,10 +706,11 @@ function! <SID>GetRoofDir()
 		let dir = current_dir 
 		echo "The '" . s:we_are_here . "' to set base dir was not found, using: " . dir
 	else
-		let dir = trim( getline( line_base + 1 ) )
+		let dir = substitute( trim( getline( line_base + 1 ) ), s:last_bar, "", "" )
 	endif
 
 	let expanded = expand( dir )
+
 	if isdirectory(  expanded )
 		return expanded . "/"
 	endif
@@ -1084,7 +1073,7 @@ function! <SID>BuFromGNUTree( line_number, line, len_tree_prefix, roof_dir )
 	
 	let counter = len_dirs - 1
 
-	let wrap = [ a:roof_dir ]
+	let wrap = [ substitute( a:roof_dir, s:last_bar, "", "" ) ]
 
 	while counter >= 0
 		call add( wrap, get( dirs, counter ))
@@ -1093,8 +1082,9 @@ function! <SID>BuFromGNUTree( line_number, line, len_tree_prefix, roof_dir )
 
 	call add( wrap, target_file )
 
-	let joined_target = join( wrap, "/" )
 
+	let joined_target = join( wrap, "/" )
+	
 	if filereadable( joined_target )
 		wa
 		execute "vi " . joined_target 
@@ -1593,6 +1583,22 @@ function! <SID>WrapperHideAndShowPopups()
 
 endfunction
 
+function! <SID>GoThroughActiveBuffers( match, do )
+
+	let tab_viewport = [ tabpagenr(), winnr() ]
+
+	tabdo 
+		\ for a in range(winnr("$")) |
+			\ let viewport = ( a + 1 ) |
+			\ if tab_viewport[0] == tabpagenr() && viewport == tab_viewport[1] | continue | endif |
+			\ let bufname = bufname(winbufnr(viewport)) |
+			\ if match( bufname, a:match) > -1 | wa | execute viewport . a:do | endif |
+		\ endfor
+
+	execute "tabnext " . tab_viewport[0]
+
+endfunction
+
 function! <SID>SmartReachWorkspace( )
 
 	try
@@ -1601,6 +1607,8 @@ function! <SID>SmartReachWorkspace( )
 		echo v:exception
 		return 0
 	endtry
+
+	call <SID>GoThroughActiveBuffers( s:workspaces_pattern, "wincmd q" )
 
 	if <SID>AreWeInAnWorkspaceFile() >= 0
 		let starting_from_this = expand("%:t")
@@ -1619,6 +1627,7 @@ function! <SID>SmartReachWorkspace( )
 	while 1
 		let searching = dir . "/" . build_file_name . ".workspaces"
 		if filereadable( searching  ) 
+			wa
 			execute "vi " . searching
 			break
 		endif
@@ -2125,6 +2134,7 @@ function! <SID>LocalMarksAutoJumping( go )
 
 	call <SID>LocalMarksAutoJumping( a:go )
 
+
 endfunction
 
 
@@ -2153,7 +2163,6 @@ function! <SID>GenerateVimScriptToLoadBuffersOfATab( which )
 
 	endfor
 
-
 	let buffers = reverse( tabpagebuflist( a:which ) )
 	for a in buffers 
 
@@ -2172,6 +2181,8 @@ function! <SID>GenerateVimScriptToLoadBuffersOfATab( which )
 		let counter += 1
 
 	endfor
+
+"	call add( list, "\twincmd t")
 	
 	call add( list, "catch | echo \"Could not load buffers: \" . v:exception | endtry" )
 	
@@ -2193,18 +2204,12 @@ function! <SID>ReadDirs( which )
 
 endfunction
 
-function! <SID>SaveLoader( from  )
+function! <SID>PromptSaveLoaderName( suggestions, from )
 
-	try
-		let dir = <SID>FindMyDirFromBaseVars(s:loaders_dir)
-		let suggestions = <SID>ReadDirs( dir  )
-	catch
-		echo v:exception
-		return
-	endtry
-
-	if len( suggestions ) <= 0
+	if len( a:suggestions ) <= 0
 		let suggestions = []
+	else
+		let suggestions = a:suggestions
 	endif
 
 	let cropped = []
@@ -2257,6 +2262,27 @@ function! <SID>SaveLoader( from  )
 
 	echo "\n" . save_or_overwrite . " -> " . input
 
+	return trimmed_input
+
+endfunction
+
+function! <SID>SaveLoader( from  )
+
+	try
+		let dir = <SID>FindMyDirFromBaseVars(s:loaders_dir)
+		let suggestions = <SID>ReadDirs( dir  )
+	catch
+		echo v:exception
+		return
+	endtry
+
+	if exists("g:DanVim_save_loader_name")
+		let trimmed_input = g:DanVim_save_loader_name
+		echo "Autosaving as filename is previously known"
+	else
+		let trimmed_input = <SID>PromptSaveLoaderName( suggestions, a:from )
+	endif
+
 
 	let last_tab = tabpagenr( "$" )
 	let commands = []
@@ -2270,6 +2296,16 @@ function! <SID>SaveLoader( from  )
 	endfor
 
 	call remove( commands, len( commands ) - 1 )
+
+	call add( commands, "tabn 1" )
+
+	for name in s:global_vars_names
+
+		if exists( "g:" . name ) == v:true
+			call add(commands, "let g:" . name . " = \"" . g:[name] . "\"")
+		endif
+
+	endfor
 
 	let file_name = dir . "/" . trimmed_input . ".vim"
 
@@ -2338,7 +2374,6 @@ function! <SID>LoadLoader( )
 		let trimmed_input = trim( input )
 	endif
 
-
 	let file_name = dir . "/" . trimmed_input . ".vim"
 
 	if filereadable( file_name ) == 0
@@ -2365,7 +2400,6 @@ function! <SID>LoadLoader( )
 		catch
 		endtry
 	endif
-
 		
 endfunction
 
@@ -2396,62 +2430,70 @@ function! <SID>TabJump()
 
 endfunction
 
+function! <SID>JobStartAfterParty()
+
+	let offset = 0
+	let range = range( tabpagewinnr(".", "$") )
+
+	for viewport in range 
+		
+		let viewport_to_focus = ( viewport + offset + 1 )
+		execute  viewport_to_focus . "wincmd w"
+
+		if exists("b:DanVim_this_buf_is_output")
+			echo expand("%")
+			let offset -= 1
+			quit!
+		endif
+
+	endfor
+	
+endfunction
+
+
+function! <SID>PrepareToJobStart()
+
+	let bufname = expand("%:t")
+	let outputs = [ ".vim.std.out.json", ".vim.std.out", ".vim.std.err" ]
+	let viewport_nr = winnr()
+	let output_viewports = []
+	for output in outputs
+		execute "split /tmp/" . bufname . output
+		let b:DanVim_this_buf_is_output = bufname
+		call add( output_viewports, bufnr())
+	endfor
+
+	execute len(outputs) . "wincmd j"
+
+	call append( line("$"), ["# DanVim.JobStart:" . output_viewports[0]  . ":" . output_viewports[2]] )
+
+
+endfunction
+
 function! <SID>JobStart()
 
-
-	if exists("b:response_file")
-
-		let vi_to = b:response_file
-		unlet b:response_file
-		execute "vi " . vi_to
-		return
-
-	endif
-
-
-	let pattern =  '#\sDanVim:'
+	let pattern =  '#\sDanVim\.JobStart:\d\+:\d\+'
 
 	let job_line = search( pattern )
 	if  job_line <= 0
-		echo "Job to start not found by " . pattern
+		echo "Please write to this file: # DanVim.JobStart:stdout_buf_number:stderr_buf_number"
 		return
-	endif
-
-	let dir = "/tmp/vim.jobs/"
-
-	if isdirectory( dir ) == 0
-		call mkdir( dir )	
 	endif
 
 	let job_build = split( getline( job_line ), ':' )
 
-	let save_to = dir . expand("%:t") . "." . localtime() . "." . job_build[ 1 ]
-
-"	call <SID>WriteToFile( ["Job is ongoing, please update ..."], save_to )
-
-	let job_cmd = expand("%")
-
-	function! Ended( channel ) closure
-
-		let cmd = job_build[ 2 ] . " " . save_to
-		echo a:channel . ", done!"
-		echo "Running " . cmd
-		call job_start( cmd )
-		echo "Done with " . cmd
-
-	endfunction
+	let job_cmd = expand("%") 
 
 	call job_start
 	\ ( 
 		\ job_cmd, 
-		\ { "out_name": save_to, "out_io": "file", "close_cb":"Ended" } 
+		\ { 
+			\ "out_buf": job_build[1], "out_io": "buffer", 
+			\ "err_io": "buffer", "err_buf": job_build[2]
+		\ } 
 	\ )
 
 	echo "Job started " . job_cmd
-
-	call foreground()
-
-	let b:response_file = save_to
 
 endfunction
 
@@ -2477,6 +2519,7 @@ endfor
 let g:Danvim_SID = expand("<SID>")
 
 let s:tail_file = '[._[:alnum:]-]\+$'
+let s:last_bar = '\(\\\|/\)\{-\}$'
 let s:tail_with_upto_two_dirs = '\([^/]\+/\)\{,2}[^/]\+$'
 let s:file_extension = '\.[^./\\]\+$'
 let s:file_extension_less = '^.\+\(\.\)\@='
@@ -2504,6 +2547,7 @@ let s:cmd_buf_pattern = '\(\s\|\t\)*+\(/\|\d\).\{-}\s\+'
 let s:types_of_overlays = [ "Traditional" ]
 
 let s:tab_vars_names = ["title", "workspaces"]
+let s:global_vars_names = ["DanVim_save_loader_name"]
 
 let s:overlay_allowed_to_show = v:true
 

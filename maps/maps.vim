@@ -79,7 +79,7 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( "<C-S-Down>", 'NavigateThroughLocalMarksAndWorkspaces( "down" )' )
 	call <SID>MapShortcut( "<C-S-Up>", 'NavigateThroughLocalMarksAndWorkspaces( "up" )' )
 
-	call <SID>MapShortcut( "<C-Home>", 'JobStart()' )
+"	call <SID>MapShortcut( "<C-Home>", 'JobStart()' )
 	call <SID>MapShortcut( "<C-End>", 'TabJump()' )
 
 	let types = [ "Traditional", "Workspaces" ]
@@ -134,8 +134,10 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( "<F7>", 'SaveLoader(1)' )
 	call <SID>MapShortcut( "<S-F7>", "SaveLoader( tabpagenr() )" )
 	call <SID>MapShortcut( "<C-S-F7>", 'SaveBuffersOfThisTab( )' )
-	call <SID>MapShortcut( "<F8>", 'RunAuScript( 1 )' )
-	call <SID>MapShortcut( "<S-F8>", 'RunAuScript( 0 )' )
+"	call <SID>MapShortcut( "<F8>", 'RunAuScript( 1 )' )
+	call <SID>MapShortcut( "<C-S-F8>", 'JobStartAfterParty()' )
+	call <SID>MapShortcut( "<S-F8>", 'PrepareToJobStart()' )
+	call <SID>MapShortcut( "<F8>", 'JobStart()' )
 
 "	=======
 
@@ -180,7 +182,7 @@ endfunction
 
 function! <SID>MapShortcutButFirstRuntimeDanVim( sequence, action )
 
-	call <SID>MapShortcut( a:sequence, a:action, "runtime Dan.vim" )
+	call <SID>MapShortcut( a:sequence, a:action, "runtime Dan.vim", "echo \"" . a:action . "\"")
 
 endfunction
 
