@@ -107,7 +107,8 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( ";K", 'SharpSplits("K")' )
 
 	map B :bu<Space>
-	map E :e<CR>
+	map E :e!<CR>
+	map <C-S-E> :windo e!<CR>
 	map V EG
 
 	map P :set paste! <Bar> 

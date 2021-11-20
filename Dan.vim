@@ -1723,7 +1723,6 @@ endfunction
 function! <SID>RefreshAll()
 	tabdo
 		\ windo 
-			\ echo buffer_name("%") |
 			\ try |
 				\ :e |
 			\ catch |
@@ -2458,7 +2457,7 @@ function! <SID>PrepareToJobStart()
 	let viewport_nr = winnr()
 	let output_viewports = []
 	for output in outputs
-		execute "split /tmp/" . bufname . output
+		execute "split /tmp/" . bufname . "." . localtime() . output
 		let b:DanVim_this_buf_is_output = bufname
 		call add( output_viewports, bufnr())
 	endfor
