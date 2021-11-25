@@ -1721,16 +1721,23 @@ function! <SID>SourceCurrent_ifVim()
 endfunction
 
 function! <SID>RefreshAll()
-	tabdo
-		\ windo 
-			\ try |
-				\ :e |
-			\ catch |
-				\ echohl Visual |
-				\ echo v:exception |
-				\ echohl None |
-			\ endtry |
-			\ vertical resize
+
+	let this_tab = tabpagenr()
+	let this_viewport = winnr()
+	tabdo windo 
+		\ try |
+			\ silent edit! |
+		\ catch |
+			\ echo "Tab:" . tabpagenr() . ", Buf:" . bufnr() . ") [" . bufname() . "], " .
+			\  v:exception |
+		\ endtry
+
+	execute "tabn " . this_tab
+	execute this_viewport . " wincmd w" 
+
+	echo "Executed forced edit(:e!) thought all active buffers!"
+	
+
 endfunction
 
 function! <SID>HiLight()	
@@ -2450,36 +2457,114 @@ function! <SID>JobStartAfterParty()
 endfunction
 
 
-function! <SID>PrepareToJobStart()
+function! <SID>MakeRoomForForThisJob( file_type )
 
+
+	let mark_job = "DanVim_is_a_job"
+	let mark_job_source = "DanVim_is_a_source_job"
+	let mark_job_output = "DanVim_job_output"
+
+	let bufnr = bufnr()
+	let context = gettabvar( tabpagenr(), "title" )
+	if len( context ) == 0
+		let context = ""
+	endif
 	let bufname = expand("%:t")
-	let outputs = [ ".vim.std.out.json", ".vim.std.out", ".vim.std.err" ]
-	let viewport_nr = winnr()
-	let output_viewports = []
+	let title = bufnr . ")" . context . "/" . bufname
+	let new_id = substitute( title, ')\|/', ".", "g" )
+	let id = gettabvar( tabpagenr(), mark_job )
+
+	if len( id ) == 0
+		let id = new_id
+		let b:[mark_job_source] = v:true
+	else
+		for viewport in range( 1, winnr("$") )
+			if getbufvar( winbufnr( viewport ),  mark_job_source ) == v:true
+				execute viewport . "wincmd w"
+			endif
+		endfor
+
+		let expectations = [ string(bufnr()), matchstr( t:[mark_job], '^\d\+') ]
+
+		let check_bufnr =  expectations[ 0 ] == expectations[ 1 ] 
+		if check_bufnr == 0
+			echo "Buf missmatch, expecting buf: " . expectations[ 1 ] . 
+				\ ", but this buf is: " . expectations[ 0 ] . ", please consider buf " .
+				\ " buffer: " . expectations[ 1 ] . " in this viewport"
+			return
+		endif
+
+	endif
+
+
+
+	let tab_created = 0
+
+	for tab in range( 1, tabpagenr("$") )
+		let tabId = gettabvar( tab, mark_job )
+		if tabId == id
+			execute "tabn" . tab
+			let tab_created = 1
+			silent wa
+
+			let viewport_count = winnr("$")
+			let counter = [ 1, 0 ]
+			while 1
+				if len( getbufvar( winbufnr( counter[ 0 ] ), mark_job_output ) ) > 0
+					execute counter[ 0 ] . "wincmd q"
+					let viewport_count_updated = winnr("$")
+					if viewport_count > viewport_count_updated
+						let counter[ 0 ] -= 1
+						let viewport_count = viewport_count_updated
+					endif
+				endif
+				let counter[ 1 ] += 1
+				let counter[ 0 ] += 1
+				if counter[ 1 ] > 30 || counter[ 0 ] > winnr("$")
+					break
+				endif	
+
+			endwhile
+		endif
+	endfor
+	
+	if tab_created == 0
+		echo "Creating context tab for " . id
+		tabnew
+		let rescue_viewport = 1
+		execute "buffer " . bufnr
+		let t:title = title
+		let t:[ mark_job ] = id
+	else
+		echo "Context tab was ready already for " . id
+	endif
+
+
+
+	let outbufs = []
+	let prefix = "split /tmp/"
+	let epoch_unix = localtime()
+	let outputs = [ "stdout." . a:file_type, "stderr" ]
 	for output in outputs
-		execute "split /tmp/" . bufname . "." . localtime() . output
-		let b:DanVim_this_buf_is_output = bufname
-		call add( output_viewports, bufnr())
+		execute  "silent " . prefix . id . "." . epoch_unix . "." . output
+		call add( outbufs, bufnr() )
+		let b:[mark_job_output] = 1
 	endfor
 
-	execute len(outputs) . "wincmd j"
+	execute ( len( outputs ) + 1 ) . "wincmd w"
+	wincmd K
 
-	call append( line("$"), ["# DanVim.JobStart:" . output_viewports[0]  . ":" . output_viewports[2]] )
+	return outbufs
 
 
 endfunction
 
-function! <SID>JobStart()
 
-	let pattern =  '#\sDanVim\.JobStart:\d\+:\d\+'
 
-	let job_line = search( pattern )
-	if  job_line <= 0
-		echo "Please write to this file: # DanVim.JobStart:stdout_buf_number:stderr_buf_number"
-		return
-	endif
+function! <SID>JobStart( file_type )
 
-	let job_build = split( getline( job_line ), ':' )
+	
+	let output_bufs = <SID>MakeRoomForForThisJob( a:file_type )
 
 	let job_cmd = expand("%") 
 
@@ -2487,12 +2572,10 @@ function! <SID>JobStart()
 	\ ( 
 		\ job_cmd, 
 		\ { 
-			\ "out_buf": job_build[1], "out_io": "buffer", 
-			\ "err_io": "buffer", "err_buf": job_build[2]
+			\ "out_buf": output_bufs[ 0 ], "out_io": "buffer", 
+			\ "err_io": "buffer", "err_buf": output_bufs[ 1 ]
 		\ } 
 	\ )
-
-	echo "Job started " . job_cmd
 
 endfunction
 

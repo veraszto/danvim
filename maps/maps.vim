@@ -136,9 +136,8 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( "<S-F7>", "SaveLoader( tabpagenr() )" )
 	call <SID>MapShortcut( "<C-S-F7>", 'SaveBuffersOfThisTab( )' )
 "	call <SID>MapShortcut( "<F8>", 'RunAuScript( 1 )' )
-	call <SID>MapShortcut( "<C-S-F8>", 'JobStartAfterParty()' )
-	call <SID>MapShortcut( "<S-F8>", 'PrepareToJobStart()' )
-	call <SID>MapShortcut( "<F8>", 'JobStart()' )
+	call <SID>MapShortcut( "<S-F8>", 'JobStart( "log" )' )
+	call <SID>MapShortcut( "<F8>", 'JobStart( "json" )' )
 
 "	=======
 
