@@ -145,6 +145,7 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( ";hi", 'HiLight()' )
 	call <SID>MapShortcut( ";cf", 'GetThisFilePopupMark()' )
 	map ;hn :new<CR>
+	map ;he :help function-list<CR>
 	map ;ju :jumps<CR>
 	map ;hs :split<CR>
 	map ;ks :keepjumps /
@@ -156,6 +157,7 @@ function! <SID>MakeMappings()
 	map ;pw :pwd<CR>
 "	call <SID>MapShortcut( ";pt", "GetThisFilePopupMark()" )
 	map ;q :quit<CR>
+	map ;Q :tabclose<CR>
 	map ;rg :reg<CR>
 	map ;sm :marks<CR>
 	call <SID>MapShortcut( ";sh", "SayHello( [ \"DanVim loaded\" ] )" )

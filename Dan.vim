@@ -2496,8 +2496,6 @@ function! <SID>MakeRoomForForThisJob( file_type )
 
 	endif
 
-
-
 	let tab_created = 0
 
 	for tab in range( 1, tabpagenr("$") )
@@ -2540,13 +2538,26 @@ function! <SID>MakeRoomForForThisJob( file_type )
 	endif
 
 
-
+	let tmp = "/tmp/"
 	let outbufs = []
-	let prefix = "split /tmp/"
 	let epoch_unix = localtime()
 	let outputs = [ "stdout." . a:file_type, "stderr" ]
 	for output in outputs
-		execute  "silent " . prefix . id . "." . epoch_unix . "." . output
+		let file_name = tmp . id . "." . epoch_unix . "." . output
+		execute  "silent split " . file_name
+		arglocal
+		%argd
+		let arg_priors = "argadd " . tmp . id . "*" . output
+		execute arg_priors
+		let args = []
+		let counter = argc() - 1
+		while counter >= 0
+			call add( args, argv( counter ) )
+			let counter -= 1
+		endwhile
+		%argd
+		execute "argadd " . file_name
+		execute "argadd " . reduce( args, { res, item -> res . " " . item })
 		call add( outbufs, bufnr() )
 		let b:[mark_job_output] = 1
 	endfor
