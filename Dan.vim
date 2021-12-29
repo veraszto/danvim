@@ -80,6 +80,13 @@ function! <SID>CropAsYouWill(matter, replace, match)
 		\)
 endfunction
 
+function! <SID>FormatJSON( json )
+
+	wa
+	call <SID>StartJob($MY_STUFF_BASH_SCRIPTS . "/format.json.sh")
+
+endfunction
+
 function! <SID>StartJob( job )
 
 	function! CloseHandler( channel )

@@ -138,6 +138,7 @@ function! <SID>MakeMappings()
 "	call <SID>MapShortcut( "<F8>", 'RunAuScript( 1 )' )
 	call <SID>MapShortcut( "<S-F8>", 'JobStart( "log" )' )
 	call <SID>MapShortcut( "<F8>", 'JobStart( "json" )' )
+	call <SID>MapShortcut( "<F9>", 'FormatJSON(bufname())' )
 
 "	=======
 
