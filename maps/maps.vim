@@ -79,7 +79,6 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( "<C-S-Down>", 'NavigateThroughLocalMarksAndWorkspaces( "down" )' )
 	call <SID>MapShortcut( "<C-S-Up>", 'NavigateThroughLocalMarksAndWorkspaces( "up" )' )
 
-"	call <SID>MapShortcut( "<C-Home>", 'JobStart()' )
 	call <SID>MapShortcut( "<C-End>", 'TabJump()' )
 
 	let types = [ "Traditional", "Workspaces" ]
@@ -136,9 +135,9 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( "<S-F7>", "SaveLoader( tabpagenr() )" )
 	call <SID>MapShortcut( "<C-S-F7>", 'SaveBuffersOfThisTab( )' )
 "	call <SID>MapShortcut( "<F8>", 'RunAuScript( 1 )' )
-	call <SID>MapShortcut( "<S-F8>", 'JobStart( "log" )' )
-	call <SID>MapShortcut( "<F8>", 'JobStart( "json" )' )
-	call <SID>MapShortcut( "<F9>", 'FormatJSON(bufname())' )
+	call <SID>MapShortcut( "<S-F8>", 'JobStartOutBufs( "log" )' )
+	call <SID>MapShortcut( "<F8>", 'JobStartOutBufs( "json" )' )
+	call <SID>MapShortcut( "<F9>", 'FormatJSON()' )
 
 "	=======
 

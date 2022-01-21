@@ -80,27 +80,14 @@ function! <SID>CropAsYouWill(matter, replace, match)
 		\)
 endfunction
 
-function! <SID>FormatJSON( json )
+function! <SID>FormatJSON( )
 
 	wa
-	call <SID>StartJob($MY_STUFF_BASH_SCRIPTS . "/format.json.sh")
+	call <SID>JobStartOutFiles($MY_STUFF_BASH_SCRIPTS . "/format.json.sh")
 
 endfunction
 
-function! <SID>StartJob( job )
 
-	function! CloseHandler( channel )
-
-		let msg = []
-		while ch_status(a:channel) == "buffered"
-			call add(msg, ch_read(a:channel))
-		endwhile
-		echo msg
-	endfunction
-
-	let job = job_start( [ a:job, expand("%:p") ], {"err_io": "out", "close_cb": "CloseHandler"})
-
-endfunction
 
 function! <SID>RunAuScript( on_off )
 
@@ -127,7 +114,7 @@ function! <SID>RunAuScript( on_off )
 
 	augroup my_scripts
 		execute "au " . event_and_script[ 0 ]  . 
-			\ " * call <SID>StartJob(\"" . expand(event_and_script[ 1 ])  . "\")"
+			\ " * call <SID>JobStartOutFiles(\"" . expand(event_and_script[ 1 ])  . "\")"
 	augroup END
 	 
 
@@ -2577,9 +2564,7 @@ function! <SID>MakeRoomForForThisJob( file_type )
 
 endfunction
 
-
-
-function! <SID>JobStart( file_type )
+function! <SID>JobStartOutBufs( file_type )
 
 	
 	let output_bufs = <SID>MakeRoomForForThisJob( a:file_type )
@@ -2597,6 +2582,27 @@ function! <SID>JobStart( file_type )
 
 endfunction
 
+function! <SID>JobStartOutFiles( job )
+
+	let job = job_start
+	\ ( 
+		\ [ a:job, expand("%:p") ], 
+		\ {
+			\ "out_io": "file", 
+			\ "out_name": "/tmp/vim.job.start.out", 
+			\ "err_io": "file",
+			\ "err_name": "/tmp/vim.job.start.error",
+			\ "exit_cb": g:Danvim_SID . "JobStartOutFilesCallback" 
+		\ }
+	\ )
+
+endfunction
+
+function! <SID>JobStartOutFilesCallback(a, b)
+
+	echo "JobStart has finished: (" . a:a . ", " . a:b . ")"
+
+endfunction
 
 
 
