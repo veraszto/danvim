@@ -2248,8 +2248,7 @@ function! <SID>PromptSaveLoaderName( suggestions, from )
 	echohl None
 
 	if len( trimmed_input ) <= 0
-		echo "Could not save to a empty name"
-		return
+		throw "Could not save to a empty name"
 	endif
 
 	let save_or_overwrite = "Saving"
@@ -2276,11 +2275,17 @@ function! <SID>SaveLoader( from  )
 		return
 	endtry
 
-	if exists("g:DanVim_save_loader_name")
+	if exists("g:DanVim_save_loader_name") && a:from <= 1
 		let trimmed_input = g:DanVim_save_loader_name
-		echo "Autosaving as filename is previously known"
+		echo "Autosaving as filename is previously known, " . 
+			\ "partial saves do not take g:DanVim_save_loader_name into account"
 	else
-		let trimmed_input = <SID>PromptSaveLoaderName( suggestions, a:from )
+		try
+			let trimmed_input = <SID>PromptSaveLoaderName( suggestions, a:from )
+		catch
+			echo v:exception
+			return
+		endtry
 	endif
 
 
