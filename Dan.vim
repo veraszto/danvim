@@ -2455,6 +2455,30 @@ function! <SID>JobStartAfterParty()
 	
 endfunction
 
+function! <SID>BuffersMatteringNow()
+
+	let current_tab = tabpagenr()
+	for tab in range(1, tabpagenr("$"))
+		let mattering = gettabvar( tab, "mattering", v:false )
+		if mattering == v:true
+			let buf_number = bufnr()
+			execute "tabn " . tab
+			exec "sbuffer " . buf_number
+		endif
+	endfor
+
+	if ! exists("buf_number")
+		let buf_number = bufnr()
+		tabnew
+		let t:title = "MattersNow"
+		let t:mattering = v:true
+		exec "buffer " . buf_number
+	endif
+
+	execute "tabn " . current_tab
+
+endfunction
+
 
 function! <SID>MakeRoomForForThisJob( file_type )
 

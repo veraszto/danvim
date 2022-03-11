@@ -177,6 +177,7 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( ";O0", "TurnOnOffOverlays( 0 )" )
 	call <SID>MapShortcut( ";O1", "TurnOnOffOverlays( 1 )" )
 	call <SID>MapShortcut( ";OO", "ShowPopups()" )
+	call <SID>MapShortcut( "<F10>", "BuffersMatteringNow()" )
 	noremap <expr> ;i ":vi " . getcwd() . "/"
 	noremap <expr> ;I ":vi " . expand("%")
 
