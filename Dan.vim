@@ -968,7 +968,7 @@ function! <SID>SpecialBu( this_bu )
 	endif
 	execute "argadd " . escape( built, '#%' )
 	let first_file = argv()[0]
-	wa
+	e!
 	let to_execute = "buffer " . pattern_prefix . first_file 
 	try
 		execute to_execute 
@@ -1080,7 +1080,7 @@ function! <SID>BuFromGNUTree( line_number, line, len_tree_prefix, roof_dir )
 	let joined_target = join( wrap, "/" )
 	
 	if filereadable( joined_target )
-		wa
+		e!
 		execute "vi " . joined_target 
 	else
 		echo joined_target . " not readable"
@@ -1632,7 +1632,7 @@ function! <SID>SmartReachWorkspace( )
 		endif
 		let build_file_name = one_dir_up
 		let safe_guard += 1
-		if safe_guard > 10
+		if safe_guard > 20
 			break
 		endif
 	endwhile
