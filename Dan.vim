@@ -2575,12 +2575,17 @@ function! <SID>MakeRoomForForThisJob( file_type )
 		let args = []
 		let counter = argc() - 1
 		while counter >= 0
-			call add( args, argv( counter ) )
+			let iter = argv( counter )
+			if match(iter, '*') < 0
+				call add( args, iter )
+			endif
 			let counter -= 1
 		endwhile
 		%argd
 		execute "argadd " . file_name
-		execute "argadd " . reduce( args, { res, item -> res . " " . item })
+		if len( args ) > 0
+			execute "argadd " . reduce( args, { res, item -> res . " " . item })
+		endif
 		call add( outbufs, bufnr() )
 		let b:[mark_job_output] = 1
 	endfor
