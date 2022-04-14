@@ -2204,89 +2204,100 @@ function! <SID>ReadDirs( which )
 
 endfunction
 
-function! <SID>PromptSaveLoaderName( suggestions, from )
+function! <SID>PromptSaveOrLoadLoaderName( should_save, from )
 
-	if len( a:suggestions ) <= 0
-		let suggestions = []
-	else
-		let suggestions = a:suggestions
+	let dir = <SID>FindMyDirFromBaseVars(s:loaders_dir)
+	let msg = 
+	\ [ 
+		\ "Please type a new name or an existing one",
+		\
+		\ "as the sample below demonstrates:\n" .
+		\ "my.awesome.Project SortersAlgorithms\n" .
+		\ "to reach:\n" . dir . "/my/awesome/Project/SortersAlgorithms.vim\n",
+		\
+		\ "to save or overwrite the", 
+		\
+		\ "state",
+		\ 
+		\ "of",
+		\
+		\ "this VIM instance,",
+		\
+		\ "with ALL current active buffers"
+	\ ]
+
+	let main_state = "SAVE"
+	if a:should_save == 0
+		let msg[0] = "Enter an existing name"
+		let msg[2] = "to load a "
+		let msg[4] = "to "
+		"let msg[3] = "the desired project"
+		let main_state = "LOAD"
 	endif
-
-	let cropped = []
-	for a in suggestions
-		call add( cropped, matchstr( a, s:file_extension_less ))
-	endfor
-
-	echohl MyActivities 
-
-	let msg = "Please type a new name " .
-		\ "or at least a name match of an existing entry " .
-		\ "listed below(if any) to overwrite, to save "
-
-	let complement_msg = "ALL current active buffers"
 
 	if ( a:from > 1 )
-		let complement_msg = "from current tabpage " . a:from . " up to including the last"
+		let msg[6] = "with buffers from current tabpage " . a:from . " up to including the last"
 	endif
 
-	let msg = msg . complement_msg
+	echo join( msg, " " )
+	echohl DiaryDivisorDate 
+	echo main_state . " to:"
 
-	echo msg
-
-	echohl WarningMsg
-	echo "SAVE to:"
-
-	echohl MyDone 
-
-	let input = input
-		\ ( 
-			\ join( cropped, "\n" ) . "\n"
-		\ )
-
-	let trimmed_input = trim( input )
-
-	echohl None
+	if ! exists("g:DanVim_save_loader_name")
+		echohl MyDone 
+		let input = input("")
+		let trimmed_input = trim( input )
+		echo "\n"
+		echo "Input " . "(" . input . ")"
+		echohl None
+		let g:DanVim_save_loader_name = trimmed_input
+		echo "g:DanVim_save_loader_name has just been set to " .
+			\ trimmed_input . " in order to save VIM state without being asked for name input"
+	else
+		let trimmed_input = g:DanVim_save_loader_name
+	endif
 
 	if len( trimmed_input ) <= 0
-		throw "Could not save to a empty name"
+		unlet g:DanVim_save_loader_name
+		throw "Could not " . main_state . " to a empty name"
 	endif
 
-	let save_or_overwrite = "Saving"
-	let match = match( cropped, input )
-	if match > -1
-		let save_or_overwrite = "Overwritting"
-		let input = cropped[ match ]
-		let trimmed_input = trim( input )
+	let project_context_and_project = split(trimmed_input, '\s') 
+
+	if len(project_context_and_project) < 2
+		let save_before_unlet = g:DanVim_save_loader_name
+		unlet g:DanVim_save_loader_name
+		throw "Please enter a project context and a project name, like this \"my.Stuff BashScripts\", " .
+			\ "just like the the \"awesome project\" mentioned above, ok?\n" .
+			\ "this way: \"" . save_before_unlet . "\" it will not behave like expected"
 	endif
 
-	echo "\n" . save_or_overwrite . " -> " . input
+	let path_prefix = dir . "/" . 
+		\ substitute(project_context_and_project[0], '\.', "/", "g")
 
-	return trimmed_input
+	if ! isdirectory(path_prefix)
+		call mkdir(path_prefix, "p")
+		echo "Created dir: " . path_prefix
+	endif
+
+
+	let path_sufix = project_context_and_project[1] . ".vim"
+
+	echo path_prefix
+	echo path_sufix
+
+	return path_prefix . "/" . path_sufix
 
 endfunction
 
-function! <SID>SaveLoader( from  )
+function! <SID>SaveLoader( from )
 
 	try
-		let dir = <SID>FindMyDirFromBaseVars(s:loaders_dir)
-		let suggestions = <SID>ReadDirs( dir  )
+		let file_name = <SID>PromptSaveOrLoadLoaderName( 1, a:from )
 	catch
 		echo v:exception
 		return
 	endtry
-
-	if exists("g:DanVim_save_loader_name") && a:from <= 1
-		let trimmed_input = g:DanVim_save_loader_name
-		echo "Autosaving as filename is previously known, " . 
-			\ "partial saves do not take g:DanVim_save_loader_name into account"
-	else
-		try
-			let trimmed_input = <SID>PromptSaveLoaderName( suggestions, a:from )
-		catch
-			echo v:exception
-			return
-		endtry
-	endif
 
 
 	let last_tab = tabpagenr( "$" )
@@ -2311,8 +2322,6 @@ function! <SID>SaveLoader( from  )
 		endif
 
 	endfor
-
-	let file_name = dir . "/" . trimmed_input . ".vim"
 
 	call <SID>WriteToFile( commands,  file_name )
 
@@ -2344,10 +2353,11 @@ function! <SID>LoadLoader( )
 		return
 	endif
 
-	let cropped = []
-	for a in suggestions
-		call add( cropped, matchstr( a, s:file_extension_less ))
-	endfor
+	let cropped = suggestions
+
+"	for a in suggestions
+"		call add( cropped, matchstr( a, s:file_extension_less ))
+"	endfor
 
 	echohl MyActivities 
 
