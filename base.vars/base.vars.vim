@@ -10,6 +10,7 @@ let s:base_vars =
 \ {
 	\ "popup_marks_dir": [ $MY_VIM_MARKS_DIR, s:home_vim . "/popup.shortcuts" ],
 	\ "dictionaries_dir": [ $MY_VIM_DICTS, s:home_vim . "/dictionaries" ],
+	\ "additional_runtime_dirs": [ $MY_VIM_ADDITIONAL_RUNTIME_DIR ],
 	\ "bridge_file": "/tmp/bridge",
 	\ "clipboard_commands": [ "wl-copy", "wl-paste" ],
 	\ "workspaces_dir": [ $MY_VIM_WORKSPACES, s:workspaces ],

@@ -2195,71 +2195,83 @@ endfunction
 function! <SID>ReadDirs( which )
 	
 	try
-		let files = readdir( a:which )
+		let names = readdir( a:which )
 	catch
-		throw "Could not readdir: " . a:which
+		echo "Could not readdir: " . a:which
+		return []
 	endtry
 
-	return files
+	let response = []
+	for name in names
+		call add(response, a:which . "/" . name )
+	endfor
+
+	return response
 
 endfunction
+
 
 function! <SID>PromptSaveOrLoadLoaderName( should_save, from )
 
 	let dir = <SID>FindMyDirFromBaseVars(s:loaders_dir)
 	let msg = 
 	\ [ 
-		\ "Please type a new name or an existing one",
+		\ "Please type a new name or an existing one ",
 		\
-		\ "as the sample below demonstrates:\n" .
-		\ "my.awesome.Project SortersAlgorithms\n" .
-		\ "to reach:\n" . dir . "/my/awesome/Project/SortersAlgorithms.vim\n",
+		\ "as the adjacent sample line below demonstrates:\n" .
+		\ "my.awesome.Project SortersAlgorithms\n",
 		\
-		\ "to save or overwrite the", 
+		\ "to save to",
 		\
-		\ "state",
+		\ ":\n" . dir . "/my/awesome/Project/SortersAlgorithms.vim\n",
+		\
+		\ "to save or overwrite the ", 
+		\
+		\ "state ",
 		\ 
-		\ "of",
+		\ "of ",
 		\
-		\ "this VIM instance,",
+		\ "this VIM instance ",
 		\
 		\ "with ALL current active buffers"
 	\ ]
 
-	let main_state = "SAVE"
+	let main_state = "SAVE to"
 	if a:should_save == 0
-		let msg[0] = "Enter an existing name"
-		let msg[2] = "to load a "
-		let msg[4] = "to "
-		"let msg[3] = "the desired project"
-		let main_state = "LOAD"
+		let msg[0] = "Enter an existing name "
+		let msg[2] = "to load from"
+		let msg[4] = "to load a "
+		let msg[6] = "to "
+		let msg[8] = "with the desired project"
+		let main_state = "LOAD from"
 	endif
 
 	if ( a:from > 1 )
 		let msg[6] = "with buffers from current tabpage " . a:from . " up to including the last"
 	endif
 
-	echo join( msg, " " )
-	echohl DiaryDivisorDate 
-	echo main_state . " to:"
 
-	if ! exists("g:DanVim_save_loader_name")
-		echohl MyDone 
+	let g_danvim_set = ""
+	if ! exists("g:DanVim_save_loader_name") || a:should_save == 0
+		echo join( msg, "" )
+		echohl DiaryDivisorDate 
+		echo main_state . ":"
+		echohl None
 		let input = input("")
 		let trimmed_input = trim( input )
 		echo "\n"
 		echo "Input " . "(" . input . ")"
-		echohl None
 		let g:DanVim_save_loader_name = trimmed_input
-		echo "g:DanVim_save_loader_name has just been set to " .
-			\ trimmed_input . " in order to save VIM state without being asked for name input"
+		let g_danvim_set = "g:DanVim_save_loader_name has just been (re)set to " .
+			\ trimmed_input . " in order to save VIM state without being asked for project's name input"
 	else
 		let trimmed_input = g:DanVim_save_loader_name
+		let g_danvim_set = "Using previously set name from g:DanVim_save_loader_name: " . g:DanVim_save_loader_name
 	endif
 
 	if len( trimmed_input ) <= 0
 		unlet g:DanVim_save_loader_name
-		throw "Could not " . main_state . " to a empty name"
+		throw "Could not " . main_state . " an empty name"
 	endif
 
 	let project_context_and_project = split(trimmed_input, '\s') 
@@ -2271,6 +2283,10 @@ function! <SID>PromptSaveOrLoadLoaderName( should_save, from )
 			\ "just like the the \"awesome project\" mentioned above, ok?\n" .
 			\ "this way: \"" . save_before_unlet . "\" it will not behave like expected"
 	endif
+	
+	if len(g_danvim_set) > 0
+		echo g_danvim_set
+	endif
 
 	let path_prefix = dir . "/" . 
 		\ substitute(project_context_and_project[0], '\.', "/", "g")
@@ -2280,11 +2296,7 @@ function! <SID>PromptSaveOrLoadLoaderName( should_save, from )
 		echo "Created dir: " . path_prefix
 	endif
 
-
 	let path_sufix = project_context_and_project[1] . ".vim"
-
-	echo path_prefix
-	echo path_sufix
 
 	return path_prefix . "/" . path_sufix
 
@@ -2298,7 +2310,6 @@ function! <SID>SaveLoader( from )
 		echo v:exception
 		return
 	endtry
-
 
 	let last_tab = tabpagenr( "$" )
 	let commands = []
@@ -2324,8 +2335,11 @@ function! <SID>SaveLoader( from )
 	endfor
 
 	call <SID>WriteToFile( commands,  file_name )
-
-	echo "Saved loader to " . file_name
+	if len(findfile(file_name)) > 0
+		echo "Saved overriding loader to " . file_name
+	else
+		echo "Saved loader to " . file_name
+	endif
 
 
 endfunction
@@ -2341,55 +2355,12 @@ endfunction
 function! <SID>LoadLoader( )
 
 	try
-		let dir = <SID>FindMyDirFromBaseVars(s:loaders_dir)
-		let suggestions = <SID>ReadDirs( dir )
+		let file_name = <SID>PromptSaveOrLoadLoaderName(0, 1)
 	catch
 		echo v:exception
 		return
 	endtry
 
-	if len( suggestions ) <= 0
-		echo "There is not a buffers stack loader to load"
-		return
-	endif
-
-	let cropped = suggestions
-
-"	for a in suggestions
-"		call add( cropped, matchstr( a, s:file_extension_less ))
-"	endfor
-
-	echohl MyActivities 
-
-	echo "Please type a name " .
-		\ "or at least a name match of an existing entry " .
-		\ "listed below to load a saved stack of buffers."
-	echohl WarningMsg
-	echo "LOAD from:"
-
-	echohl MyDone 
-
-	let input = input
-		\ ( 
-			\ join( cropped, "\n" ) . "\n"
-		\ )
-
-	let trimmed_input = trim( input )
-
-	echohl None 
-
-	if len( trimmed_input ) <= 0
-		echo "Could not load from an empty name"
-		return
-	endif
-
-	let match = match( cropped, input )
-	if match > -1
-		let input = cropped[ match ]
-		let trimmed_input = trim( input )
-	endif
-
-	let file_name = dir . "/" . trimmed_input . ".vim"
 
 	if filereadable( file_name ) == 0
 		echo "\nThe file " . file_name . " is not readable"
@@ -2648,7 +2619,17 @@ function! <SID>JobStartOutFilesCallback(a, b)
 
 endfunction
 
-
+function! <SID>FromDirToFiles(dir_or_file, init)
+	let list = a:init
+	for each in a:dir_or_file
+		if isdirectory(each)
+			call <SID>FromDirToFiles(<SID>ReadDirs(each), list)
+		elseif filereadable(each)
+			call add(list, each)
+		endif
+	endfor
+	return list
+endfunction
 
 "Custom Vars
 
@@ -2714,7 +2695,18 @@ if exists("s:this_has_been_loaded") == v:false
 	call <SID>SayHello( s:initial_message )
 endif
 
+let s:qualified_additional_runtime = []
+for additional in s:additional_runtime_dirs
+	call add(s:qualified_additional_runtime, expand(additional))
+endfor
 
+silent let s:additional_runtime_built = <SID>FromDirToFiles(s:qualified_additional_runtime, [])
+
+for each in s:additional_runtime_built
+	if match(each, '\.vim$') >= 0
+		silent execute "source" each
+	endif
+endfor
 
 
 

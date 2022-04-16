@@ -84,7 +84,8 @@ jBufs lists all but workspaces files, jBufs stands for "last jumped to buffers",
 ### BufStack loader
 
 Load and save current active buffers by using `<F6>` and `<F7>`,
-after exiting Vim, it may be desired, to have back all opened tabs with theirs buffers, 
+after exiting Vim, it may be desired, to have back all opened tabs with theirs buffers,
+setting Vim state to a specific project 
 or to merge buffers with the current ones, this is the goal of BufStack loader
 
 ### Dynamic Marking
