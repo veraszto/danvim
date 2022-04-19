@@ -2261,27 +2261,28 @@ function! <SID>PromptSaveOrLoadLoaderName( should_save, from )
 		let trimmed_input = trim( input )
 		echo "\n"
 		echo "Input " . "(" . input . ")"
-		let g:DanVim_save_loader_name = trimmed_input
 		let g_danvim_set = "g:DanVim_save_loader_name has just been (re)set to " .
 			\ trimmed_input . " in order to save VIM state without being asked for project's name input"
 	else
 		let trimmed_input = g:DanVim_save_loader_name
-		let g_danvim_set = "Using previously set name from g:DanVim_save_loader_name: " . g:DanVim_save_loader_name
+		echo "Using previously set name from g:DanVim_save_loader_name: " . g:DanVim_save_loader_name
 	endif
 
 	if len( trimmed_input ) <= 0
-		unlet g:DanVim_save_loader_name
+		if a:should_save == 1
+			unlet g:DanVim_save_loader_name
+		endif
 		throw "Could not " . main_state . " an empty name"
 	endif
 
 	let project_context_and_project = split(trimmed_input, '\s') 
 
 	if len(project_context_and_project) < 2
-		let save_before_unlet = g:DanVim_save_loader_name
-		unlet g:DanVim_save_loader_name
+		if a:should_save == 1
+			unlet g:DanVim_save_loader_name
+		endif
 		throw "Please enter a project context and a project name, like this \"my.Stuff BashScripts\", " .
-			\ "just like the the \"awesome project\" mentioned above, ok?\n" .
-			\ "this way: \"" . save_before_unlet . "\" it will not behave like expected"
+			\ "this way: \"" . trimmed_input . "\" it will not behave like expected"
 	endif
 	
 	if len(g_danvim_set) > 0
@@ -2298,7 +2299,13 @@ function! <SID>PromptSaveOrLoadLoaderName( should_save, from )
 
 	let path_sufix = project_context_and_project[1] . ".vim"
 
-	return path_prefix . "/" . path_sufix
+	let file_name = path_prefix . "/" . path_sufix
+
+	if a:should_save == 1
+		let g:DanVim_save_loader_name = trimmed_input
+	endif
+
+	return  file_name
 
 endfunction
 
