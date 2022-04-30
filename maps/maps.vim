@@ -76,8 +76,13 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( "<S-Right>", "PopupBuffers()" )
 	call <SID>MapShortcut( "<S-Down>", "PopupJumps()" )
 
-	call <SID>MapShortcut( "<C-S-Down>", 'NavigateThroughLocalMarksAndWorkspaces( "down" )' )
-	call <SID>MapShortcut( "<C-S-Up>", 'NavigateThroughLocalMarksAndWorkspaces( "up" )' )
+"	call <SID>MapShortcut( "<C-S-Down>", 'NavigateThroughLocalMarksAndWorkspaces( "down" )' )
+"	call <SID>MapShortcut( "<C-S-Up>", 'NavigateThroughLocalMarksAndWorkspaces( "up" )' )
+	call <SID>MapShortcut( "<C-S-Down>", 'FluidFlowNavigate( v:true, -1 )' )
+	call <SID>MapShortcut( "<C-S-Up>", 'FluidFlowNavigate( v:true, 1 )' )
+	call <SID>MapShortcut( "[1;2R", 'FluidFlow(v:false)' )
+	call <SID>MapShortcut( "[1;6R", 'FluidFlow(v:true)' )
+"	map [1;6R <Cmd>echo 1<CR>
 
 	call <SID>MapShortcut( "<C-End>", 'TabJump()' )
 
@@ -123,7 +128,6 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( "[1;6P", 'PasteFromClipboard( 1 )' )
 	call <SID>MapShortcut( "<F2>", 'WrapperHideAndShowPopups()' )
 	call <SID>MapShortcut( "<F3>", 'MarkNext()' )
-	map [1;2R <Cmd>delmarks! \| marks<CR>
 	call <SID>MapShortcut( "<F4>", 'WriteBasicStructure()' )
 	call <SID>MapShortcut( "<F5>", 'CloseAllTrees()' )
 
@@ -160,6 +164,8 @@ function! <SID>MakeMappings()
 	map ;Q :tabclose<CR>
 	map ;rg :reg<CR>
 	map ;sm :marks<CR>
+	map ;ms ;sm
+	map ;md <Cmd>delmarks! \| echo "All marks deleted for " .bufname()<CR>
 	call <SID>MapShortcut( ";sh", "SayHello( [ \"DanVim loaded\" ] )" )
 	call <SID>MapShortcut( ";std", "StampThisTypeToStatusLine()" )
 	map ;stc :try <Bar> unlet w:stamp_name <Bar> catch <Bar> echo "Already unstamped" <Bar> endtry<CR>

@@ -1701,13 +1701,11 @@ function! <SID>SourceCurrent_ifVim()
 	if  l:extension == ".vim"
 		let l:this_file = expand( "%" )
 		try
+			write
 			echo "Sourcing " . l:this_file
 			execute "source " . l:this_file
 		catch
-			echo "Could not source, remember that this function" .
-					\ " cannot source Dan.vim, " .
-					\ "as it will try to redefine an executing function ok? v:exception => " . 
-					\ v:exception
+			echo v:exception
 		endtry
 	else
 		echo "Is this a vim script? it is stated as " . l:extension
@@ -1776,12 +1774,10 @@ endfunction
 function! <SID>CopyRegisterToFileAndClipboard( )
 
 	let tmp = @" 
-	let escaped = shellescape( tmp )
-	call <SID>WriteToFile( [ escaped ], s:bridge_file )
-"	call system( "echo " . escaped . " > " . s:bridge_file )
-	call system( s:clipboard_commands[ 0 ] . " " . escaped )
-	redraw!
-	echo "Copied \"... " . trim( matchstr( tmp, '.\{1,20}' ) ) . " ...\" to main clipboard"
+	call <SID>WriteToFile( [ tmp ], s:bridge_file )
+	call system( s:clipboard_commands[ 0 ] . " -- " . shellescape(tmp) )
+"	call system( s:clipboard_commands[ 0 ] . " < " . s:bridge_file )
+	echo "Copied \"... " . trim( matchstr( tmp, '.\{1,50}' ) ) . " ...\" to main clipboard"
 
 endfunction
 
@@ -2626,6 +2622,66 @@ function! <SID>JobStartOutFilesCallback(a, b)
 
 endfunction
 
+
+function! <SID>FluidFlowCreate(open_floor)
+
+	let line_number = line(".")
+	if a:open_floor == 1
+		let has_created = v:false
+		for letter_hex in range(0x41, 0x5A)
+			let char = nr2char(letter_hex)
+			if ! has_key(g:DanVim_fluid_flow, char)
+				let has_created = v:true
+				let g:DanVim_fluid_flow[ char ] = #{current: 0, flow: [[line_number, expand("%:p")]]}
+				echo "Created \"" . char  . "\" floor, with initial flow item l:" . line_number . ", at " . expand("%:t")
+				break
+			endif
+		endfor
+		if has_created == 0
+			echo "Floors from A to Z have already been created, please consider replacing"
+		endif
+		return
+	endif
+
+	call add(g:DanVim_fluid_flow[g:DanVim_fluid_flow["current"]]["flow"], [line_number, expand("%:p")])
+	echo "Added to floor \"" . g:DanVim_fluid_flow["current"] . "\" the flow item l:" . line_number . ", at " . expand("%:t")
+
+
+endfunction
+
+function! <SID>FluidFlowNavigate( floors_change, up )
+
+	let floors_range = len(keys(g:DanVim_fluid_flow)) - 1
+	let total_range = ( 0x5A - 0x41 )
+	if a:floors_change == 1
+		let current = char2nr(g:DanVim_fluid_flow["current"]) - 0x41
+		if floors_range > 1
+			let counter = 1;
+			let next = ( current + a:up * counter ) % total_range
+			while next != current
+				let counter += 1
+				let next = ( current + a:up * counter ) % total_range
+				let letter = nr2char(next + 0x41)
+				if has_key(g:DanVim_fluid_flow, letter)
+					let g:DanVim_fluid_flow["current"] = letter
+				endif
+				if counter > total_range
+					break
+				endif
+			endwhile
+		else
+			echo "There is just a single floor"
+		endif
+		echo "We are at \"" . g:DanVim_fluid_flow["current"] . "\" floor from Fluid Flow now"
+	endif
+
+endfunction
+
+function! <SID>MakeInitialFluidFlow()
+	let g:DanVim_fluid_flow = #{current: "A", A:#{current: 0, flow:[]}}
+endfunction
+
+
 function! <SID>FromDirToFiles(dir_or_file, init)
 	let list = a:init
 	for each in a:dir_or_file
@@ -2685,7 +2741,8 @@ let s:cmd_buf_pattern = '\(\s\|\t\)*+\(/\|\d\).\{-}\s\+'
 let s:types_of_overlays = [ "Traditional" ]
 
 let s:tab_vars_names = ["title", "workspaces"]
-let s:global_vars_names = ["DanVim_save_loader_name"]
+let s:global_vars_names = ["DanVim_save_loader_name", "DanVim_fluid_flow"]
+
 
 let s:overlay_allowed_to_show = v:true
 
@@ -2700,6 +2757,7 @@ if exists("s:this_has_been_loaded") == v:false
 	let s:automatic_scp = 0
 	call <SID>StartUp()
 	call <SID>SayHello( s:initial_message )
+	call <SID>MakeInitialFluidFlow()
 endif
 
 let s:qualified_additional_runtime = []
