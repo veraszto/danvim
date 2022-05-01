@@ -58,8 +58,6 @@ function! <SID>MakeMappings()
 	map { g;
 	map } g,
 
-	map <C-S-Left>	:previous<CR>
-	map <C-S-Right>	:next<CR>
 
 "	Shortcuts
 
@@ -80,9 +78,13 @@ function! <SID>MakeMappings()
 "	call <SID>MapShortcut( "<C-S-Up>", 'NavigateThroughLocalMarksAndWorkspaces( "up" )' )
 	call <SID>MapShortcut( "<C-S-Down>", 'FluidFlowNavigate( v:true, -1 )' )
 	call <SID>MapShortcut( "<C-S-Up>", 'FluidFlowNavigate( v:true, 1 )' )
-	call <SID>MapShortcut( "[1;2R", 'FluidFlow(v:false)' )
-	call <SID>MapShortcut( "[1;6R", 'FluidFlow(v:true)' )
-"	map [1;6R <Cmd>echo 1<CR>
+	call <SID>MapShortcut( "<C-S-Left>", 'FluidFlowNavigate( v:false, -1 )' )
+	call <SID>MapShortcut( "<C-S-Right>", 'FluidFlowNavigate( v:false, 1 )' )
+"	map <C-S-Left>	:previous<CR>
+"	map <C-S-Right>	:next<CR>
+	call <SID>MapShortcut( "[1;2R", 'FluidFlowCreate(v:false)' )
+	call <SID>MapShortcut( "[1;6R", 'FluidFlowCreate(v:true)' )
+
 
 	call <SID>MapShortcut( "<C-End>", 'TabJump()' )
 

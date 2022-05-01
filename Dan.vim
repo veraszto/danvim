@@ -2332,7 +2332,7 @@ function! <SID>SaveLoader( from )
 	for name in s:global_vars_names
 
 		if exists( "g:" . name ) == v:true
-			call add(commands, "let g:" . name . " = \"" . g:[name] . "\"")
+			call add(commands, "let g:" . name . " = " . string(g:[name]) )
 		endif
 
 	endfor
@@ -2630,9 +2630,9 @@ function! <SID>FluidFlowCreate(open_floor)
 		let has_created = v:false
 		for letter_hex in range(0x41, 0x5A)
 			let char = nr2char(letter_hex)
-			if ! has_key(g:DanVim_fluid_flow, char)
+			if ! has_key(g:DanVim_fluid_flow["floors"], char)
 				let has_created = v:true
-				let g:DanVim_fluid_flow[ char ] = #{current: 0, flow: [[line_number, expand("%:p")]]}
+				let g:DanVim_fluid_flow["floors"][ char ] = #{current: 0, flow: [[line_number, expand("%:p")]]}
 				echo "Created \"" . char  . "\" floor, with initial flow item l:" . line_number . ", at " . expand("%:t")
 				break
 			endif
@@ -2643,7 +2643,7 @@ function! <SID>FluidFlowCreate(open_floor)
 		return
 	endif
 
-	call add(g:DanVim_fluid_flow[g:DanVim_fluid_flow["current"]]["flow"], [line_number, expand("%:p")])
+	call add(g:DanVim_fluid_flow["floors"][g:DanVim_fluid_flow["current"]]["flow"], [line_number, expand("%:p")])
 	echo "Added to floor \"" . g:DanVim_fluid_flow["current"] . "\" the flow item l:" . line_number . ", at " . expand("%:t")
 
 
@@ -2651,21 +2651,27 @@ endfunction
 
 function! <SID>FluidFlowNavigate( floors_change, up )
 
-	let floors_range = len(keys(g:DanVim_fluid_flow)) - 1
-	let total_range = ( 0x5A - 0x41 )
+	let interval = [0x41, 0x5A]
+	let floors_range = len(keys(g:DanVim_fluid_flow.floors))
+	let total_range = interval[1] - interval[0] + 1
 	if a:floors_change == 1
-		let current = char2nr(g:DanVim_fluid_flow["current"]) - 0x41
+		let current = char2nr(g:DanVim_fluid_flow["current"]) - interval[0]
 		if floors_range > 1
-			let counter = 1;
+			let counter = 1
 			let next = ( current + a:up * counter ) % total_range
+			if next < 0
+				let next = total_range - 1
+				let current = total_range
+			endif
 			while next != current
+				let letter = nr2char(next + interval[0])
 				let counter += 1
 				let next = ( current + a:up * counter ) % total_range
-				let letter = nr2char(next + 0x41)
-				if has_key(g:DanVim_fluid_flow, letter)
+				if has_key(g:DanVim_fluid_flow["floors"], letter)
 					let g:DanVim_fluid_flow["current"] = letter
+					break
 				endif
-				if counter > total_range
+				if counter >= total_range
 					break
 				endif
 			endwhile
@@ -2673,12 +2679,33 @@ function! <SID>FluidFlowNavigate( floors_change, up )
 			echo "There is just a single floor"
 		endif
 		echo "We are at \"" . g:DanVim_fluid_flow["current"] . "\" floor from Fluid Flow now"
+		return
 	endif
+
+	let floor = g:DanVim_fluid_flow["floors"][g:DanVim_fluid_flow["current"]]
+	let len_floor_flow = len(floor.flow)
+	if len_floor_flow <= 0
+		echo "There are no flow items"
+		return
+	endif
+
+	let next_number = floor.current + a:up
+	let index = ( next_number ) % ( len_floor_flow )
+	let next = floor.flow[ index  ]
+	let floor.current = index
+	try
+"		execute "vi +" . next[0] . " " . next[1]
+		normal zz
+		redraw!
+		echo (index + 1) . "/" . (len_floor_flow) 
+	catch
+		echo "Could not move to next flow of Fluid Flow, " . v:exception
+	endtry
 
 endfunction
 
 function! <SID>MakeInitialFluidFlow()
-	let g:DanVim_fluid_flow = #{current: "A", A:#{current: 0, flow:[]}}
+	let g:DanVim_fluid_flow = #{current: "A", floors:#{ A:#{current: 0, flow:[]}} }
 endfunction
 
 
