@@ -70,9 +70,9 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( ";ea", 'RefreshAll()' )
 	call <SID>MapShortcut( ";em", 'EditMarksFile()' )
 
-	call <SID>MapShortcut( "<S-Left>", "PopupMarksShow()" )
-	call <SID>MapShortcut( "<S-Right>", "PopupBuffers()" )
-	call <SID>MapShortcut( "<S-Down>", "PopupJumps()" )
+	call <SID>MapShortcut( ";pm", "PopupMarksShow()" )
+	call <SID>MapShortcut( ";pb", "PopupBuffers()" )
+	call <SID>MapShortcut( ";pj", "PopupJumps()" )
 
 "	call <SID>MapShortcut( "<C-S-Down>", 'NavigateThroughLocalMarksAndWorkspaces( "down" )' )
 "	call <SID>MapShortcut( "<C-S-Up>", 'NavigateThroughLocalMarksAndWorkspaces( "up" )' )

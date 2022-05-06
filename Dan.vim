@@ -1789,6 +1789,7 @@ function! <SID>PasteFromClipboard( only_to_main_register )
 	if a:only_to_main_register == v:false
 		call append( line("."), from_regular_clipboard )
 	else
+		echo "Clipboard has been put to main register"
 		let @" = join( from_regular_clipboard, "\n" )
 	endif
 
@@ -2694,7 +2695,11 @@ function! <SID>FluidFlowNavigate( floors_change, up )
 	let next = floor.flow[ index  ]
 	let floor.current = index
 	try
-"		execute "vi +" . next[0] . " " . next[1]
+		if expand("%:p") == next[1]
+"			call setpos(".", [ 0, next[0], 1 ] )	
+		else
+"			execute "vi +" . next[0] . " " . next[1]
+		endif
 		normal zz
 		redraw!
 		echo (index + 1) . "/" . (len_floor_flow) 
