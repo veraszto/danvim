@@ -2072,7 +2072,7 @@ function! <SID>NavigateThroughLocalMarksAndWorkspaces( go )
 
 	if <SID>AreWeInAnWorkspaceFile() > 0
 
-		if a:go =~ '^up$'
+		if a:go =~ '^down$'
 			call cursor(line(".") - 1, 1)
 			let line = search( s:we_are_here, "bnw" )
 		else
@@ -2645,12 +2645,17 @@ function! <SID>FluidFlowCreate(open_floor)
 	endif
 
 	call add(g:DanVim_fluid_flow["floors"][g:DanVim_fluid_flow["current"]]["flow"], [line_number, expand("%:p")])
-	echo "Added to floor \"" . g:DanVim_fluid_flow["current"] . "\" the flow item l:" . line_number . ", at " . expand("%:t")
+	echo "Added flow step " . len(g:DanVim_fluid_flow["floors"][g:DanVim_fluid_flow["current"]]["flow"])  . 
+		\ " to floor \"" . g:DanVim_fluid_flow["current"] . "\" with l:" . line_number . " at " . expand("%:t")
 
 
 endfunction
 
 function! <SID>FluidFlowNavigate( floors_change, up )
+
+	if ! exists("g:DanVim_fluid_flow")
+		call <SID>MakeInitialFluidFlow()
+	endif
 
 	let interval = [0x41, 0x5A]
 	let floors_range = len(keys(g:DanVim_fluid_flow.floors))
@@ -2679,7 +2684,11 @@ function! <SID>FluidFlowNavigate( floors_change, up )
 		else
 			echo "There is just a single floor"
 		endif
-		echo "We are at \"" . g:DanVim_fluid_flow["current"] . "\" floor from Fluid Flow now"
+		let custom_name = ""
+		if has_key(g:DanVim_fluid_flow["floors"][g:DanVim_fluid_flow["current"]], "custom_name")
+			let custom_name = "[" . g:DanVim_fluid_flow["floors"][g:DanVim_fluid_flow["current"]]["custom_name"] . "]"
+		endif
+		echo "We are at \"" . g:DanVim_fluid_flow["current"] . "\"" . custom_name  . " floor from Fluid Flow now"
 		return
 	endif
 
@@ -2691,14 +2700,18 @@ function! <SID>FluidFlowNavigate( floors_change, up )
 	endif
 
 	let next_number = floor.current + a:up
+	if next_number < 0
+		let next_number = len_floor_flow - 1
+	endif
 	let index = ( next_number ) % ( len_floor_flow )
 	let next = floor.flow[ index  ]
 	let floor.current = index
+
 	try
 		if expand("%:p") == next[1]
-"			call setpos(".", [ 0, next[0], 1 ] )	
+			call setpos(".", [ 0, next[0], 1 ] )	
 		else
-"			execute "vi +" . next[0] . " " . next[1]
+			execute "vi +" . next[0] . " " . next[1]
 		endif
 		normal zz
 		redraw!
@@ -2804,10 +2817,6 @@ for each in s:additional_runtime_built
 		silent execute "source" each
 	endif
 endfor
-
-
-
-
 
 
 

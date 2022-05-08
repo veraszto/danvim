@@ -12,7 +12,7 @@ a proposed way of using Vim, with the intent to make Vim usage better and faster
 - [Workspaces](#workspaces)
 - [jBufs](#jbufs)
 - [BufStack loader](#bufstack-loader)
-- [Dynamic Marking](#dynamic-marking)
+- [Fluid Flow](#fluid-flow)
 - [Popup menus](#popup-menus)
 - [Sets](#sets)
 - [Maps](#maps)
@@ -88,9 +88,29 @@ after exiting Vim, it may be desired, to have back all opened tabs with theirs b
 setting Vim state to a specific project 
 or to merge buffers with the current ones, this is the goal of BufStack loader
 
-### Dynamic Marking
+### Fluid Flow
 
-`<F3>` marks to the next letter in sequence, navigate through them using `<S-C-Up>` and `<S-C-Down>`
+Picture that, sometimes we need to jump fastly across lines and multiple files so that we can conceive and
+understand a code flow minimizing any effort to reach a next or previous step(filename and line) 
+that could otherwise be a hassle by interrupting your reasoning of the code itself.
+
+Now picture a 2D array.
+
+Ok, `<S-C-F3>` creates a floor and each floor has a flow, `<S-F3>` stamps a step to the to flow of the current floor,
+Run through floors by `<S-C-Up>` and `<S-C-Down>` and across flow's steps of the current floor by `<S-C-Right>` and 
+`<S-C-Left>`
+
+Fluid Flow is an alternate version of Vim's default mark system
+
+Press `<F7>` to save your active buffers alongside the Fluid Flow created
+
+`<F3>` makes an automate Vim's local mark, press `<S-Left>` and `<S-Right>` to run through them
+
+`<S-Left>` and `<S-Right>` can also be used at workspaces's files to jump through its trees
+
+Manipulate g:DanVim_fluid_flow to have further control of the fluid flow, I should make an interface for that.
+
+Remove by `:unlet g:DanVim_fluid_flow` to restart Fluid Flow to its initial configuration
 
 ### Popup menus
 
@@ -98,7 +118,7 @@ or to merge buffers with the current ones, this is the goal of BufStack loader
 the purpose of them is to reach buffers in different ways, through custom marks, jumps' list and all buffers, 
 once launched they are navigated through up and down arrows
 
-1. `<S-Left>` to access custom marks, 
+1. `;pm` to access custom marks, 
 which are currently set only to Dan.vim as an example and editable through normal map `;em` when in Dan.vim buffer,
 custom marks file name are like so, \<filename\>.vim.shortcut, so Dan.vim is Dan.vim.vim.shortcut, 
 one can set its own for any file, following with the Dan.vim marks example.
@@ -119,8 +139,8 @@ func\(tion\)\?!\?\s\+<SID>AddBuffer
 
   * These custom marks are stored at DanVim/popup.shortcuts
 
-2. `<S-Down>` access the jump list(the same jBufs shows) 
-3. `<S-Right>` all buffers
+2. `;pj` access the jump list(the same jBufs shows) 
+3. `;pb` all buffers
 
 ### Sets
 
@@ -181,5 +201,5 @@ Please consider donating,
 </table>
 
 #### There are several features still to be documented about DanVim, as these docs are ongoing
-#### Please ask whenever the unexpected happen or in doubt
+#### Please let me know if DanVim behaves unexpectedly
 #### Thank you!
