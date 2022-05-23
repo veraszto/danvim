@@ -968,8 +968,13 @@ function! <SID>SpecialBu( this_bu )
 	endif
 	execute "argadd " . escape( built, '#%' )
 	let first_file = argv()[0]
-	e!
 	let to_execute = "buffer " . pattern_prefix . first_file 
+	try
+		wa
+	catch
+		echo "Could not WA to enter buf, " . v:exception
+		e!
+	endtry
 	try
 		execute to_execute 
 	catch
@@ -1076,12 +1081,10 @@ function! <SID>BuFromGNUTree( line_number, line, len_tree_prefix, roof_dir )
 
 	call add( wrap, target_file )
 
-
 	let joined_target = join( wrap, "/" )
 	
 	if filereadable( joined_target )
-		e!
-		execute "vi " . joined_target 
+		call <SID>SpecialBu( joined_target )
 	else
 		echo joined_target . " not readable"
 	endif
