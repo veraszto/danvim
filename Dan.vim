@@ -2742,6 +2742,13 @@ function! <SID>FromDirToFiles(dir_or_file, init)
 	return list
 endfunction
 
+function! <SID>NoTabs()
+
+	set expandtab softtabstop=4
+	tabdo windo set expandtab< softtabstop<
+
+endfunction
+
 "Custom Vars
 
 runtime! base.vars/**/*.vim
