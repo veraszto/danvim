@@ -176,7 +176,7 @@ function! <SID>MakeMappings()
 	map ;. <Cmd>try \| tabm+ \| catch \| echo "Even more?" \| endtry <CR>
 	map ;< <Cmd>tabm0<CR>
 	map ;> <Cmd>tabm$<CR>
-	call <SID>MapShortcut( ";t", "ViInitialWorkspace()", "tabnew", "clearjumps" )
+	call <SID>MapShortcut( ";t", "ViNewTabOnContext()" )
 	map ;vn :vertical new<CR>
 	map ;vs :vertical split<CR>
 	call <SID>MapShortcut( ";so", "SourceCurrent_ifVim()" )

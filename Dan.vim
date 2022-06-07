@@ -1642,6 +1642,12 @@ function! <SID>SmartReachWorkspace( )
 
 endfunction
 
+function! <SID>ViNewTabOnContext()
+	split
+	wincmd T
+	call <SID>SmartReachWorkspace()
+endfunction
+
 
 function! <SID>ViInitialWorkspace()
 
