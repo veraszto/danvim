@@ -32,8 +32,8 @@ function! <SID>MakeMappings()
 	map <S-Tab> :up <Bar> :e#<CR>
 
 	"Buffer navigation
-	map <Bar> :bprevious<CR>
-	map Z :bnext<CR>
+	map <Bar> :previous<CR>
+	map Z :next<CR>
 	
 
 
