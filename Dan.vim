@@ -1580,17 +1580,20 @@ function! <SID>WrapperHideAndShowPopups()
 
 endfunction
 
-function! <SID>GoThroughActiveBuffers( match, do )
+function! <SID>GoThroughActiveBuffers( match, do, do_not_perform_when_alone_in_tab )
 
 	let tab_viewport = [ tabpagenr(), winnr() ]
 
 	tabdo 
-		\ for a in range(winnr("$")) |
-			\ let viewport = ( a + 1 ) |
-			\ if tab_viewport[0] == tabpagenr() && viewport == tab_viewport[1] | continue | endif |
-			\ let bufname = bufname(winbufnr(viewport)) |
-			\ if match( bufname, a:match) > -1 | wa | execute viewport . a:do | endif |
-		\ endfor
+		\ let last_viewport = winnr("$") |
+		\ if last_viewport > 1 || a:do_not_perform_when_alone_in_tab == v:false |
+			\ for a in range(last_viewport) |
+				\ let viewport = ( a + 1 ) |
+				\ if tab_viewport[0] == tabpagenr() && viewport == tab_viewport[1] | continue | endif |
+				\ let bufname = bufname(winbufnr(viewport)) |
+				\ if match( bufname, a:match) > -1 | wa | execute viewport . a:do | endif |
+			\ endfor |
+		\ endif
 
 	execute "tabnext " . tab_viewport[0]
 
@@ -1605,7 +1608,7 @@ function! <SID>SmartReachWorkspace( )
 		return 0
 	endtry
 
-	call <SID>GoThroughActiveBuffers( s:workspaces_pattern, "wincmd q" )
+	call <SID>GoThroughActiveBuffers( s:workspaces_pattern, "wincmd q", v:true )
 
 	if <SID>AreWeInAnWorkspaceFile() >= 0
 		let starting_from_this = expand("%:t")
@@ -1683,23 +1686,15 @@ function! <SID>SetDict( )
 	endtry
 
 	let potential_dicts = expand( dir . "/*", 1, 1)
+	let this_type = expand("<afile>:e")
 
 	let selected = []
-	let this_type = matchstr( expand("<afile>"), s:file_extension )
-
-	if len( this_type ) == 0
-"		echo "len(this_type) empty"
-		return
-	endif
-
 	for a in potential_dicts
-		let type = matchstr( a, s:tail_file )		
+		let type = matchstr( a, '[^/]\+$' )
 		if match( type, this_type ) >= 0
 			call add( selected, a )
 		endif
 	endfor
-
-"	echo selected
 
 	execute "setlocal dictionary=" . join( selected, "," )
 
@@ -1736,7 +1731,7 @@ function! <SID>RefreshAll()
 	execute "tabn " . this_tab
 	execute this_viewport . " wincmd w" 
 
-	echo "Executed forced edit(:e!) thought all active buffers!"
+	echo "Executed forced edit(:e!) throught all active buffers!"
 	
 
 endfunction
