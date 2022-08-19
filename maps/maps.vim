@@ -11,6 +11,8 @@ function! <SID>MakeMappings()
 	imap jn <C-X><C-N>
 	imap jk <C-X><C-K>
 	imap jv <C-X><C-V>
+	imap jg <Esc>:execute "call " . g:Danvim_SID . "PopupGrep()"<CR>
+
 
 	call <SID>iMapShortcut( "jf", 'LocalCDAtFirstRoof()', "<C-X><C-F>" )
 

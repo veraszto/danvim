@@ -101,7 +101,7 @@ function! <SID>RunAuScript( on_off )
 		return
 	endif
 
-	let au_script = "g:au_script"
+	let au_script = "g:DanVim_au_script"
 
 	if ! exists( au_script ) == 1
 		echo "Please map script path at " . au_script . " like this: BufWritePost|~/script.sh"
@@ -148,7 +148,7 @@ function! <SID>AutoCommands()
 
 	autocmd DanVim BufRead *.yaml,*.yml setlocal expandtab | setlocal tabstop=2 
 	
-	autocmd DanVim BufRead * call <SID>SetDict( )
+	autocmd DanVim BufRead * call <SID>SetDictAndGreps( )
 
 	call <SID>AutoCommandsOverlay( 0 ) 
 
@@ -371,6 +371,7 @@ function! <SID>CollectPertinentJumps( limit, what_is_pertinent )
 	return jumps_togo 
 
 endfunction
+
 
 function! <SID>PopupJumps( )
 	
@@ -1676,13 +1677,60 @@ function! <SID>ViInitialWorkspace()
 
 endfunction
 
-function! <SID>SetDict( )
+function! <SID>SetDictAndGreps( )
 
+	let b:DanVim_grep_files = join(DictsAndGrepsFiles(".grep"), " ")
+	execute "setlocal dictionary=" . join( DictsAndGrepsFiles(".dict"), "," )
+
+endfunction
+
+function! <SID>PopupGrep()
+	
+	if (!exists("b:DanVim_grep_files") || len(b:DanVim_grep_files) == 0)
+		echo "b:DanVim_grep_files is not filled, were there grep files for " . expand("%:e") . " files types?"
+		return
+	endif
+	let looked_for = expand("<cword>")
+	if len(looked_for) <= 0
+		echo "Are you with the cursor over the word you want to look for?"
+		return
+	endif
+	let grep_implementation = "grep -i " . looked_for  . " " . b:DanVim_grep_files
+	let grep = systemlist(grep_implementation)
+	if len(grep) <= 0
+		echo "Nothing has been found with " . looked_for
+		return
+	endif
+	try
+		aunmenu DanVimGrepCompletionMenu
+	catch
+	endtry
+
+	let menu = []
+	for eligible in grep
+		call add
+		\ (
+			\ menu, "amenu DanVimGrepCompletionMenu." . <SID>MakeEscape(eligible) . " " . 
+			\ "bvedh\"='" . eligible . "'<CR>p:let @g = '" . eligible . "'<CR>"
+		\ )
+	endfor
+
+
+	for each_menu in menu
+		execute each_menu
+	endfor
+
+	popup DanVimGrepCompletionMenu
+
+endfunction
+
+
+function! DictsAndGrepsFiles(dict_grep)
 	try
 		let dir = <SID>FindMyDirFromBaseVars(s:dictionaries_dir)
 	catch
 		echo v:exception
-		return 0
+		return []
 	endtry
 
 	let potential_dicts = expand( dir . "/*", 1, 1)
@@ -1691,13 +1739,11 @@ function! <SID>SetDict( )
 	let selected = []
 	for a in potential_dicts
 		let type = matchstr( a, '[^/]\+$' )
-		if match( type, this_type ) >= 0
+		if match( type, this_type . a:dict_grep ) >= 0
 			call add( selected, a )
 		endif
 	endfor
-
-	execute "setlocal dictionary=" . join( selected, "," )
-
+	return selected
 endfunction
 
 function! <SID>SourceCurrent_ifVim()

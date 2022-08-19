@@ -12,7 +12,6 @@ set scrolloff=5
 set noloadplugins
 set nohlsearch
 set number
-set noshowmode
 set nocompatible
 set noincsearch
 set autoread
