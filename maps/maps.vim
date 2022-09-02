@@ -160,7 +160,8 @@ function! <SID>MakeMappings()
 	map ;lc :lcd 
 
 
-	call <SID>MapShortcut( ";lf", "LocalCDAtThisFile()" )
+	call <SID>MapShortcut( ";cdl", "CDAtThisFile(\"lcd\")" )
+	call <SID>MapShortcut( ";cdt", "CDAtThisFile(\"tcd\")" )
 	call <SID>MapShortcut( ";u", "LocalCDAtFirstRoof()" )
 	map ;pw :pwd<CR>
 "	call <SID>MapShortcut( ";pt", "GetThisFilePopupMark()" )
@@ -188,7 +189,7 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( ";O1", "TurnOnOffOverlays( 1 )" )
 	call <SID>MapShortcut( ";OO", "ShowPopups()" )
 	call <SID>MapShortcut( "<F10>", "BuffersMatteringNow()" )
-	call <SID>MapShortcut( "<F11>", "NoTabs()", "echo \"NoTabs!\"" )
+	call <SID>MapShortcut( "<S-F11>", "NoTabs()", "echo \"NoTabs!\"" )
 	noremap <expr> ;i ":vi " . getcwd() . "/"
 	noremap <expr> ;I ":vi " . expand("%")
 

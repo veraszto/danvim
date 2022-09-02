@@ -672,10 +672,10 @@ endfunction
 
 
 
-function! <SID>LocalCDAtThisFile()
+function! <SID>CDAtThisFile(level)
 
 	let to_lcd = expand("%:h")
-	execute "lcd " . to_lcd
+	execute a:level . " " . to_lcd
 	echo "Current lcd is now " . to_lcd
 
 endfunction
@@ -2184,19 +2184,22 @@ function! <SID>LocalMarksAutoJumping( go )
 
 endfunction
 
+function! <SID>PreparePathsToGenerateVimScriptToLoadBuffers()
+
+	let way_to_goback = [ "cd", "lcd", "tcd" ]
+	let this_dir = getcwd( )
+	let has_local_dir = haslocaldir( )
+	let save = way_to_goback[ has_local_dir ] . " " . this_dir
+	cd /
+	return save
+
+endfunction
 
 function! <SID>GenerateVimScriptToLoadBuffersOfATab( which )
 
 	let list = []
 	let counter = 0
 	let options = [ "vi", "split" ]
-	let way_to_goback = [ "cd", "lcd", "tcd" ]
-	let this_dir = getcwd( )
-	let has_local_dir = haslocaldir( )
-	let save = way_to_goback[ has_local_dir ] . " " . this_dir
-
-	call add( list, "try" )
-	call add( list, "\t" . <SID>BaseDirToSaveLoader() )
 
 	for name in s:tab_vars_names
 
@@ -2204,7 +2207,7 @@ function! <SID>GenerateVimScriptToLoadBuffersOfATab( which )
 		if len( tab_var ) > 0
 			call add
 			\ ( 
-				\ list, "\t" . "let t:" . name  . " = \"" . tab_var . "\""
+				\ list, "let t:" . name  . " = \"" . tab_var . "\""
 			\ )
 		endif
 
@@ -2224,17 +2227,15 @@ function! <SID>GenerateVimScriptToLoadBuffersOfATab( which )
 			continue
 		endif
 
-		call add( list, "\t" . options[ index ]  . " " .  bufname )
+		call add( list, options[ index ]  . " " .  bufname )
 		let counter += 1
 
 	endfor
 
 "	call add( list, "\twincmd t")
 	
-	call add( list, "catch | echo \"Could not load buffers: \" . v:exception | endtry" )
+"	call add( list, "catch | echo \"Could not load buffers: \" . v:exception | endtry" )
 	
-	execute save
-
 	return list
 
 endfunction
@@ -2368,13 +2369,17 @@ function! <SID>SaveLoader( from )
 	let last_tab = tabpagenr( "$" )
 	let commands = []
 
+	let save = <SID>PreparePathsToGenerateVimScriptToLoadBuffers()
+
 	for a in range( a:from, last_tab )
 		
 		let for_this_tab = <SID>GenerateVimScriptToLoadBuffersOfATab( a )
 		call extend( commands,   for_this_tab )
-		call extend( commands, [ "tabnew" ])
+		call extend( commands, [ "", "tabnew" ])
 
 	endfor
+
+	execute save
 
 	call remove( commands, len( commands ) - 1 )
 
@@ -2445,7 +2450,9 @@ endfunction
 
 function! <SID>SaveBuffersOfThisTab()
 
+	let save = <SID>PreparePathsToGenerateVimScriptToLoadBuffers()
 	let this_buffers = <SID>GenerateVimScriptToLoadBuffersOfATab( tabpagenr() )
+	execute save
 	call <SID>WriteToFile
 	\ ( 
 		\ this_buffers,  
