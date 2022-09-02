@@ -1711,7 +1711,7 @@ function! <SID>PopupGrep()
 		call add
 		\ (
 			\ menu, "amenu DanVimGrepCompletionMenu." . <SID>MakeEscape(eligible) . " " . 
-			\ "bvedh\"='" . eligible . "'<CR>p:let @g = '" . eligible . "'<CR>"
+			\ "bved\"='" . eligible . "'<CR>p:let @g = '" . eligible . "'<CR>"
 		\ )
 	endfor
 
