@@ -676,7 +676,7 @@ function! <SID>CDAtThisFile(level)
 
 	let to_lcd = expand("%:h")
 	execute a:level . " " . to_lcd
-	echo "Current lcd is now " . to_lcd
+	echo "Current " . a:level  . "is now " . to_lcd
 
 endfunction
 
@@ -1592,7 +1592,8 @@ function! <SID>GoThroughActiveBuffers( match, do, do_not_perform_when_alone_in_t
 				\ let viewport = ( a + 1 ) |
 				\ if tab_viewport[0] == tabpagenr() && viewport == tab_viewport[1] | continue | endif |
 				\ let bufname = bufname(winbufnr(viewport)) |
-				\ if match( bufname, a:match) > -1 | wa | execute viewport . a:do | endif |
+				\ if match( bufname, a:match) > -1 | 
+					\ wa | execute viewport . a:do | endif |
 			\ endfor |
 		\ endif
 
@@ -1628,7 +1629,7 @@ function! <SID>SmartReachWorkspace( )
 	while 1
 		let searching = dir . "/" . build_file_name . ".workspaces"
 		if filereadable( searching  ) 
-			wa
+			try | wa | catch | echo "Could not save all buffers! No worries!" | endtry
 			execute "vi " . searching
 			break
 		endif
@@ -2369,6 +2370,28 @@ function! <SID>SaveLoader( from )
 	let last_tab = tabpagenr( "$" )
 	let commands = []
 
+	for option in s:global_options_names
+		execute "let option_value = &g:" . option
+		let is_toggle = 0
+		for toggle in s:global_options_names_toggle_mode
+			if toggle == option
+				let is_toggle = 1
+				break
+			endif
+		endfor
+		if is_toggle == 0
+			call add(commands, "setglobal " . option . "=" . option_value)
+		else
+			if option_value == 1
+				call add(commands, "setglobal " . option)
+			else
+				call add(commands, "setglobal no" . option)
+			endif
+		endif
+	endfor
+
+	call add(commands, "")
+
 	let save = <SID>PreparePathsToGenerateVimScriptToLoadBuffers()
 
 	for a in range( a:from, last_tab )
@@ -2799,7 +2822,7 @@ endfunction
 function! <SID>NoTabs()
 
 	set expandtab softtabstop=4
-	tabdo windo set expandtab< softtabstop<
+"	tabdo windo set expandtab< softtabstop<
 
 endfunction
 
@@ -2851,6 +2874,8 @@ let s:types_of_overlays = [ "Traditional" ]
 
 let s:tab_vars_names = ["title", "workspaces"]
 let s:global_vars_names = ["DanVim_save_loader_name", "DanVim_fluid_flow"]
+let s:global_options_names = ["tabstop", "softtabstop", "shiftwidth", "expandtab"]
+let s:global_options_names_toggle_mode = ["expandtab"]
 
 
 let s:overlay_allowed_to_show = v:true
