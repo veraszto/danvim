@@ -146,7 +146,7 @@ function! <SID>AutoCommands()
 	autocmd DanVim BufReadPost * 
 		\ try | execute "normal g'\"zz" | catch | echo "Could not jump to last position" | endtry
 
-	autocmd DanVim BufRead *.yaml,*.yml setlocal expandtab | setlocal tabstop=2 
+	autocmd DanVim BufRead *.yaml,*.yml,package.json setlocal expandtab | setlocal tabstop=2 | setlocal softtabstop=2
 	
 	autocmd DanVim BufRead * call <SID>SetDictAndGreps( )
 
