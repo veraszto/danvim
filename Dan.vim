@@ -2668,7 +2668,7 @@ function! <SID>JobStartOutBufs( file_type )
 	
 	let output_bufs = <SID>MakeRoomForForThisJob( a:file_type )
 
-	let job_cmd = expand("%") 
+	let job_cmd = expand("%:p") 
 
 	call job_start
 	\ ( 
