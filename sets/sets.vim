@@ -29,7 +29,7 @@ set shortmess+=A
 set term=xterm-256color
 filetype indent off
 filetype plugin off
-syntax on
+"syntax on
 
 
 execute "set tabline=%!" . g:Danvim_SID . "BuildTabLine2()"

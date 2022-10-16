@@ -120,13 +120,6 @@ function! <SID>RunAuScript( on_off )
 
 endfunction
 
-function! <SID>FileTypeSet()
-
-	" Syntax from DanVim/syntax/syntax.vim
-	runtime syntax/syntax.vim 
-	
-endfunction
-
 function! <SID>AutoCommands()
 
 	aug mine
@@ -141,12 +134,12 @@ function! <SID>AutoCommands()
 		au!
 	aug END
 
-	autocmd DanVim FileType * call <SID>FileTypeSet()
+	"autocmd DanVim Syntax * runtime syntax/syntax.vim
 
 	autocmd DanVim BufReadPost * 
 		\ try | execute "normal g'\"zz" | catch | echo "Could not jump to last position" | endtry
 
-	autocmd DanVim BufRead *.yaml,*.yml,package.json setlocal expandtab | setlocal tabstop=2 | setlocal softtabstop=2
+	autocmd DanVim BufRead *.yaml,*.yml,package.json setlocal expandtab tabstop=2 softtabstop=2
 	
 	autocmd DanVim BufRead * call <SID>SetDictAndGreps( )
 
@@ -217,10 +210,23 @@ function! <SID>InsMenuSelected()
 
 endfunction
 
+function! <SID>AreFiletypesLoaded()
+	if exists("did_load_filetypes")
+		echo "Look, did_load_filetypes: " g:did_load_filetypes
+	else
+		echo "did_load_filetypes does not exist yet"
+	endif
+endfunction
 
-"\Sets
 function! <SID>Sets()
 
+	for added_runtimepath in s:added_runtimepath
+		execute "set runtimepath+=" . added_runtimepath
+	endfor
+	if exists("s:custom_ftdetects") == v:false
+		runtime! ftdetect/*.vim
+		let s:custom_ftdetects = v:true
+	endif
 	runtime! sets/**/*.vim
 
 endfunction
@@ -2819,13 +2825,6 @@ function! <SID>FromDirToFiles(dir_or_file, init)
 	return list
 endfunction
 
-function! <SID>NoTabs()
-
-	set expandtab softtabstop=4
-"	tabdo windo set expandtab< softtabstop<
-
-endfunction
-
 "Custom Vars
 
 runtime! base.vars/**/*.vim
@@ -2876,13 +2875,10 @@ let s:tab_vars_names = ["title", "workspaces"]
 let s:global_vars_names = ["DanVim_save_loader_name", "DanVim_fluid_flow"]
 let s:global_options_names = ["tabstop", "softtabstop", "shiftwidth", "expandtab"]
 let s:global_options_names_toggle_mode = ["expandtab"]
-
-
 let s:overlay_allowed_to_show = v:true
-
 let s:tmp_vim_script_buffers_loader = "/tmp/buffers.loader.vim"
-
 let s:when_only_at_workspaces_message = "This makes sense only in a .workspaces buffer"
+
 
 if exists("s:this_has_been_loaded") == v:false
 	let s:this_has_been_loaded = v:true

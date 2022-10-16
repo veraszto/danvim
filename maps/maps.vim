@@ -189,7 +189,6 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( ";O1", "TurnOnOffOverlays( 1 )" )
 	call <SID>MapShortcut( ";OO", "ShowPopups()" )
 	call <SID>MapShortcut( "<F10>", "BuffersMatteringNow()" )
-	call <SID>MapShortcut( "<S-F11>", "NoTabs()", "echo \"NoTabs!\"" )
 	noremap <expr> ;i ":vi " . getcwd() . "/"
 	noremap <expr> ;I ":vi " . expand("%")
 

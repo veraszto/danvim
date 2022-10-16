@@ -1,1 +1,1 @@
-runtime! Dan.vim
+runtime Dan.vim
