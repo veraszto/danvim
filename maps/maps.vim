@@ -1,7 +1,8 @@
 
 function! <SID>MakeMappings()
 
-
+	map [1~ <Cmd>normal ^<CR>
+	imap [1~ <Cmd>normal ^<CR>
 	
 "	Avoiding insert/replace toggle
 	inoremap <Insert> <Esc>a

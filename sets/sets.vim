@@ -1,6 +1,6 @@
 let g:Danvim_current_being_sourced = expand("<SID>")
 
-
+set term=xterm-256color
 set updatecount=0
 set autoindent	
 set smartindent
@@ -26,7 +26,6 @@ set wrap
 set comments=""
 set iskeyword+=-
 set shortmess+=A
-set term=xterm-256color
 filetype indent off
 filetype plugin off
 "syntax on
