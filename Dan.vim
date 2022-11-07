@@ -16,14 +16,15 @@ function! <SID>BuildTabLine2()
 			endif
 		endif
 		if added_one == tabpagenr()
-			let focused = "%#TabLineSel# " .  ( title ) . " %0*"
+			let focused = "%#TabLineSel# %-1.100(" .  ( title ) . " %)%0*"
 		else
-			let focused = " " . ( title ) . " "
+			let focused = "%-1.100( " . ( title ) . " %)"
+"			let focused = "(%2.5f)"
 		endif
 		let block = l:line . focused
 		let l:line = block
 	endfor
-	return l:line
+	return l:line . "%<"
 endfunction
 
 
