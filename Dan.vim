@@ -144,7 +144,9 @@ function! <SID>AutoCommands()
 	
 	autocmd DanVim BufRead * call <SID>SetDictAndGreps( )
 
-	call <SID>AutoCommandsOverlay( 0 ) 
+	if !has_key(environ(), "MY_VIM_OVERLAY_NAVIGATOR_OFF") || ($MY_VIM_OVERLAY_NAVIGATOR_OFF) == "0"
+		call <SID>AutoCommandsOverlay( 0 ) 
+	endif
 
 endfunction
 
@@ -956,43 +958,41 @@ function! <SID>SpecialBu( this_bu )
 		return
 	endif
 
-	let space = match( built, '[[:space:]]' )
-	if space > -1
-		echo "Cannot args " . built . ", there is a [[:space:]]"
-		return
-	endif
+"	let space = match( built, '[[:space:]]' )
+"	if space > -1
+"		echo "Cannot args " . built . ", there is a [[:space:]]"
+"		return
+"	endif
 
 	if isdirectory( built )
 		echo built . " is a directory, please select a file"
 		return
 	endif
+	
+	wa
+	execute "vi " . escape( built, '#% ' )
 
-	echon "argadd this: " . built 
-
-	argglobal
-
-	if argc() > 0
-		argd *
-	endif
-	execute "argadd " . escape( built, '#%' )
-	let first_file = argv()[0]
-	let to_execute = "buffer " . pattern_prefix . first_file 
-	try
-		wa
-	catch
-		echo "Could not WA to enter buf, " . v:exception
-		e!
-	endtry
-	try
-		execute to_execute 
-	catch
-		echo "Could not " .  to_execute . ", because: " . v:exception . 
-				\ ", so trying to just buffer the asked file " . first_file
-	endtry
-
-	call <SID>LoadBufferVars( bufnr(),  pattern_bufvar_suffix )
-
-	arglocal
+"	argglobal
+"	if argc() > 0
+"		argd *
+"	endif
+"	execute "argadd " . escape( built, '#% ' )
+"	let first_file = argv()[0]
+"	let to_execute = "buffer " . pattern_prefix . first_file 
+"	try
+"		wa
+"	catch
+"		echo "Could not WA to enter buf, " . v:exception
+"		e!
+"	endtry
+"	try
+"		execute to_execute 
+"	catch
+"		echo "Could not " .  to_execute . ", because: " . v:exception . 
+"				\ ", so trying to just buffer the asked file " . first_file
+"	endtry
+"	call <SID>LoadBufferVars( bufnr(),  pattern_bufvar_suffix )
+"	arglocal
 
 endfunction
 
@@ -1774,16 +1774,21 @@ function! <SID>RefreshAll()
 
 	let this_tab = tabpagenr()
 	let this_viewport = winnr()
+	let running = "running"
 	tabdo windo 
 		\ try |
-			\ silent edit! |
+			\ if term_getstatus(bufnr()) != running | silent edit! | endif |
 		\ catch |
 			\ echo "Tab:" . tabpagenr() . ", Buf:" . bufnr() . ") [" . bufname() . "], " .
 			\  v:exception |
 		\ endtry
 
+	tabdo wincmd h
+
 	execute "tabn " . this_tab
 	execute this_viewport . " wincmd w" 
+		
+	"\ echo getbufinfo(winbufnr(winnr())) |
 
 	echo "Executed forced edit(:e!) throught all active buffers!"
 	
