@@ -77,8 +77,8 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( ";pb", "PopupBuffers()" )
 	call <SID>MapShortcut( ";pj", "PopupJumps()" )
 
-	call <SID>MapShortcut( "<S-Left>", 'NavigateThroughLocalMarksAndWorkspaces( "down" )' )
-	call <SID>MapShortcut( "<S-Right>", 'NavigateThroughLocalMarksAndWorkspaces( "up" )' )
+	"call <SID>MapShortcut( "<S-Left>", 'NavigateThroughLocalMarksAndWorkspaces( "down" )' )
+	"call <SID>MapShortcut( "<S-Right>", 'NavigateThroughLocalMarksAndWorkspaces( "up" )' )
 	call <SID>MapShortcut( "<C-S-Down>", 'FluidFlowNavigate( v:true, -1 )' )
 	call <SID>MapShortcut( "<C-S-Up>", 'FluidFlowNavigate( v:true, 1 )' )
 	call <SID>MapShortcut( "<C-S-Left>", 'FluidFlowNavigate( v:false, -1 )' )
@@ -91,24 +91,21 @@ function! <SID>MakeMappings()
 
 	call <SID>MapShortcut( "<C-End>", 'TabJump()' )
 
-	let types = [ "Traditional", "Workspaces" ]
+	if !has_key(environ(), "MY_VIM_OVERLAY_NAVIGATOR_OFF") || ($MY_VIM_OVERLAY_NAVIGATOR_OFF) == "0"
+		call <SID>OverlayMaps()
+	else
+		map <S-PageDown> <Cmd>wincmd w \| execute "normal \<C-F>" \| wincmd p<CR>
+		map <S-PageUp> <Cmd>wincmd w \| execute "normal \<C-B>" \| wincmd p<CR>
+		imap <S-PageDown> <Cmd>wincmd w \| execute "normal \<C-F>" \| wincmd p<CR>
+		imap <S-PageUp> <Cmd>wincmd w \| execute "normal \<C-B>" \| wincmd p<CR>
+	endif
+	map <S-Right> <Cmd>call <SID>NextArgInNextViewport(0)<CR>
+	map <S-Left> <Cmd>call <SID>NextArgInNextViewport(1)<CR>
+	imap <S-Right> <Cmd>call <SID>NextArgInNextViewport(0)<CR>
+	imap <S-Left> <Cmd>call <SID>NextArgInNextViewport(1)<CR>
 
-	let keys = 
-		\ [
-			\ "<S-Home>", "<S-End>", "<S-PageUp>", "<S-PageDown>",
-			\ "<C-S-Home>", "<C-S-End>", "<C-S-PageUp>", "<C-S-PageDown>" 
-		\ ]
-
-
-	for a in range(1, 4)
-
-		call <SID>MapShortcut( keys[ a - 1 ], 'ShortcutToNthPertinentJump( "' . a . '", "' . types[ 0 ] . '")' )
-
-		let a_plus_three = a + 3
-
-		call <SID>MapShortcut( keys[ a_plus_three ], 'ShortcutToNthPertinentJump( "' . ( a_plus_three + 1 ) . '", "' . types[ 0 ] . '")' )
-
-	endfor
+	map <S-Down> <Cmd>call <SID>RaiseAndLowerTerminal()<CR>
+	imap <S-Down> <Cmd>call <SID>RaiseAndLowerTerminal()<CR>
 
 	call <SID>MapShortcut( "<Del>", 'SmartReachWorkspace()' )
 
@@ -193,6 +190,55 @@ function! <SID>MakeMappings()
 	noremap <expr> ;i ":vi " . getcwd() . "/"
 	noremap <expr> ;I ":vi " . expand("%")
 
+endfunction
+
+let s:try_some_other_way = "Try some other way!"
+function <SID>NextArgInNextViewport( is_left )
+
+	wincmd w 
+	try 
+		if a:is_left
+			let headed = " You are going LEFT"
+			previous 
+		else
+			let headed = " You are going RIGHT"
+			next
+		endif
+	catch 
+		echo s:try_some_other_way 
+		echon headed
+	endtry 
+	wincmd p
+
+endfunction
+
+let s:is_terminal_lowered = 0
+function! <SID>RaiseAndLowerTerminal()
+	wincmd h
+	wincmd w
+	if s:is_terminal_lowered
+		let s:is_terminal_lowered = 0
+		wincmd =
+	else
+		let s:is_terminal_lowered = 1
+		wincmd _
+	endif
+	wincmd h
+	
+endfunction
+
+function! <SID>OverlayMaps()
+	let types = [ "Traditional", "Workspaces" ]
+	let keys = 
+		\ [
+			\ "<S-Home>", "<S-End>", "<S-PageUp>", "<S-PageDown>",
+			\ "<C-S-Home>", "<C-S-End>", "<C-S-PageUp>", "<C-S-PageDown>" 
+		\ ]
+	for a in range(1, 4)
+		call <SID>MapShortcut( keys[ a - 1 ], 'ShortcutToNthPertinentJump( "' . a . '", "' . types[ 0 ] . '")' )
+		let a_plus_three = a + 3
+		call <SID>MapShortcut( keys[ a_plus_three ], 'ShortcutToNthPertinentJump( "' . ( a_plus_three + 1 ) . '", "' . types[ 0 ] . '")' )
+	endfor
 endfunction
 
 function! <SID>MapShortcutButFirstRuntimeDanVim( sequence, action )
