@@ -214,6 +214,7 @@ endfunction
 
 let s:is_terminal_lowered = 0
 function! <SID>RaiseAndLowerTerminal()
+	let cur_viewport = winnr()
 	wincmd h
 	wincmd w
 	if s:is_terminal_lowered
@@ -223,7 +224,7 @@ function! <SID>RaiseAndLowerTerminal()
 		let s:is_terminal_lowered = 1
 		wincmd _
 	endif
-	wincmd h
+	execute cur_viewport . "wincmd w"
 	
 endfunction
 

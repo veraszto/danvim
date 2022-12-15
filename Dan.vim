@@ -1136,7 +1136,7 @@ function! <SID>WriteBasicStructure()
 			\ "-i \"\"",
 			\ "",
 			\ "[make tree]",
-			\ "-x -I \"target|.git|node_modules|build|target\" --filelimit 50", "", ""
+			\ "-I \"target|.git|node_modules|build|target\" --filelimit 50", "", ""
 		\ ]
 	\ )
 

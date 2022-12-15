@@ -26,6 +26,7 @@ set wrap
 set comments=""
 set iskeyword+=-
 set shortmess+=A
+"set termwinkey=<S-Down>
 filetype indent off
 filetype plugin off
 "syntax on
