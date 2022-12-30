@@ -2831,6 +2831,38 @@ function! <SID>FromDirToFiles(dir_or_file, init)
 	return list
 endfunction
 
+function! <SID>FirstJumpDiffBuf(right_or_left)
+    const cur_bufnr = bufnr()
+    const [list, current_jump] = getjumplist()
+    const len_list = len(list)
+    if a:right_or_left > 0
+        if len(list) <= (current_jump + 1)
+            return
+        endif
+        let counter = (current_jump + 1)
+        while (counter) < (len_list) 
+            let supposed_buffer = list[counter]["bufnr"]
+            if (cur_bufnr != supposed_buffer) && (match(bufname(supposed_buffer), s:workspaces_pattern) < 0)
+                execute "normal " . (counter - current_jump) . "\<c-i>" 
+                return
+            endif
+            let counter += 1
+        endwhile
+    else
+        if current_jump <= 0
+            return
+        endif
+        let counter = current_jump - 1
+        while counter >= 0
+            let supposed_buffer = list[counter]["bufnr"]
+            if (cur_bufnr != supposed_buffer) && (match(bufname(supposed_buffer), s:workspaces_pattern) < 0)
+                execute "normal " . (current_jump - counter) . "\<c-o>" 
+                return
+            endif
+            let counter -= 1
+        endwhile
+    endif
+endfunction
 "Custom Vars
 
 runtime! base.vars/**/*.vim

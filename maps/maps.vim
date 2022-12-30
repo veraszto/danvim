@@ -35,8 +35,8 @@ function! <SID>MakeMappings()
 	map <S-Tab> :up <Bar> :e#<CR>
 
 	"Buffer navigation
-	map <Bar> :previous<CR>
-	map Z :next<CR>
+	"map <Bar> :previous<CR>
+	"map Z :next<CR>
 	
 
 
@@ -79,12 +79,16 @@ function! <SID>MakeMappings()
 
 	"call <SID>MapShortcut( "<S-Left>", 'NavigateThroughLocalMarksAndWorkspaces( "down" )' )
 	"call <SID>MapShortcut( "<S-Right>", 'NavigateThroughLocalMarksAndWorkspaces( "up" )' )
-	call <SID>MapShortcut( "<C-S-Down>", 'FluidFlowNavigate( v:true, -1 )' )
-	call <SID>MapShortcut( "<C-S-Up>", 'FluidFlowNavigate( v:true, 1 )' )
-	call <SID>MapShortcut( "<C-S-Left>", 'FluidFlowNavigate( v:false, -1 )' )
-	call <SID>MapShortcut( "<C-S-Right>", 'FluidFlowNavigate( v:false, 1 )' )
+	call <SID>MapShortcut( ";fd", 'FluidFlowNavigate( v:true, -1 )' )
+	call <SID>MapShortcut( ";fu", 'FluidFlowNavigate( v:true, 1 )' )
+	call <SID>MapShortcut( "<Bar>", 'FluidFlowNavigate( v:false, -1 )' )
+	call <SID>MapShortcut( "Z", 'FluidFlowNavigate( v:false, 1 )' )
 "	map <C-S-Left>	:previous<CR>
 "	map <C-S-Right>	:next<CR>
+	map <S-Right> <Cmd>next<CR>
+	map <S-Left> <Cmd>previous<CR>
+	call <SID>MapShortcut( "<C-S-Right>", 'FirstJumpDiffBuf(1)' )
+	call <SID>MapShortcut( "<C-S-Left>", 'FirstJumpDiffBuf(-1)' )
 	call <SID>MapShortcut( "[1;2R", 'FluidFlowCreate(v:false)' )
 	call <SID>MapShortcut( "[1;6R", 'FluidFlowCreate(v:true)' )
 
@@ -99,10 +103,9 @@ function! <SID>MakeMappings()
 		imap <S-PageDown> <Cmd>wincmd w \| execute "normal \<C-F>" \| wincmd p<CR>
 		imap <S-PageUp> <Cmd>wincmd w \| execute "normal \<C-B>" \| wincmd p<CR>
 	endif
-	map <S-Right> <Cmd>call <SID>NextArgInNextViewport(0)<CR>
-	map <S-Left> <Cmd>call <SID>NextArgInNextViewport(1)<CR>
-	imap <S-Right> <Cmd>call <SID>NextArgInNextViewport(0)<CR>
-	imap <S-Left> <Cmd>call <SID>NextArgInNextViewport(1)<CR>
+
+	"map <S-Right> <Cmd>call <SID>NextArgInNextViewport(0)<CR>
+	"map <S-Left> <Cmd>call <SID>NextArgInNextViewport(1)<CR>
 
 	map <S-Down> <Cmd>call <SID>RaiseAndLowerTerminal()<CR>
 	imap <S-Down> <Cmd>call <SID>RaiseAndLowerTerminal()<CR>
@@ -193,7 +196,7 @@ function! <SID>MakeMappings()
 endfunction
 
 let s:try_some_other_way = "Try some other way!"
-function <SID>NextArgInNextViewport( is_left )
+function! <SID>NextArgInNextViewport( is_left )
 
 	wincmd w 
 	try 
