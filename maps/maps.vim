@@ -183,6 +183,7 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( ";t", "ViNewTabOnContext()" )
 	map ;vn :vertical new<CR>
 	map ;vs :vertical split<CR>
+    map ;w= <Cmd>tabdo wincmd =<CR>
 	call <SID>MapShortcut( ";so", "SourceCurrent_ifVim()" )
 	call <SID>MapShortcut( ";sc", "ShowMeColors()" )
 	call <SID>MapShortcut( ";o", "OpenWorkspace()" )
@@ -192,6 +193,7 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( "<F10>", "BuffersMatteringNow()" )
 	noremap <expr> ;i ":vi " . getcwd() . "/"
 	noremap <expr> ;I ":vi " . expand("%")
+    tnoremap <S-Down> <Cmd>call <SID>RaiseAndLowerTerminal()<CR>
 
 endfunction
 
@@ -215,17 +217,21 @@ function! <SID>NextArgInNextViewport( is_left )
 
 endfunction
 
-let s:is_terminal_lowered = 0
+let s:terminal_state = "default"
 function! <SID>RaiseAndLowerTerminal()
 	let cur_viewport = winnr()
 	wincmd h
 	wincmd w
-	if s:is_terminal_lowered
-		let s:is_terminal_lowered = 0
-		wincmd =
-	else
-		let s:is_terminal_lowered = 1
+	if s:terminal_state == "default"
+		let s:terminal_state = "minimized"
 		wincmd _
+	elseif s:terminal_state == "minimized"
+		let s:terminal_state = "maximized"
+        wincmd w
+		wincmd _
+    else
+		let s:terminal_state = "default"
+		wincmd =
 	endif
 	execute cur_viewport . "wincmd w"
 	
