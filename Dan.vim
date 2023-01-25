@@ -84,7 +84,7 @@ endfunction
 function! <SID>FormatJSON( )
 
 	wa
-	call <SID>JobStartOutFiles($MY_STUFF_BASH_SCRIPTS . "/format.json.sh")
+	call <SID>JobStartOutFiles($MY_BASH_DIR . "/format_json.sh")
 
 endfunction
 
@@ -1131,10 +1131,8 @@ function! <SID>WriteBasicStructure()
 		\ [
 	 		\ "[we are here]",
 			\ expand( dir ) . "/",
-			\ "",
 			\ "[search]",
 			\ "-i \"\"",
-			\ "",
 			\ "[make tree]",
 			\ "-I \"target|.git|node_modules|build|target\" --filelimit 50", "", ""
 		\ ]
@@ -2863,7 +2861,6 @@ function! <SID>FirstJumpDiffBuf(right_or_left)
         endwhile
     endif
 endfunction
-"Custom Vars
 
 runtime! base.vars/**/*.vim
 

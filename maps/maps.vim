@@ -1,8 +1,8 @@
 
 function! <SID>MakeMappings()
 
-	map [1~ <Cmd>normal ^<CR>
-	imap [1~ <Cmd>normal ^<CR>
+"	map [1~ <Cmd>normal ^<CR>
+	"imap [1~ <Cmd>normal ^<CR>
 	
 "	Avoiding insert/replace toggle
 	inoremap <Insert> <Esc>a
@@ -140,7 +140,6 @@ function! <SID>MakeMappings()
 	
 	call <SID>MapShortcut( "<F6>", 'LoadLoader( )' )
 	map <silent> <S-F6> :try \| tabnew \| %bd \| catch \| echo "Tryied to unload all buffers, has it been enough?" \| endtry<CR>
-	call <SID>MapShortcut( "<F7>", 'SaveLoader(1)' )
 	call <SID>MapShortcut( "<S-F7>", "SaveLoader( tabpagenr() )" )
 	call <SID>MapShortcut( "<C-S-F7>", 'SaveBuffersOfThisTab( )' )
 "	call <SID>MapShortcut( "<F8>", 'RunAuScript( 1 )' )
@@ -191,9 +190,17 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( ";O1", "TurnOnOffOverlays( 1 )" )
 	call <SID>MapShortcut( ";OO", "ShowPopups()" )
 	call <SID>MapShortcut( "<F10>", "BuffersMatteringNow()" )
+	noremap <F11> <Cmd>source $MY_DANVIM_DIR/basic_loader.vim<CR>
 	noremap <expr> ;i ":vi " . getcwd() . "/"
 	noremap <expr> ;I ":vi " . expand("%")
     tnoremap <S-Down> <Cmd>call <SID>RaiseAndLowerTerminal()<CR>
+
+	call <SID>MapShortcut( "<F7>", 'SaveLoader(1)' )
+	map ;aa <Cmd>$argadd<CR>
+	map ;ad <Cmd>argdelete<CR>
+	map ;ae <Cmd>argu<CR>
+	map ;ap <Cmd>argdedupe<CR>
+	map ;as <Cmd>args<CR>
 
 endfunction
 
