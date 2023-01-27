@@ -29,7 +29,7 @@ function <SID>SaveArgs()
 		let args = []
         execute (tab + 1) . "tabn"
 		for file in argv()
-			call add(args, getcwd() . "/" . file)
+			call add(args, file)
 		endfor
 		call add(all_args, args)
     endfor    
@@ -43,7 +43,7 @@ function <SID>AssertOrCreateLoaderDir()
 	if ! isdirectory(loader_path) || len(findfile(main_file)) <= 0
 		call mkdir(loader_path, "p")
 		call writefile([""], main_file)	
-		call writefile([s:tabs_var_name . ' = [[]]'], loader_path . "/" . s:tabs_vim)	
+		call writefile([s:tabs_var_name . ' = []'], loader_path . "/" . s:tabs_vim)	
 	endif
 endfunction
 
@@ -63,8 +63,8 @@ map <F7> <Cmd>call <SID>SaveArgs()<CR>
 
 const s:tabs_length = len(g:DanVim_LoaderV2_tabs)
 const s:get_context_dirs_regex = '\(/[^/]\+\)\{1,3}\(/[^/]\+$\)\@='
+%bd
 clearjumps
-
 let s:counter = 0
 while s:counter < s:tabs_length
 	let args = g:DanVim_LoaderV2_tabs[s:counter]
@@ -74,9 +74,15 @@ while s:counter < s:tabs_length
 	let s:counter += 1
 endwhile
 
+if s:counter <= 0
+	arglocal Hello 
+    let t:title = "Hello how are you?"
+else
+	tabclose
+endif
+
 tabdo wincmd =
 redraw!
-tabclose
 
 
 

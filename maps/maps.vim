@@ -85,10 +85,10 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( "Z", 'FluidFlowNavigate( v:false, 1 )' )
 "	map <C-S-Left>	:previous<CR>
 "	map <C-S-Right>	:next<CR>
-	map <S-Right> <Cmd>next<CR>
-	map <S-Left> <Cmd>previous<CR>
+	map <S-Right> <Cmd>try \| next \| catch \| args \| endtry<CR>
+	map <S-Left> <Cmd>try \| previous \| catch \| args \| endtry<CR>
 	call <SID>MapShortcut( "<C-S-Right>", 'FirstJumpDiffBuf(1)' )
-	call <SID>MapShortcut( "<C-S-Left>", 'FirstJumpDiffBuf(-1)' )
+	call <SID>MapShortcut( "<C-S-Left>", 'FirstJumpDiffBuf(0)' )
 	call <SID>MapShortcut( "[1;2R", 'FluidFlowCreate(v:false)' )
 	call <SID>MapShortcut( "[1;6R", 'FluidFlowCreate(v:true)' )
 
