@@ -2833,6 +2833,7 @@ let w:jump_diff_buff_jump_these_buffs = []
 let w:jump_diff_buff_direction = 0
 function! <SID>FirstJumpDiffBuf(right_or_left)
     let cur_bufnr = bufnr()
+	call add(w:jump_diff_buff_jump_these_buffs, cur_bufnr)
     const [list, current_jump] = getjumplist()
     const len_list = len(list)
 	if w:jump_diff_buff_direction != a:right_or_left
@@ -2847,23 +2848,21 @@ function! <SID>FirstJumpDiffBuf(right_or_left)
             let supposed_buffer = list[counter]["bufnr"]
             if (cur_bufnr != supposed_buffer) && 
 				\ (match(bufname(supposed_buffer), s:workspaces_pattern) < 0) &&
-				\ index(w:jump_diff_buff_jump_these_buffs, cur_bufnr) < 0
-					let save_counter = counter
+				\ index(w:jump_diff_buff_jump_these_buffs, supposed_buffer) < 0
+
 		            let counter += 1
-					let save_cur_bufnr = cur_bufnr
 				    let cur_bufnr = supposed_buffer
+
 					while (counter) < (len_list)
 			            let supposed_buffer = list[counter]["bufnr"]
 						if cur_bufnr != supposed_buffer
-							call add(w:jump_diff_buff_jump_these_buffs, save_cur_bufnr)
 			                execute "normal " . ((counter - 1) - current_jump) . "\<c-i>" 
 							return
 						endif
 		            	let counter += 1
 					endwhile
-					call add(w:jump_diff_buff_jump_these_buffs, save_cur_bufnr)
-	                execute "normal " . ((save_counter) - current_jump) . "\<c-i>" 
 
+	                execute "normal " . ((counter - 1) - current_jump) . "\<c-i>" 
             endif
             let counter += 1
         endwhile
@@ -2877,8 +2876,7 @@ function! <SID>FirstJumpDiffBuf(right_or_left)
             if 
 				\ (cur_bufnr != supposed_buffer) && 
 				\ (match(bufname(supposed_buffer), s:workspaces_pattern) < 0) &&
-				\ index(w:jump_diff_buff_jump_these_buffs, cur_bufnr) < 0
-					call add(w:jump_diff_buff_jump_these_buffs, cur_bufnr)
+				\ index(w:jump_diff_buff_jump_these_buffs, supposed_buffer) < 0
 	                execute "normal " . (current_jump - counter) . "\<c-o>" 
 					return
             endif
