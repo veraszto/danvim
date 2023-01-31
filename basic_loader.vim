@@ -26,12 +26,8 @@ function <SID>SaveArgs()
 	let tab_page_number = tabpagenr() 
     let all_args = []
     for tab in range(tabpagenr("$"))
-		let args = []
         execute (tab + 1) . "tabn"
-		for file in argv()
-			call add(args, file)
-		endfor
-		call add(all_args, args)
+		call add(all_args, argv())
     endfor    
 	call <SID>AssertOrCreateLoaderDir()
     call writefile([s:tabs_var_name . " = " . string(all_args)], <SID>LoaderPath() . "/" . s:tabs_vim)

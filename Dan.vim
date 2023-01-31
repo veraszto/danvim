@@ -2829,13 +2829,15 @@ function! <SID>FromDirToFiles(dir_or_file, init)
 	return list
 endfunction
 
-let w:jump_diff_buff_jump_these_buffs = []
-let w:jump_diff_buff_direction = 0
 function! <SID>FirstJumpDiffBuf(right_or_left)
     let cur_bufnr = bufnr()
-	call add(w:jump_diff_buff_jump_these_buffs, cur_bufnr)
     const [list, current_jump] = getjumplist()
     const len_list = len(list)
+	if ! exists("w:jump_diff_buff_jump_these_buffs")
+		let w:jump_diff_buff_jump_these_buffs = []
+		let w:jump_diff_buff_direction = 0
+	endif
+	call add(w:jump_diff_buff_jump_these_buffs, cur_bufnr)
 	if w:jump_diff_buff_direction != a:right_or_left
 		let w:jump_diff_buff_jump_these_buffs = []
 	endif
