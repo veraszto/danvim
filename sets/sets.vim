@@ -27,9 +27,10 @@ set comments=""
 set iskeyword+=-
 set shortmess+=A
 "set termwinkey=<S-Down>
+filetype on
 filetype indent off
 filetype plugin off
-"syntax on
+syntax on
 
 
 execute "set tabline=%!" . g:Danvim_SID . "BuildTabLine2()"
