@@ -87,10 +87,10 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( ">", 'FluidFlowNavigate( v:false, 1 )' )
 "	map <C-S-Left>	:previous<CR>
 "	map <C-S-Right>	:next<CR>
-	map <S-Right> <Cmd>try \| next \| catch \| args \| endtry<CR>
-	map <S-Left> <Cmd>try \| previous \| catch \| args \| endtry<CR>
-	imap <S-Right> <Cmd>try \| next \| catch \| args \| endtry<CR>
-	imap <S-Left> <Cmd>try \| previous \| catch \| args \| endtry<CR>
+	map <S-Right> <Cmd>try \| next \| catch \| echo "Last of " . argc() \| endtry<CR>
+	map <S-Left> <Cmd>try \| previous \| catch \| echo "First of " . argc() \| endtry<CR>
+	imap <S-Right> <Cmd>try \| next \| catch \| echo echo "Last of " . argc() \| endtry<CR>
+	imap <S-Left> <Cmd>try \| previous \| catch \| echo "First of " . argc() \| endtry<CR>
 	call <SID>MapShortcut( "<C-S-Right>", 'FirstJumpDiffBuf(1)' )
 	call <SID>MapShortcut( "<C-S-Left>", 'FirstJumpDiffBuf(0)' )
 
