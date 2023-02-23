@@ -13,7 +13,7 @@ let s:base_vars =
 	\ additional_runtime_dirs: [ $MY_VIM_ADDITIONAL_RUNTIME_DIR ],
 	\ added_runtimepath: [ $MY_VIM_ADDED_RUNTIMEPATH ],
 	\ bridge_file: "/tmp/bridge",
-	\ clipboard_commands: [ "wl-copy", "wl-paste" ],
+	\ clipboard_commands: [ $MY_CLIPBOARD_MANAGER_IN, $MY_CLIPBOARD_MANAGER_OUT ],
 	\ workspaces_dir: [ $MY_VIM_WORKSPACES, s:workspaces ],
 	\ initial_workspace_tries: [ "all", "root", "basic", "workspaces", "core", "source" ],
 	\ loaders_dir: [ $MY_VIM_LOADERS_DIR, s:home_vim . "/loaders/trending" ],

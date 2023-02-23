@@ -2,6 +2,7 @@ set winheight=1
 "set termwinkey=<S-Down>
 const s:tabs_var_name = "let g:DanVim_LoaderV2_tabs"
 const s:tabs_vim = "tabs.vim"
+const s:fluid_flow_vim = "fluid-flow.vim"
 
 function <SID>LoaderPath()
 	return expand($MY_VIM_LOADERS_DIR_BASE . "/trendingV2" . getcwd())
@@ -30,7 +31,9 @@ function <SID>SaveArgs()
 		call add(all_args, argv())
     endfor    
 	call <SID>AssertOrCreateLoaderDir()
-    call writefile([s:tabs_var_name . " = " . string(all_args)], <SID>LoaderPath() . "/" . s:tabs_vim)
+	const loader_path = <SID>LoaderPath()
+    call writefile([s:tabs_var_name . " = " . string(all_args)], loader_path . "/" . s:tabs_vim)
+	call <SID>WriteFluidFlowToFile()
 endfunction
 
 function <SID>AssertOrCreateLoaderDir()
@@ -40,19 +43,27 @@ function <SID>AssertOrCreateLoaderDir()
 		call mkdir(loader_path, "p")
 		call writefile([""], main_file)	
 		call writefile([s:tabs_var_name . ' = []'], loader_path . "/" . s:tabs_vim)	
+		call <SID>WriteFluidFlowToFile()
 	endif
+endfunction
+
+function <SID>WriteFluidFlowToFile()
+    call writefile(["let g:" . g:DanVim_fluid_flow_VAR_NAME . " = " . string(g:DanVim_fluid_flow)], 
+		\ <SID>LoaderPath() . "/" . s:fluid_flow_vim)
 endfunction
 
 call <SID>AssertOrCreateLoaderDir()
 
+const s:loader_path = <SID>LoaderPath()
 const s:paths = [
     \ <SID>MainFile(), 
-    \ <SID>LoaderPath()  . "/" . s:tabs_vim 
+    \ s:loader_path  . "/" . s:tabs_vim,
+    \ s:loader_path  . "/" . s:fluid_flow_vim 
 \ ]
 
 for path in s:paths
     echo path
-    execute "source " . path
+    execute "try | source " . path . " | catch | echo \"Could not source: " . path . "\" | endtry"
 endfor
 
 map <F7> <Cmd>call <SID>SaveArgs()<CR>

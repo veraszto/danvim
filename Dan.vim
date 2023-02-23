@@ -2932,7 +2932,8 @@ let s:cmd_buf_pattern = '\(\s\|\t\)*+\(/\|\d\).\{-}\s\+'
 let s:types_of_overlays = [ "Traditional" ]
 
 let s:tab_vars_names = ["title", "workspaces"]
-let s:global_vars_names = ["DanVim_save_loader_name", "DanVim_fluid_flow"]
+let g:DanVim_fluid_flow_VAR_NAME = "DanVim_fluid_flow"
+let s:global_vars_names = ["DanVim_save_loader_name", g:DanVim_fluid_flow_VAR_NAME]
 let s:global_options_names = ["tabstop", "softtabstop", "shiftwidth", "expandtab"]
 let s:global_options_names_toggle_mode = ["expandtab"]
 let s:overlay_allowed_to_show = v:true
