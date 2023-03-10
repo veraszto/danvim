@@ -16,7 +16,14 @@ function <SID>MainFile()
 	return <SID>LoaderPath() . "/" . <SID>MainName() . ".vim"
 endfunction
 
+let s:tab_counter = 0x41
 function <SID>AddTitle()
+	
+	execute "let t:title = \"" . nr2char(s:tab_counter)  . "\""
+	let s:tab_counter += 1
+
+	return
+
 	let s:context_dir = matchstr(expand("%:p"), s:get_context_dirs_regex)
     if len(s:context_dir) > 0
 	    execute "let t:title = \"" . s:context_dir  . "\""
