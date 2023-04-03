@@ -82,7 +82,12 @@ clearjumps
 let s:counter = 0
 while s:counter < s:tabs_length
 	let args = g:DanVim_LoaderV2_tabs[s:counter]
-	execute "arglocal" . " " . join(args, " ")
+	let args_escaped = []
+	for arg in args
+		call add(args_escaped, escape(arg, ' \'))
+	endfor
+	execute "arglocal" . " " . join(args_escaped, " ")
+	vertical split
 	call <SID>AddTitle()
 	tabnew
 	let s:counter += 1

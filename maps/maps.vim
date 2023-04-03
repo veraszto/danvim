@@ -87,15 +87,8 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( ">", 'FluidFlowNavigate( v:false, 1 )' )
 "	map <C-S-Left>	:previous<CR>
 "	map <C-S-Right>	:next<CR>
-	map <S-Right> <Cmd>try \| next \| catch \| echo "Last of " . argc() \| endtry<CR>
-	map <S-Left> <Cmd>try \| previous \| catch \| echo "First of " . argc() \| endtry<CR>
-	imap <S-Right> <Cmd>try \| next \| catch \| echo echo "Last of " . argc() \| endtry<CR>
-	imap <S-Left> <Cmd>try \| previous \| catch \| echo "First of " . argc() \| endtry<CR>
 	call <SID>MapShortcut( "<C-S-Right>", 'FirstJumpDiffBuf(1)' )
 	call <SID>MapShortcut( "<C-S-Left>", 'FirstJumpDiffBuf(0)' )
-
-
-	call <SID>MapShortcut( "<C-End>", 'TabJump()' )
 
 	if !has_key(environ(), "MY_VIM_OVERLAY_NAVIGATOR_OFF") || ($MY_VIM_OVERLAY_NAVIGATOR_OFF) == "0"
 		call <SID>OverlayMaps()
@@ -105,6 +98,8 @@ function! <SID>MakeMappings()
 		imap <S-PageDown> <Cmd>wincmd w \| execute "normal \<C-F>" \| wincmd p<CR>
 		imap <S-PageUp> <Cmd>wincmd w \| execute "normal \<C-B>" \| wincmd p<CR>
 	endif
+
+	call <SID>MapShortcut( "<C-End>", 'TabJump()' )
 
 	"map <S-Right> <Cmd>call <SID>NextArgInNextViewport(0)<CR>
 	"map <S-Left> <Cmd>call <SID>NextArgInNextViewport(1)<CR>
@@ -203,6 +198,26 @@ function! <SID>MakeMappings()
 	map ;ae <Cmd>argu<CR>
 	map ;ap <Cmd>argdedupe<CR>
 	map ;as <Cmd>args<CR>
+
+	map <S-Right> <Cmd>call <SID>ArgsBrowsing(v:false)<CR>
+	map <S-Left> <Cmd>call <SID>ArgsBrowsing(v:true)<CR>
+	imap <S-Right> <Cmd>call <SID>ArgsBrowsing(v:false)<CR>
+	imap <S-Left> <Cmd>call <SID>ArgsBrowsing(v:true)<CR>
+
+endfunction
+
+function! <SID>ArgsBrowsing(left)
+
+	try
+		wa
+		if a:left
+			previous
+		else
+			next
+		endif
+	catch
+		echo v:exception
+	endtry
 
 endfunction
 
