@@ -3,9 +3,13 @@ set winheight=1
 const s:tabs_var_name = "let g:DanVim_LoaderV2_tabs"
 const s:tabs_vim = "tabs.vim"
 const s:fluid_flow_vim = "fluid-flow.vim"
+let s:loaders_dir_base = getenv("MY_VIM_LOADERS_DIR_BASE")
+if (s:loaders_dir_base == v:null)
+	s:loaders_dir_base = expand("<sfile>:h") . "/loaders"
+endif
 
 function <SID>LoaderPath()
-	return expand($MY_VIM_LOADERS_DIR_BASE . "/trendingV2" . getcwd())
+	return expand(s:loaders_dir_base . "/trendingV2" . getcwd())
 endfunction
 
 function <SID>MainName()
