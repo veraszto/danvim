@@ -187,13 +187,13 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( ";O1", "TurnOnOffOverlays( 1 )" )
 	call <SID>MapShortcut( ";OO", "ShowPopups()" )
 	call <SID>MapShortcut( "<F10>", "BuffersMatteringNow()" )
-	noremap <F11> <Cmd>source $MY_DANVIM_DIR/basic_loader.vim<CR>
+	noremap <F11> <Cmd>execute "source " . <SID>BasicLoaderPath()<CR>
 	noremap <expr> ;i ":vi " . getcwd() . "/"
-	noremap <expr> ;I ":vi " . expand("%")
-    tnoremap <S-Down> <Cmd>call <SID>RaiseAndLowerTerminal()<CR>
+	noremap <expr> ;I ":vi " . expand("%:h")
+    "tnoremap <S-Down> <Cmd>call <SID>RaiseAndLowerTerminal()<CR>
 
 	call <SID>MapShortcut( "<F7>", 'SaveLoader(1)' )
-	map ;aa <Cmd>$argadd<CR>
+	map ;aa <Cmd>0argadd <Bar> argu1 <Bar> argdedupe<CR>
 	map ;ad <Cmd>argdelete<CR>
 	map ;ae <Cmd>argu<CR>
 	map ;ap <Cmd>argdedupe<CR>
@@ -204,6 +204,11 @@ function! <SID>MakeMappings()
 	imap <S-Right> <Cmd>call <SID>ArgsBrowsing(v:false)<CR>
 	imap <S-Left> <Cmd>call <SID>ArgsBrowsing(v:true)<CR>
 
+endfunction
+
+const s:basic_loader_path = substitute(expand("<sfile>:h"), '.maps$', "", "") . "/basic_loader.vim"
+function! <SID>BasicLoaderPath()
+	return s:basic_loader_path
 endfunction
 
 function! <SID>ArgsBrowsing(left)

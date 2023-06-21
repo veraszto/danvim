@@ -39,8 +39,11 @@ function <SID>SaveArgs()
     endfor    
 	call <SID>AssertOrCreateLoaderDir()
 	const loader_path = <SID>LoaderPath()
-    call writefile([s:tabs_var_name . " = " . string(all_args)], loader_path . "/" . s:tabs_vim)
+	const save_to = loader_path . "/" . s:tabs_vim
+    call writefile([s:tabs_var_name . " = " . string(all_args)], save_to)
 	call <SID>WriteFluidFlowToFile()
+	execute tab_page_number . "tabnext"
+	echo "Saved to " . save_to
 endfunction
 
 function <SID>AssertOrCreateLoaderDir()
@@ -88,6 +91,11 @@ while s:counter < s:tabs_length
 	endfor
 	execute "arglocal" . " " . join(args_escaped, " ")
 	vertical split
+	if len(args) > 1
+		2wincmd w
+		argu2
+		1wincmd w
+	endif
 	call <SID>AddTitle()
 	tabnew
 	let s:counter += 1
