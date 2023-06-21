@@ -5,7 +5,7 @@ const s:tabs_vim = "tabs.vim"
 const s:fluid_flow_vim = "fluid-flow.vim"
 let s:loaders_dir_base = getenv("MY_VIM_LOADERS_DIR_BASE")
 if (s:loaders_dir_base == v:null)
-	s:loaders_dir_base = expand("<sfile>:h") . "/loaders"
+	let s:loaders_dir_base = expand("<sfile>:h") . "/loaders"
 endif
 
 function <SID>LoaderPath()
