@@ -84,8 +84,6 @@ map <F7> <Cmd>call <SID>SaveArgs()<CR>
 
 const s:tabs_length = len(g:DanVim_LoaderV2_tabs)
 const s:get_context_dirs_regex = '\(/[^/]\+\)\{1,3}\(/[^/]\+$\)\@='
-%bd
-clearjumps
 let s:counter = 0
 while s:counter < s:tabs_length
 	let args = g:DanVim_LoaderV2_tabs[s:counter]
