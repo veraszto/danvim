@@ -22,16 +22,13 @@ endfunction
 
 let s:tab_counter = 0x41
 function <SID>AddTitle()
-	
 	execute "let t:title = \"" . nr2char(s:tab_counter)  . "\""
 	let s:tab_counter += 1
-
 	return
-
-	let s:context_dir = matchstr(expand("%:p"), s:get_context_dirs_regex)
-    if len(s:context_dir) > 0
-	    execute "let t:title = \"" . s:context_dir  . "\""
-    endif
+"	let s:context_dir = matchstr(expand("%:p"), s:get_context_dirs_regex)
+"    if len(s:context_dir) > 0
+"	    execute "let t:title = \"" . s:context_dir  . "\""
+"    endif
 endfunction
 
 function <SID>SaveArgs()
@@ -66,6 +63,28 @@ function <SID>WriteFluidFlowToFile()
 		\ <SID>LoaderPath() . "/" . s:fluid_flow_vim)
 endfunction
 
+function <SID>MakeThatSplit()
+	only
+	wincmd t
+	vertical split | vertical split
+	wincmd t
+	split | split
+	wincmd b
+	split | split
+	wincmd h
+	split
+endfunction
+
+function <SID>DistributeArgsIntoViewports()
+	wincmd t
+	let i = 0
+	while i < argc()
+		execute i . "argu"
+		wincmd w		
+		let i += 1
+	endwhile
+endfunction
+
 call <SID>AssertOrCreateLoaderDir()
 
 const s:loader_path = <SID>LoaderPath()
@@ -81,7 +100,8 @@ for path in s:paths
 endfor
 
 map <F7> <Cmd>call <SID>SaveArgs()<CR>
-
+%bd
+clearjumps
 const s:tabs_length = len(g:DanVim_LoaderV2_tabs)
 const s:get_context_dirs_regex = '\(/[^/]\+\)\{1,3}\(/[^/]\+$\)\@='
 let s:counter = 0
@@ -92,12 +112,8 @@ while s:counter < s:tabs_length
 		call add(args_escaped, escape(arg, ' \'))
 	endfor
 	execute "arglocal" . " " . join(args_escaped, " ")
-	vertical split
-	if len(args) > 1
-		2wincmd w
-		argu2
-		1wincmd w
-	endif
+	call <SID>MakeThatSplit()
+	call <SID>DistributeArgsIntoViewports()
 	call <SID>AddTitle()
 	tabnew
 	let s:counter += 1

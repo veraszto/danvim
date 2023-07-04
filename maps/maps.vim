@@ -130,7 +130,9 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( "[1;6P", 'PasteFromClipboard( 1 )' )
 	call <SID>MapShortcut( "<F2>", 'WrapperHideAndShowPopups()' )
 "	call <SID>MapShortcut( "<F3>", 'MarkNext()' )
-	call <SID>MapShortcut( "<F4>", 'WriteBasicStructure()' )
+"	call <SID>MapShortcut( "<F4>", 'WriteBasicStructure()' )
+	call <SID>MapShortcut( "<F4>", 'TranslatePaneViewport()' )
+	map [1;2S <Cmd>wincmd r<CR>
 	call <SID>MapShortcut( "<F5>", 'CloseAllTrees()' )
 
 	map ;/ <Cmd>echo "Searching for >>>>>, <<<<<<, \|\|\|\|\|\|" <Bar> call search( '\(<\\|>\\|=\)\{6,}' )<CR>

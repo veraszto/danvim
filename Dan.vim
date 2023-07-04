@@ -2887,6 +2887,16 @@ function! <SID>FirstJumpDiffBuf(right_or_left)
     endif
 endfunction
 
+let s:translate_buffer = v:null
+function <SID>TranslatePaneViewport()
+	if s:translate_buffer == v:null
+		let s:translate_buffer = bufnr()
+	else
+		execute "buffer " . s:translate_buffer
+		let s:translate_buffer = v:null
+	endif
+endfunction
+
 runtime! base.vars/**/*.vim
 
 execute "let s:base_vars = " . g:Danvim_current_being_sourced . "BaseVars()"
