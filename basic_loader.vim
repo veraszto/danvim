@@ -63,6 +63,7 @@ function <SID>WriteFluidFlowToFile()
 		\ <SID>LoaderPath() . "/" . s:fluid_flow_vim)
 endfunction
 
+"4K split
 function <SID>MakeThatSplit()
 	only
 	wincmd t
@@ -78,8 +79,9 @@ endfunction
 function <SID>DistributeArgsIntoViewports()
 	wincmd t
 	let i = 0
-	while i < argc()
-		execute i . "argu"
+	"while i < argc()
+	while i < winnr("$")
+		try | execute "argu" . (i+1) | catch | echo v:exception | endtry
 		wincmd w		
 		let i += 1
 	endwhile
