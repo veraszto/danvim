@@ -114,7 +114,8 @@ while s:counter < s:tabs_length
 		call add(args_escaped, escape(arg, ' \'))
 	endfor
 	execute "arglocal" . " " . join(args_escaped, " ")
-	call <SID>MakeThatSplit()
+	"call <SID>MakeThatSplit()
+	vertical split
 	call <SID>DistributeArgsIntoViewports()
 	call <SID>AddTitle()
 	tabnew

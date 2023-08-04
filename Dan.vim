@@ -1,63 +1,24 @@
-function! <SID>BuildTabLine2()
-	let l:line = ""
-	for i in range(tabpagenr('$'))
-		let focused = " . "
-		let added_one = i + 1
-		let bufname = bufname(tabpagebuflist(added_one)[tabpagewinnr(added_one) - 1])
-		let title = gettabvar
-		\ ( 
-			\ added_one, "title", 
-			\ <SID>ExtractExtension(bufname)
-		\ )
-		if len(title) <= 0
-			let title = matchstr(bufname, '\(/\)\@<=.\{,7}$')
-			if len(title) <= 0
-				let title = "[Empty]"
-			endif
-		endif
-		if added_one == tabpagenr()
-			let focused = "%#TabLineSel# %-1.100(" .  ( title ) . " %)%0*"
-		else
-			let focused = "%-1.100( " . ( title ) . " %)"
-"			let focused = "(%2.5f)"
-		endif
-		let block = l:line . focused
-		let l:line = block
-	endfor
-	return l:line . "%<"
-endfunction
 
+let s:home_vim = expand("<sfile>:p")
+let s:workspaces = s:home_vim . "/workspaces"
 
-
-function! <SID>ShowType()
-	let type = <SID>ExtractExtension(@%) 
-	if len(type) > 0
-		return "[" .type . "]"
-	endif
-	return "[CODE]"
-endfunction
+let s:popup_marks_dir = [ $MY_VIM_MARKS_DIR, s:home_vim . "/popup.shortcuts" ]
+let s:dictionaries_dir = [ $MY_VIM_DICTS, s:home_vim . "/dictionaries" ]
+let s:additional_runtime_dirs = [ $MY_VIM_ADDITIONAL_RUNTIME_DIR ],
+let s:added_runtimepath = [ $MY_VIM_ADDED_RUNTIMEPATH ],
+let s:bridge_file = "/tmp/bridge",
+" In Xorg, wl-paste and wl-copy may need to be replaced by xclip -o and xcli -i
+" Empty the initial_message to turn it off
+let s:clipboard_commands = [ $MY_CLIPBOARD_MANAGER_IN, $MY_CLIPBOARD_MANAGER_OUT ],
+let s:workspaces_dir = [ $MY_VIM_WORKSPACES, s:workspaces ],
+let s:initial_workspace_tries = [ "all", "root", "basic", "workspaces", "core", "source" ],
+let s:loaders_dir = [ $MY_VIM_LOADERS_DIR, s:home_vim . "/loaders/trending" ],
+let s:initial_message = [ "DanVim loaded!" ],
+let s:basic_structure_initial_dir = [ $MY_VIM_INITIAL_DIR, s:home_vim . "/" ],
 
 function! <SID>ExtractExtension( from )
-
 	return 	trim( matchstr( a:from, s:file_extension ) )
-
 endfunction
-
-function! <SID>LastDir( matter )
-
-	return matchstr( a:matter,   '\(/[^/]\+\)\{1}$' ) 
-
-endfunction
-
-function! <SID>BuildStatusLine2()
-
-	let snr = s:GetSNR()
-	return "%m%#SameAsExtensionToStatusLine#%n%*)%{". snr  ."GetAutoScp()}" .
-		\ "%#SameAsExtensionToStatusLine#%f%*" . 
-		\ " / %#SameAsExtensionToStatusLine#%{". snr ."getStamp()}%*" .
-		\ "%=%*(%c/%l/%L) byte:%B, %b"
-endfunction
-
 
 function! <SID>MakeHTML()
 	let tag = matchstr(getline("."), '[[:alnum:]\._-]\+')
@@ -66,59 +27,9 @@ function! <SID>MakeHTML()
 	call append(".", indent . "</" . tag . ">")
 endfunction
 
-function! <SID>CropAsYouWill(matter, replace, match)
-	return 
-		\matchstr
-		\(
-			\substitute
-			\(
-				\a:matter,
-				\a:replace,
-				\"",
-				\"gi"
-			\),
-			\a:match
-		\)
-endfunction
-
 function! <SID>FormatJSON( )
-
 	wa
 	call <SID>JobStartOutFiles($MY_BASH_DIR . "/format_json.sh")
-
-endfunction
-
-
-
-function! <SID>RunAuScript( on_off )
-
-	augroup my_scripts
-		au!
-	augroup END
-
-	if a:on_off == 0
-		echo "AuScripts not running"
-		let s:automatic_scp = 0
-		return
-	endif
-
-	let au_script = "g:DanVim_au_script"
-
-	if ! exists( au_script ) == 1
-		echo "Please map script path at " . au_script . " like this: BufWritePost|~/script.sh"
-		return
-	endif
-
-	let event_and_script = split( g:au_script, '|' )
-
-	let s:automatic_scp = 1
-
-	augroup my_scripts
-		execute "au " . event_and_script[ 0 ]  . 
-			\ " * call <SID>JobStartOutFiles(\"" . expand(event_and_script[ 1 ])  . "\")"
-	augroup END
-	 
-
 endfunction
 
 function! <SID>AutoCommands()
@@ -134,8 +45,6 @@ function! <SID>AutoCommands()
 	aug fedora
 		au!
 	aug END
-
-	"autocmd DanVim Syntax * runtime syntax/syntax.vim
 
 	autocmd DanVim BufReadPost * 
 		\ try | execute "normal g'\"zz" | catch | echo "Could not jump to last position" | endtry
@@ -240,10 +149,7 @@ function! <SID>CallAFunction()
 
 endfunction
 
-function! s:GetSNR()
-	let snr = matchstr( expand("<sfile>"), '.SNR.\d\+')
-	return snr . "_"
-endfunction
+
 
 function! <SID>StartUp()
 
