@@ -4,27 +4,22 @@ function! <SID>BuildTabLine2()
 		let focused = " . "
 		let added_one = i + 1
 		let bufname = bufname(tabpagebuflist(added_one)[tabpagewinnr(added_one) - 1])
-		let title = gettabvar
-		\ ( 
-			\ added_one, "title", 
-			\ <SID>ExtractExtension(bufname)
-		\ )
-		if len(title) <= 0
-			let title = matchstr(bufname, '\(/\)\@<=.\{,7}$')
-			if len(title) <= 0
-				let title = "[Empty]"
-			endif
-		endif
-		if added_one == tabpagenr()
-			let focused = "%#TabLineSel# %-1.100(" .  ( title ) . " %)%0*"
+
+		if len(bufname) <= 0
+			let title = "[No name]"
 		else
-			let focused = "%-1.100( " . ( title ) . " %)"
-"			let focused = "(%2.5f)"
+			let title = slice(bufname, -20)
+		endif
+
+		if added_one == tabpagenr()
+			let focused = "%#TabLineSel#  " .  ( title ) . "  %0*"
+		else
+			let focused = "  " . ( title ) . "  "
 		endif
 		let block = l:line . focused
 		let l:line = block
 	endfor
-	return l:line . "%<"
+	return l:line . "%<%=" . getcwd()
 endfunction
 
 

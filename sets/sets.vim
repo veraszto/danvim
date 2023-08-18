@@ -34,4 +34,5 @@ syntax on
 
 
 execute "set tabline=%!" . g:Danvim_SID . "BuildTabLine2()"
+"set tabline="%{%f}"
 execute "set statusline=%!" . g:Danvim_SID . "BuildStatusLine2()"
