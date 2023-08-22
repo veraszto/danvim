@@ -1,20 +1,23 @@
+let g:DanVim = {initial_vars: {}, lib: {}}
 
-let s:home_vim = expand("<sfile>:p")
-let s:workspaces = s:home_vim . "/workspaces"
+let s:initial_vars = g:DanVim.initial_vars
+let s:lib = g:DanVim.lib
 
-let s:popup_marks_dir = [ $MY_VIM_MARKS_DIR, s:home_vim . "/popup.shortcuts" ]
-let s:dictionaries_dir = [ $MY_VIM_DICTS, s:home_vim . "/dictionaries" ]
-let s:additional_runtime_dirs = [ $MY_VIM_ADDITIONAL_RUNTIME_DIR ],
-let s:added_runtimepath = [ $MY_VIM_ADDED_RUNTIMEPATH ],
-let s:bridge_file = "/tmp/bridge",
+
+
+let s:initial_vars.home_vim = expand("<sfile>:p")
+let s:initial_vars.workspaces = s:initial_vars.home_vim . "/workspaces"
+let s:initial_vars.dictionaries_dir = [ $MY_VIM_DICTS, s:initial_vars.home_vim . "/dictionaries" ]
+let s:initial_vars.additional_runtime_dirs = [ $MY_VIM_ADDITIONAL_RUNTIME_DIR ],
+let s:initial_vars.bridge_file = [$MY_VIM_BRIDGE_FILE, "/tmp/bridge"],
 " In Xorg, wl-paste and wl-copy may need to be replaced by xclip -o and xcli -i
 " Empty the initial_message to turn it off
-let s:clipboard_commands = [ $MY_CLIPBOARD_MANAGER_IN, $MY_CLIPBOARD_MANAGER_OUT ],
-let s:workspaces_dir = [ $MY_VIM_WORKSPACES, s:workspaces ],
-let s:initial_workspace_tries = [ "all", "root", "basic", "workspaces", "core", "source" ],
-let s:loaders_dir = [ $MY_VIM_LOADERS_DIR, s:home_vim . "/loaders/trending" ],
-let s:initial_message = [ "DanVim loaded!" ],
-let s:basic_structure_initial_dir = [ $MY_VIM_INITIAL_DIR, s:home_vim . "/" ],
+let s:initial_vars.clipboard_commands = [ $MY_CLIPBOARD_MANAGER_IN, $MY_CLIPBOARD_MANAGER_OUT ],
+let s:initial_vars.workspaces_dir = [ $MY_VIM_WORKSPACES, s:initial_vars.workspaces ],
+let s:initial_vars.initial_workspace_tries = [ "all", "root", "basic", "workspaces", "core", "source" ],
+let s:initial_vars.loaders_dir = [ $MY_VIM_LOADERS_DIR, s:initial_vars.home_vim . "/loaders/trending" ],
+let s:initial_vars.initial_message = [ "DanVim loaded!" ],
+let s:initial_vars.basic_structure_initial_dir = [ $MY_VIM_INITIAL_DIR, s:initial_vars.home_vim . "/" ],
 
 function! <SID>ExtractExtension( from )
 	return 	trim( matchstr( a:from, s:file_extension ) )
