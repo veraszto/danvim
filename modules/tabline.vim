@@ -1,4 +1,4 @@
-function! <SID>BuildTabLine2()
+function! <SID>BuildTabLine()
 	let l:line = ""
 	for i in range(tabpagenr('$'))
 		let focused = " . "
@@ -26,3 +26,5 @@ function! <SID>BuildTabLine2()
 	endfor
 	return l:line . "%<"
 endfunction
+
+set tabline=%!BuildTabLine()
