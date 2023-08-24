@@ -1,3 +1,69 @@
+function! <SID>NavigateThroughLocalMarksAndWorkspaces( go )
+
+	if <SID>AreWeInAnWorkspaceFile() > 0
+
+		if a:go =~ '^down$'
+			call cursor(line(".") - 1, 1)
+			let line = search( s:we_are_here, "bnw" )
+		else
+			let line = search( s:we_are_here, "nw" )
+		endif
+		let line += 1
+		call cursor( line, 1 )
+		return
+	endif
+
+	call <SID>LocalMarksAutoJumping( a:go )
+
+endfunction
+
+
+function! <SID>LocalMarksAutoJumping( go )
+
+
+	if ! exists("b:local_marks_auto_jumping")
+		let b:local_marks_auto_jumping = [ 0, 0 ]
+	endif
+
+	let len_elligible = len( s:elligible_auto_cycle_local_marks_letters )
+
+	if b:local_marks_auto_jumping[ 1 ] >= len_elligible
+		echo "No marks found"
+		let b:local_marks_auto_jumping[ 1 ] = 0
+		return
+	endif
+
+	if a:go =~ '^up$'
+		let b:local_marks_auto_jumping[ 0 ] += 1
+	else
+		let b:local_marks_auto_jumping[ 0 ] -= 1
+	endif
+
+	let letter = 
+		\ s:elligible_auto_cycle_local_marks_letters
+		\[ 
+			\ b:local_marks_auto_jumping[ 0 ] % len_elligible
+		\]
+
+	normal m'
+	let mark_pos = getpos( "'" . letter )
+
+	if mark_pos[ 1 ] > 0
+		call setpos( ".", mark_pos )
+		redraw
+		echo "At mark: " . letter . ") " . getline( mark_pos[ 1 ] ) 
+		normal zz
+		let b:local_marks_auto_jumping[ 1 ] = 0
+		return
+	endif
+
+	let b:local_marks_auto_jumping[ 1 ] += 1
+
+	call <SID>LocalMarksAutoJumping( a:go )
+
+
+endfunction
+
 function! <SID>ClearHighlights( list )
 
 	for a in a:list
