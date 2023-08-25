@@ -131,7 +131,8 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( "<F2>", 'WrapperHideAndShowPopups()' )
 "	call <SID>MapShortcut( "<F3>", 'MarkNext()' )
 "	call <SID>MapShortcut( "<F4>", 'WriteBasicStructure()' )
-	call <SID>MapShortcut( "<F4>", 'TranslatePaneViewport()' )
+"	call <SID>MapShortcut( "<F4>", 'TranslatePaneViewport()' )
+	call <SID>MapShortcut( "<F4>", 'PutOnStage()' )
 	map [1;2S <Cmd>wincmd r<CR>
 	call <SID>MapShortcut( "<F5>", 'CloseAllTrees()' )
 

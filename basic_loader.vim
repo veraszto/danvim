@@ -115,8 +115,11 @@ while s:counter < s:tabs_length
 		call add(args_escaped, escape(arg, ' \'))
 	endfor
 	execute "arglocal" . " " . join(args_escaped, " ")
+	vertical split
+	wincmd p
+	split | split | split
 	"call <SID>MakeThatSplit()
-	"call <SID>DistributeArgsIntoViewports()
+	call <SID>DistributeArgsIntoViewports()
 	"call <SID>AddTitle()
 	tabnew
 	let s:counter += 1

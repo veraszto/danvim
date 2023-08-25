@@ -45,12 +45,8 @@ function! <SID>LastDir( matter )
 endfunction
 
 function! <SID>BuildStatusLine2()
-
-	let snr = s:GetSNR()
-	return "%m%#SameAsExtensionToStatusLine#%n%*)%{". snr  ."GetAutoScp()}" .
-		\ "%#SameAsExtensionToStatusLine#%f%*" . 
-		\ " / %#SameAsExtensionToStatusLine#%{". snr ."getStamp()}%*" .
-		\ "%=%*(%c/%l/%L) byte:%B, %b"
+	return "%m%#SameAsExtensionToStatusLine#%f%*" . 
+		\ "%=%*Col:%c L:%l/%L byte:%B Buf:%n"
 endfunction
 
 
@@ -2890,6 +2886,12 @@ function <SID>TranslatePaneViewport()
 		execute "buffer " . s:translate_buffer
 		let s:translate_buffer = v:null
 	endif
+endfunction
+
+function! <SID>PutOnStage()
+	let bufnr = bufnr()
+	wincmd t
+	execute "bu " . bufnr
 endfunction
 
 runtime! base.vars/**/*.vim
