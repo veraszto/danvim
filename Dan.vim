@@ -46,7 +46,7 @@ endfunction
 
 function! <SID>BuildStatusLine2()
 	return "%m%#SameAsExtensionToStatusLine#%f%*" . 
-		\ "%=%*Col:%c L:%l/%L byte:%B Buf:%n"
+		\ "%=%*Col:%c L:%l/%L Byte:%B Buf:%n"
 endfunction
 
 
