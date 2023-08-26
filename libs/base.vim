@@ -1,3 +1,49 @@
+let s:translate_buffer = v:null
+function <SID>TranslatePaneViewport()
+	if s:translate_buffer == v:null
+		let s:translate_buffer = bufnr()
+	else
+		execute "buffer " . s:translate_buffer
+		let s:translate_buffer = v:null
+	endif
+endfunction
+
+function! <SID>FromDirToFiles(dir_or_file, init)
+	let list = a:init
+	for each in a:dir_or_file
+		if isdirectory(each)
+			call <SID>FromDirToFiles(<SID>ReadDirs(each), list)
+		elseif filereadable(each)
+			call add(list, each)
+		endif
+	endfor
+	return list
+endfunction
+
+function! <SID>TabJump()
+	let l:count = tabpagenr("$")	
+	let current = tabpagenr()
+	let middle = l:count / 2 + 1
+	if current != middle
+		execute "normal " . middle  . "gt"
+	else
+		tabrewind
+	endif
+endfunction
+
+
+function! <SID>MakeHTML()
+	let tag = matchstr(getline("."), '[[:alnum:]\._-]\+')
+	let indent = matchstr(getline("."), '^\(\t\|\s\)\+')
+	call setline(".", indent . "<" . tag . ">")
+	call append(".", indent . "</" . tag . ">")
+endfunction
+
+function! <SID>FormatJSON( )
+	wa
+	call <SID>JobStartOutFiles($MY_BASH_DIR . "/format_json.sh")
+endfunction
+
 function! <SID>SayHello( msg )
 
 	if len( a:msg ) <= 0

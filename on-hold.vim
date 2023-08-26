@@ -1,3 +1,47 @@
+function! <SID>BuffersMatteringNow()
+
+	let current_tab = tabpagenr()
+	for tab in range(1, tabpagenr("$"))
+		let mattering = gettabvar( tab, "mattering", v:false )
+		if mattering == v:true
+			let buf_number = bufnr()
+			execute "tabn " . tab
+			exec "sbuffer " . buf_number
+		endif
+	endfor
+
+	if ! exists("buf_number")
+		let buf_number = bufnr()
+		tabnew
+		let t:title = "MattersNow"
+		let t:mattering = v:true
+		exec "buffer " . buf_number
+	endif
+
+	execute "tabn " . current_tab
+
+endfunction
+
+function! <SID>JobStartAfterParty()
+
+	let offset = 0
+	let range = range( tabpagewinnr(".", "$") )
+
+	for viewport in range 
+		
+		let viewport_to_focus = ( viewport + offset + 1 )
+		execute  viewport_to_focus . "wincmd w"
+
+		if exists("b:DanVim_this_buf_is_output")
+			echo expand("%")
+			let offset -= 1
+			quit!
+		endif
+
+	endfor
+	
+endfunction
+
 function! <SID>NavigateThroughLocalMarksAndWorkspaces( go )
 
 	if <SID>AreWeInAnWorkspaceFile() > 0
