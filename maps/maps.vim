@@ -104,8 +104,8 @@ function! <SID>MakeMappings()
 	"map <S-Right> <Cmd>call <SID>NextArgInNextViewport(0)<CR>
 	"map <S-Left> <Cmd>call <SID>NextArgInNextViewport(1)<CR>
 
-	map <S-Down> <Cmd>call <SID>RaiseAndLowerTerminal()<CR>
-	imap <S-Down> <Cmd>call <SID>RaiseAndLowerTerminal()<CR>
+	map <S-Down> <Cmd>call <SID>RaiseAndLowerViewport()<CR>
+	imap <S-Down> <Cmd>call <SID>RaiseAndLowerViewport()<CR>
 
 	call <SID>MapShortcut( "<Del>", 'SmartReachWorkspace()' )
 
@@ -132,7 +132,8 @@ function! <SID>MakeMappings()
 "	call <SID>MapShortcut( "<F3>", 'MarkNext()' )
 "	call <SID>MapShortcut( "<F4>", 'WriteBasicStructure()' )
 "	call <SID>MapShortcut( "<F4>", 'TranslatePaneViewport()' )
-	call <SID>MapShortcut( "<F4>", 'PutOnStage()' )
+"	call <SID>MapShortcut( "<F10>", "BuffersMatteringNow()" )
+	call <SID>MapShortcut( "<F10>", 'StageBufferSwitcher()' )
 	map [1;2S <Cmd>wincmd r<CR>
 	call <SID>MapShortcut( "<F5>", 'CloseAllTrees()' )
 
@@ -189,7 +190,6 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( ";O0", "TurnOnOffOverlays( 0 )" )
 	call <SID>MapShortcut( ";O1", "TurnOnOffOverlays( 1 )" )
 	call <SID>MapShortcut( ";OO", "ShowPopups()" )
-	call <SID>MapShortcut( "<F10>", "BuffersMatteringNow()" )
 	noremap <F11> <Cmd>execute "source " . <SID>BasicLoaderPath()<CR>
 	noremap <expr> ;i ":vi " . getcwd() . "/"
 	noremap <expr> ;I ":vi " . expand("%:h")
@@ -249,24 +249,17 @@ function! <SID>NextArgInNextViewport( is_left )
 
 endfunction
 
-let s:terminal_state = "default"
-function! <SID>RaiseAndLowerTerminal()
-	let cur_viewport = winnr()
-	wincmd h
-	wincmd w
-	if s:terminal_state == "default"
-		let s:terminal_state = "minimized"
-		wincmd _
-	elseif s:terminal_state == "minimized"
-		let s:terminal_state = "maximized"
-        wincmd w
-		wincmd _
-    else
-		let s:terminal_state = "default"
-		wincmd =
+function! <SID>RaiseAndLowerViewport()
+	if !exists("w:is_raised")
+		let w:is_raised = v:false
 	endif
-	execute cur_viewport . "wincmd w"
-	
+	if w:is_raised == v:true
+		wincmd =
+		let w:is_raised = v:false
+	else
+		wincmd _
+		let w:is_raised = v:true
+	endif
 endfunction
 
 function! <SID>OverlayMaps()

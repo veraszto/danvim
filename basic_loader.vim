@@ -31,13 +31,24 @@ endfunction
 ""    endif
 "endfunction
 
-function <SID>SaveArgs()
+function <SID>SaveArgs(by_viewport)
 	let tab_page_number = tabpagenr() 
     let all_args = []
     for tab in range(tabpagenr("$"))
         execute (tab + 1) . "tabn"
-		if argc()
-			call add(all_args, argv())
+		if a:by_viewport == v:false
+			if argc()
+				call add(all_args, argv())
+			endif
+		else
+			let viewport_args = []
+			for viewport in range(winnr("$"))
+				let bufname = bufname(winbufnr(viewport + 1))
+				if len(bufname) > 0
+					call add(viewport_args, bufname)
+				endif
+			endfor
+			call add(all_args, viewport_args)
 		endif
     endfor    
 	call <SID>AssertOrCreateLoaderDir()
@@ -83,7 +94,7 @@ function <SID>DistributeArgsIntoViewports()
 	let i = 0
 	"while i < argc()
 	while i < winnr("$")
-		try | execute "argu" . (i+1) | catch | echo v:exception | endtry
+		try | execute "argu" . (i+1) | catch | endtry
 		wincmd w		
 		let i += 1
 	endwhile
@@ -102,7 +113,7 @@ for path in s:paths
     execute "try | source " . path . " | catch | echo \"Could not source: " . path . "\" | endtry"
 endfor
 
-map <F7> <Cmd>call <SID>SaveArgs()<CR>
+map <F12> <Cmd>call <SID>SaveArgs(v:true)<CR>
 %bd
 clearjumps
 const s:tabs_length = len(g:DanVim_LoaderV2_tabs)
@@ -117,7 +128,7 @@ while s:counter < s:tabs_length
 	execute "arglocal" . " " . join(args_escaped, " ")
 	vertical split
 	wincmd p
-	split | split | split
+	split | split 
 	"call <SID>MakeThatSplit()
 	call <SID>DistributeArgsIntoViewports()
 	"call <SID>AddTitle()

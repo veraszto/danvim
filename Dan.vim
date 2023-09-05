@@ -2888,10 +2888,24 @@ function <SID>TranslatePaneViewport()
 	endif
 endfunction
 
-function! <SID>PutOnStage()
+function! <SID>StageBufferSwitcher()
+	wa
+	let winnr = winnr()
 	let bufnr = bufnr()
-	wincmd t
-	execute "bu " . bufnr
+	if winnr > 1
+		wincmd t
+		let target_bufnr = bufnr()
+		execute "bu " . bufnr
+		execute winnr . "wincmd w"
+		execute "bu " . target_bufnr
+		wincmd t
+	else
+		wincmd l
+		let target_bufnr = bufnr()
+		execute "bu " . bufnr
+		wincmd t
+		execute "bu " . target_bufnr
+	endif
 endfunction
 
 runtime! base.vars/**/*.vim
