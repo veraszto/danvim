@@ -1,7 +1,7 @@
-let g:DanVim = {initial_vars: {}, lib: {}}
+let g:danvim = {initial_vars: {}, lib: {}}
 
-let s:initial_vars = g:DanVim.initial_vars
-let s:lib = g:DanVim.lib
+let s:initial_vars = g:danvim.initial_vars
+let s:lib = g:danvim.lib
 
 let s:initial_vars.home_vim = expand("<sfile>:p")
 let s:initial_vars.workspaces = s:initial_vars.home_vim . "/workspaces"
@@ -17,27 +17,6 @@ let s:initial_vars.loaders_dir = [ $MY_VIM_LOADERS_DIR, s:initial_vars.home_vim 
 let s:initial_vars.initial_message = [ "DanVim loaded!" ],
 let s:initial_vars.basic_structure_initial_dir = [ $MY_VIM_INITIAL_DIR, s:initial_vars.home_vim . "/" ],
 
-
-
-
-
-
-
-runtime! base.vars/**/*.vim
-
-execute "let s:base_vars = " . g:Danvim_current_being_sourced . "BaseVars()"
-
-for key in keys(s:base_vars)
-
-	let set_var = "let s:" . key . " = " . string( s:base_vars[ key ] )
-	execute set_var
-
-endfor
-
-
-"##########################
-
-let g:Danvim_SID = expand("<SID>")
 
 let s:tail_file = '[._[:alnum:]-]\+$'
 let s:last_bar = '\(\\\|/\)\{-\}$'

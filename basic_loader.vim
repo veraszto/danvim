@@ -20,23 +20,36 @@ function <SID>MainFile()
 	return <SID>LoaderPath() . "/" . <SID>MainName() . ".vim"
 endfunction
 
-let s:tab_counter = 0x41
-function <SID>AddTitle()
-	execute "let t:title = \"" . nr2char(s:tab_counter)  . "\""
-	let s:tab_counter += 1
-	return
-"	let s:context_dir = matchstr(expand("%:p"), s:get_context_dirs_regex)
-"    if len(s:context_dir) > 0
-"	    execute "let t:title = \"" . s:context_dir  . "\""
-"    endif
-endfunction
+"let s:tab_counter = 0x41
+"function <SID>AddTitle()
+"	execute "let t:title = \"" . nr2char(s:tab_counter)  . "\""
+"	let s:tab_counter += 1
+"	return
+""	let s:context_dir = matchstr(expand("%:p"), s:get_context_dirs_regex)
+""    if len(s:context_dir) > 0
+""	    execute "let t:title = \"" . s:context_dir  . "\""
+""    endif
+"endfunction
 
-function <SID>SaveArgs()
+function <SID>SaveArgs(by_viewport)
 	let tab_page_number = tabpagenr() 
     let all_args = []
     for tab in range(tabpagenr("$"))
         execute (tab + 1) . "tabn"
-		call add(all_args, argv())
+		if a:by_viewport == v:false
+			if argc()
+				call add(all_args, argv())
+			endif
+		else
+			let viewport_args = []
+			for viewport in range(winnr("$"))
+				let bufname = bufname(winbufnr(viewport + 1))
+				if len(bufname) > 0
+					call add(viewport_args, bufname)
+				endif
+			endfor
+			call add(all_args, viewport_args)
+		endif
     endfor    
 	call <SID>AssertOrCreateLoaderDir()
 	const loader_path = <SID>LoaderPath()
@@ -81,7 +94,7 @@ function <SID>DistributeArgsIntoViewports()
 	let i = 0
 	"while i < argc()
 	while i < winnr("$")
-		try | execute "argu" . (i+1) | catch | echo v:exception | endtry
+		try | execute "argu" . (i+1) | catch | endtry
 		wincmd w		
 		let i += 1
 	endwhile
@@ -97,11 +110,10 @@ const s:paths = [
 \ ]
 
 for path in s:paths
-    echo path
     execute "try | source " . path . " | catch | echo \"Could not source: " . path . "\" | endtry"
 endfor
 
-map <F7> <Cmd>call <SID>SaveArgs()<CR>
+map <F12> <Cmd>call <SID>SaveArgs(v:true)<CR>
 %bd
 clearjumps
 const s:tabs_length = len(g:DanVim_LoaderV2_tabs)
@@ -114,27 +126,30 @@ while s:counter < s:tabs_length
 		call add(args_escaped, escape(arg, ' \'))
 	endfor
 	execute "arglocal" . " " . join(args_escaped, " ")
-	"call <SID>MakeThatSplit()
 	vertical split
+	wincmd p
+	split | split 
+	"call <SID>MakeThatSplit()
 	call <SID>DistributeArgsIntoViewports()
-	call <SID>AddTitle()
+	"call <SID>AddTitle()
 	tabnew
 	let s:counter += 1
 endwhile
+
+let viewport_name_remove_home = substitute(getcwd(), $HOME, "", "")
+let viewport_name_remove_bar_prefix = substitute(viewport_name_remove_home, '^/', "", "")
+let viewport_name = viewport_name_remove_bar_prefix
+if len(viewport_name) <= 0
+	let viewport_name = "HOME"
+endif
+try
+	call system("tmux rename-window " . viewport_name)
+endtry
 
 if s:counter <= 0
 	arglocal Hello 
     let t:title = "Hello how are you?"
 else
-	tabclose
+	tabc
+	tabn 1
 endif
-
-tabdo wincmd =
-redraw!
-
-
-
-
-
-
-
