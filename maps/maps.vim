@@ -112,7 +112,7 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( ";J", 'SharpSplits("J")' )
 	call <SID>MapShortcut( ";K", 'SharpSplits("K")' )
 
-	map B :bu<Space>
+"	map B :bu<Space>
 	map E :e!<CR>
 	map <C-S-E> :windo e!<CR>
 	map V EG
@@ -133,7 +133,7 @@ function! <SID>MakeMappings()
 "	call <SID>MapShortcut( "<F4>", 'WriteBasicStructure()' )
 "	call <SID>MapShortcut( "<F4>", 'TranslatePaneViewport()' )
 "	call <SID>MapShortcut( "<F10>", "BuffersMatteringNow()" )
-	call <SID>MapShortcut( "<F10>", 'StageBufferSwitcher()' )
+"	call <SID>MapShortcut( "<F10>", 'StageBufferSwitcher()' )
 	map [1;2S <Cmd>wincmd r<CR>
 	call <SID>MapShortcut( "<F5>", 'CloseAllTrees()' )
 
@@ -150,7 +150,7 @@ function! <SID>MakeMappings()
 
 "	=======
 
-	call <SID>MapShortcut( "<Space>", 'SpacebarActionAtWorkspaces()' )
+	call <SID>MapShortcut( "<Space>", 'SpacebarAction()' )
 	call <SID>MapShortcut( ";hi", 'HiLight()' )
 	call <SID>MapShortcut( ";cf", 'GetThisFilePopupMark()' )
 	map ;hn :new<CR>

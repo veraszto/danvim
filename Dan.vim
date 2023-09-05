@@ -22,8 +22,6 @@ function! <SID>BuildTabLine2()
 	return l:line . "%<%=" . getcwd()
 endfunction
 
-
-
 function! <SID>ShowType()
 	let type = <SID>ExtractExtension(@%) 
 	if len(type) > 0
@@ -726,10 +724,14 @@ function! <SID>GoAfterAWorkSpace()
 
 endfunction
 
-function! <SID>SpacebarActionAtWorkspaces( )
+function! <SID>SpacebarCommonAction()
+	call <SID>StageBufferSwitcher()
+endfunction
+
+function! <SID>SpacebarAction( )
 
 	if match( buffer_name(), s:workspaces_pattern ) < 0
-		call <SID>GoAfterAWorkSpace()
+		call <SID>SpacebarCommonAction()
 		return
 	endif
 
