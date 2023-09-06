@@ -54,23 +54,7 @@ function! <SID>GenerateVimScriptToLoadBuffersOfATab( which )
 
 endfunction
 
-function! <SID>ReadDirs( which )
-	
-	try
-		let names = readdir( a:which )
-	catch
-		echo "Could not readdir: " . a:which
-		return []
-	endtry
 
-	let response = []
-	for name in names
-		call add(response, a:which . "/" . name )
-	endfor
-
-	return response
-
-endfunction
 
 
 function! <SID>PromptSaveOrLoadLoaderName( should_save, from )

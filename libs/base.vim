@@ -1,3 +1,31 @@
+let lib = g:danvim.lib
+
+function lib.FromDirToFiles(dir_or_file, init)
+	let list = a:init
+	for each in a:dir_or_file
+		if isdirectory(each)
+			call lib.FromDirToFiles(lib.ReadDirs(each), list)
+		elseif filereadable(each)
+			call add(list, each)
+		endif
+	endfor
+	return list
+endfunction
+
+function lib.ReadDirs( which )
+	try
+		let names = readdir( a:which )
+	catch
+		echo "Could not readdir: " . a:which
+		return []
+	endtry
+	let response = []
+	for name in names
+		call add(response, a:which . "/" . name )
+	endfor
+	return response
+endfunction
+
 let s:translate_buffer = v:null
 function <SID>TranslatePaneViewport()
 	if s:translate_buffer == v:null
@@ -8,17 +36,7 @@ function <SID>TranslatePaneViewport()
 	endif
 endfunction
 
-function! <SID>FromDirToFiles(dir_or_file, init)
-	let list = a:init
-	for each in a:dir_or_file
-		if isdirectory(each)
-			call <SID>FromDirToFiles(<SID>ReadDirs(each), list)
-		elseif filereadable(each)
-			call add(list, each)
-		endif
-	endfor
-	return list
-endfunction
+
 
 function! <SID>TabJump()
 	let l:count = tabpagenr("$")	

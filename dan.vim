@@ -1,21 +1,7 @@
-let g:danvim = {initial_vars: {}, lib: {}}
-
-let s:initial_vars = g:danvim.initial_vars
+let g:danvim = {configs: {}, lib: {}}
+let s:configs = g:danvim.configs
 let s:lib = g:danvim.lib
 
-let s:initial_vars.home_vim = expand("<sfile>:p")
-let s:initial_vars.workspaces = s:initial_vars.home_vim . "/workspaces"
-let s:initial_vars.dictionaries_dir = [ $MY_VIM_DICTS, s:initial_vars.home_vim . "/dictionaries" ]
-let s:initial_vars.additional_runtime_dirs = [ $MY_VIM_ADDITIONAL_RUNTIME_DIR ],
-let s:initial_vars.bridge_file = [$MY_VIM_BRIDGE_FILE, "/tmp/bridge"],
-" In Xorg, wl-paste and wl-copy may need to be replaced by xclip -o and xcli -i
-" Empty the initial_message to turn it off
-let s:initial_vars.clipboard_commands = [ $MY_CLIPBOARD_MANAGER_IN, $MY_CLIPBOARD_MANAGER_OUT ],
-let s:initial_vars.workspaces_dir = [ $MY_VIM_WORKSPACES, s:initial_vars.workspaces ],
-let s:initial_vars.initial_workspace_tries = [ "all", "root", "basic", "workspaces", "core", "source" ],
-let s:initial_vars.loaders_dir = [ $MY_VIM_LOADERS_DIR, s:initial_vars.home_vim . "/loaders/trending" ],
-let s:initial_vars.initial_message = [ "DanVim loaded!" ],
-let s:initial_vars.basic_structure_initial_dir = [ $MY_VIM_INITIAL_DIR, s:initial_vars.home_vim . "/" ],
 
 
 let s:tail_file = '[._[:alnum:]-]\+$'
@@ -66,18 +52,7 @@ if exists("s:this_has_been_loaded") == v:false
 	call <SID>MakeInitialFluidFlow()
 endif
 
-let s:qualified_additional_runtime = []
-for additional in s:additional_runtime_dirs
-	call add(s:qualified_additional_runtime, expand(additional))
-endfor
 
-silent let s:additional_runtime_built = <SID>FromDirToFiles(s:qualified_additional_runtime, [])
-
-for each in s:additional_runtime_built
-	if match(each, '\.vim$') >= 0
-		silent execute "source" each
-	endif
-endfor
 
 
 
