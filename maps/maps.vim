@@ -93,10 +93,10 @@ function! <SID>MakeMappings()
 	if !has_key(environ(), "MY_VIM_OVERLAY_NAVIGATOR_OFF") || ($MY_VIM_OVERLAY_NAVIGATOR_OFF) == "0"
 		call <SID>OverlayMaps()
 	else
-		map <S-PageDown> <Cmd>wincmd w \| execute "normal \<C-F>" \| wincmd p<CR>
-		map <S-PageUp> <Cmd>wincmd w \| execute "normal \<C-B>" \| wincmd p<CR>
-		imap <S-PageDown> <Cmd>wincmd w \| execute "normal \<C-F>" \| wincmd p<CR>
-		imap <S-PageUp> <Cmd>wincmd w \| execute "normal \<C-B>" \| wincmd p<CR>
+		map <S-PageDown> <Cmd>wincmd l \| execute "normal \<C-F>" \| wincmd p<CR>
+		map <S-PageUp> <Cmd>wincmd l \| execute "normal \<C-B>" \| wincmd p<CR>
+		imap <S-PageDown> <Cmd>wincmd l \| execute "normal \<C-F>" \| wincmd p<CR>
+		imap <S-PageUp> <Cmd>wincmd l \| execute "normal \<C-B>" \| wincmd p<CR>
 	endif
 
 	call <SID>MapShortcut( "<C-End>", 'TabJump()' )
