@@ -1,7 +1,7 @@
 let s:configs = g:danvim.configs
+let s:constants = g:danvim.constants
 
-
-let s:home_danvim = expand("<sfile>:p")
+let s:home_danvim = s:constants.HomeDir
 let s:configs.dictionaries_dir = [ $MY_VIM_DICTS, s:home_danvim . "/dictionaries" ]
 let s:configs.additional_runtime_dirs = [ $MY_VIM_ADDITIONAL_RUNTIME_DIR ],
 let s:configs.bridge_file = [$MY_VIM_BRIDGE_FILE, "/tmp/bridge"],

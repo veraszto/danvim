@@ -181,7 +181,6 @@ call <SID>MapShortcut( ";o", "OpenWorkspace()" )
 call <SID>MapShortcut( ";O0", "TurnOnOffOverlays( 0 )" )
 call <SID>MapShortcut( ";O1", "TurnOnOffOverlays( 1 )" )
 call <SID>MapShortcut( ";OO", "ShowPopups()" )
-noremap <F11> <Cmd>execute "source " . <SID>BasicLoaderPath()<CR>
 noremap <expr> ;i ":vi " . getcwd() . "/"
 noremap <expr> ;I ":vi " . expand("%:h")
 "tnoremap <S-Down> <Cmd>call <SID>RaiseAndLowerTerminal()<CR>
