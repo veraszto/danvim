@@ -2898,53 +2898,37 @@ endfunction
 
 function! <SID>StageBufferSwitcher()
 	wa
-	let winnr = winnr()
-	let bufnr = bufnr()
-	let main_stage_bufnr = bufnr
-	let right_pane_bufnr = bufnr
-	let asset_viewportnr = winnr
-	if winnr > 1
+	let origin_viewport = winnr()
+	if origin_viewport > 1
+		let right_pane_buffer = bufnr()
 		wincmd t
-		let target_bufnr = bufnr()
-		let right_pane_bufnr = target_bufnr
-		execute "bu " . bufnr
-		execute winnr . "wincmd w"
-		execute "bu " . target_bufnr
-		wincmd t
+		execute "bu " . right_pane_buffer
 	else
-		wincmd l
-		let asset_viewportnr = winnr()
-		let target_bufnr = bufnr()
-		let main_stage_bufnr = target_bufnr
-		execute "bu " . bufnr
-		wincmd t
-		execute "bu " . target_bufnr
-	endif
-	let instances_of_main_stage_buffer = 0
-	let instances_of_right_pane_viewportnr = []
-	for viewport in range(winnr("$"))
-		let buffer_in_viewport = winbufnr(viewport + 1)
-		if  buffer_in_viewport == main_stage_bufnr
-			let instances_of_main_stage_buffer += 1
-		elseif buffer_in_viewport == right_pane_bufnr
-			call add(instances_of_right_pane_viewportnr, viewport + 1) 
-		endif
-	endfor
-	if instances_of_main_stage_buffer <= 1
-		execute asset_viewportnr . "wincmd w"
-		split
+		let main_buffer = bufnr()
 		wincmd w
-		execute "bu " . main_stage_bufnr
-		wincmd W
+		split
+		execute "bu " . main_buffer
 		wincmd _
 		wincmd t
 	endif
-	if len(instances_of_right_pane_viewportnr) > 1
-		execute instances_of_right_pane_viewportnr[0] . "wincmd w"
-		quit
-		wincmd _
-		wincmd t
-	endif
+
+
+"	let origin_viewport = winnr()
+"	let main_buffer = bufnr()
+"	let right_pane_buffer = main_buffer
+"	if origin_viewport > 1
+"		wincmd t
+"		let main_buffer = bufnr()
+"		execute "bu " . right_pane_buffer
+"		execute origin_viewport . "wincmd w"
+"		execute "bu " . main_buffer
+"	else
+"		wincmd l
+"		let right_pane_buffer = bufnr()
+"		execute "bu " . main_buffer
+"		execute origin_viewport . "wincmd w"
+"		execute "bu " . right_pane_buffer
+"	endif
 
 endfunction
 
