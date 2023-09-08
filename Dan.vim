@@ -750,12 +750,12 @@ function! <SID>SpacebarAction( )
 	let build_func_name = matchstr( line_above, '\(\[\)\@<=.\+\(\]\)\@=' )
 
 	if len( build_func_name ) <= 0
-		call <SID>SpaceBarAction( line_number, this_line_content_raw )
+		call <SID>SpacebarWorkspacesAction( line_number, this_line_content_raw )
 		return
 	endif
 
 	let func_name = 
-			\ expand("<SID>") . "SpaceBarAction_" . 
+			\ expand("<SID>") . "SpacebarAction_" . 
 			\ substitute( tolower(build_func_name), '\s', "", "g")
 
 	if ! exists( "*" . func_name )
@@ -769,7 +769,7 @@ function! <SID>SpacebarAction( )
 
 endfunction
 
-function! <SID>SpaceBarAction_maketree( line_number, line )
+function! <SID>SpacebarAction_maketree( line_number, line )
 
 	let should_draw = <SID>TreeHasAlreadyBeenDrawed( a:line_number )
 	if should_draw == 1
@@ -834,7 +834,7 @@ function! <SID>TreeHasAlreadyBeenDrawed( line_number )
 
 endfunction
 
-function! <SID>SpaceBarAction_search( line_number, line )
+function! <SID>SpacebarAction_search( line_number, line )
 
 	let this_line = a:line
 	let roof = expand( <SID>GetRoofDir() )
@@ -1008,13 +1008,13 @@ function! <SID>MatchedAndAllRemoved( matter, cycle )
 
 endfunction
 
-function! <SID>SpaceBarAction_wearehere( line_number, line )
+function! <SID>SpacebarAction_wearehere( line_number, line )
 
 	call <SID>LocalCDAtFirstRoof()
 
 endfunction
 
-function! <SID>SpaceBarAction( line_number, line )
+function! <SID>SpacebarWorkspacesAction( line_number, line )
 
 	let this_line = a:line
 	let dir = <SID>GetRoofDir()
@@ -1373,28 +1373,34 @@ function! <SID>WorkspacesFilesToBuffer()
 
 endfunction
 
-function! <SID>MoveTo( direction )
+function! <SID>MoveTo( direction, expand )
 
-	let this_win = winnr()
-	let last_win = winnr("$")
+"	let this_win = winnr()
+"	let last_win = winnr("$")
+"
+"	if ( a:direction =~ "^up$" )
+"		if this_win > 1
+"			wincmd k
+"		else
+"			wincmd b
+"		endif
+"	else
+"		if this_win < last_win
+"			wincmd j
+"		else
+"			wincmd t
+"		endif
+"	endif
 
-
-	if ( a:direction =~ "^up$" )
-		if this_win > 1
-			wincmd k
-		else
-			wincmd b
-		endif
+	if a:direction =~ '^up$'
+		wincmd W
 	else
-		if this_win < last_win
-			wincmd j
-		else
-			wincmd t
-		endif
+		wincmd w
 	endif
 
-" As winheight is 999, the option below is not necessary
-"	wincmd _
+	if a:expand
+		wincmd _
+	endif
 
 endfunction
 
@@ -2894,20 +2900,52 @@ function! <SID>StageBufferSwitcher()
 	wa
 	let winnr = winnr()
 	let bufnr = bufnr()
+	let main_stage_bufnr = bufnr
+	let right_pane_bufnr = bufnr
+	let asset_viewportnr = winnr
 	if winnr > 1
 		wincmd t
 		let target_bufnr = bufnr()
+		let right_pane_bufnr = target_bufnr
 		execute "bu " . bufnr
 		execute winnr . "wincmd w"
 		execute "bu " . target_bufnr
 		wincmd t
 	else
 		wincmd l
+		let asset_viewportnr = winnr()
 		let target_bufnr = bufnr()
+		let main_stage_bufnr = target_bufnr
 		execute "bu " . bufnr
 		wincmd t
 		execute "bu " . target_bufnr
 	endif
+	let instances_of_main_stage_buffer = 0
+	let instances_of_right_pane_viewportnr = []
+	for viewport in range(winnr("$"))
+		let buffer_in_viewport = winbufnr(viewport + 1)
+		if  buffer_in_viewport == main_stage_bufnr
+			let instances_of_main_stage_buffer += 1
+		elseif buffer_in_viewport == right_pane_bufnr
+			call add(instances_of_right_pane_viewportnr, viewport + 1) 
+		endif
+	endfor
+	if instances_of_main_stage_buffer <= 1
+		execute asset_viewportnr . "wincmd w"
+		split
+		wincmd w
+		execute "bu " . main_stage_bufnr
+		wincmd W
+		wincmd _
+		wincmd t
+	endif
+	if len(instances_of_right_pane_viewportnr) > 1
+		execute instances_of_right_pane_viewportnr[0] . "wincmd w"
+		quit
+		wincmd _
+		wincmd t
+	endif
+
 endfunction
 
 runtime! base.vars/**/*.vim

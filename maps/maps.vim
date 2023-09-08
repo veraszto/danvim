@@ -18,15 +18,18 @@ function! <SID>MakeMappings()
 	call <SID>iMapShortcut( "jf", 'LocalCDAtFirstRoof()', "<C-X><C-F>" )
 
 
-"   Window Navigation
-	call <SID>MapShortcut( "<C-Up>", 'MoveTo("up")' )
-	call <SID>MapShortcut( "<C-Down>", 'MoveTo("down")' )
-
+"   Viewport Navigation
+	call <SID>MapShortcut( "<C-Up>", 'MoveTo("up", 0)' )
+	call <SID>MapShortcut( "<C-Down>", 'MoveTo("down", 0)' )
+	call <SID>iMapShortcut( "<C-Up>", 'MoveTo("up", 0)' )
+	call <SID>iMapShortcut( "<C-Down>", 'MoveTo("down", 0)' )
+	call <SID>MapShortcut( "<C-Home>", 'MoveTo("up", 1)' )
+	call <SID>MapShortcut( "<C-End>", 'MoveTo("down", 1)' )
+	call <SID>iMapShortcut( "<C-Home>", 'MoveTo("up", 1)' )
+	call <SID>iMapShortcut( "<C-End>", 'MoveTo("down", 1)' )
 	map <C-Left> <C-W>h
 	map <C-Right> <C-W>l
 
-	call <SID>iMapShortcut( "<C-Up>", 'MoveTo("up")' )
-	call <SID>iMapShortcut( "<C-Down>", 'MoveTo("down")' )
 
 	imap <C-Left> <Esc><C-W>hi
 	imap <C-Right> <Esc><C-W>li
@@ -99,20 +102,22 @@ function! <SID>MakeMappings()
 		imap <S-PageUp> <Cmd>wincmd l \| execute "normal \<C-B>" \| wincmd p<CR>
 	endif
 
-	call <SID>MapShortcut( "<C-End>", 'TabJump()' )
+	"call <SID>MapShortcut( "<C-End>", 'TabJump()' )
 
 	"map <S-Right> <Cmd>call <SID>NextArgInNextViewport(0)<CR>
 	"map <S-Left> <Cmd>call <SID>NextArgInNextViewport(1)<CR>
 
-	map <S-Down> <Cmd>call <SID>RaiseAndLowerViewport()<CR>
-	imap <S-Down> <Cmd>call <SID>RaiseAndLowerViewport()<CR>
+"	map <S-Down> <Cmd>call <SID>RaiseAndLowerViewport()<CR>
+"	imap <S-Down> <Cmd>call <SID>RaiseAndLowerViewport()<CR>
+	map <S-Down> <C-W>_
+	imap <S-Down> <Cmd>wincmd _<CR>
 
 	call <SID>MapShortcut( "<Del>", 'SmartReachWorkspace()' )
 
 	call <SID>MapShortcut( ";J", 'SharpSplits("J")' )
 	call <SID>MapShortcut( ";K", 'SharpSplits("K")' )
 
-"	map B :bu<Space>
+	map B :bu<Space>
 	map E :e!<CR>
 	map <C-S-E> :windo e!<CR>
 	map V EG
@@ -154,7 +159,7 @@ function! <SID>MakeMappings()
 	call <SID>MapShortcut( ";hi", 'HiLight()' )
 	call <SID>MapShortcut( ";cf", 'GetThisFilePopupMark()' )
 	map ;hn :new<CR>
-	map ;he :help function-list<CR>
+	map ;he :tabnew <Bar> help function-list <Bar> only<CR>
 	map ;ju :jumps<CR>
 	map ;hs :split<CR>
 	map ;ks :keepjumps /

@@ -44,7 +44,7 @@ function <SID>SaveArgs(by_viewport)
 			let viewport_args = []
 			for viewport in range(winnr("$"))
 				let bufname = bufname(winbufnr(viewport + 1))
-				if len(bufname) > 0
+				if len(bufname) > 0 && count(viewport_args, bufname) <= 0
 					call add(viewport_args, bufname)
 				endif
 			endfor
@@ -76,28 +76,37 @@ function <SID>WriteFluidFlowToFile()
 		\ <SID>LoaderPath() . "/" . s:fluid_flow_vim)
 endfunction
 
-"4K split
-function <SID>MakeThatSplit()
-	only
-	wincmd t
-	vertical split | vertical split
-	wincmd t
-	split | split
-	wincmd b
-	split | split
-	wincmd h
-	split
-endfunction
+"High res split
+"function <SID>MakeThatSplit()
+"	only
+"	wincmd t
+"	vertical split | vertical split
+"	wincmd t
+"	split | split
+"	wincmd b
+"	split | split
+"	wincmd h
+"	split
+"endfunction
 
 function <SID>DistributeArgsIntoViewports()
-	wincmd t
+	only
+	argu1
+	vertical split
+	wincmd p
 	let i = 0
-	"while i < argc()
-	while i < winnr("$")
+	while i < argc()
 		try | execute "argu" . (i+1) | catch | endtry
-		wincmd w		
+		split
+		wincmd w
 		let i += 1
 	endwhile
+	quit
+	if winnr("$") > 2
+		3wincmd w
+	endif
+	wincmd _
+	wincmd t 
 endfunction
 
 call <SID>AssertOrCreateLoaderDir()
@@ -126,12 +135,7 @@ while s:counter < s:tabs_length
 		call add(args_escaped, escape(arg, ' \'))
 	endfor
 	execute "arglocal" . " " . join(args_escaped, " ")
-	vertical split
-	wincmd p
-	split | split 
-	"call <SID>MakeThatSplit()
 	call <SID>DistributeArgsIntoViewports()
-	"call <SID>AddTitle()
 	tabnew
 	let s:counter += 1
 endwhile
