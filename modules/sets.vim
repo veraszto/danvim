@@ -2,7 +2,7 @@ set term=xterm-256color
 set updatecount=0
 set autoindent	
 set smartindent
-set title
+"set title
 set tabstop=4	
 set shiftwidth=0 
 set scrolloff=5
@@ -25,5 +25,3 @@ set shortmess+=A
 filetype on
 filetype indent off
 filetype plugin off
-
-"execute "set statusline=%!" . g:Danvim_SID . "BuildStatusLine2()"
