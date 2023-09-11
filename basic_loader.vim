@@ -43,12 +43,19 @@ function <SID>SaveArgs(by_viewport)
 		else
 			let viewport_args = []
 			for viewport in range(winnr("$"))
-				let bufname = bufname(winbufnr(viewport + 1))
-				if len(bufname) > 0 && count(viewport_args, bufname) <= 0
+				let bufnr = winbufnr(viewport + 1)
+				let bufname = bufname(bufnr)
+
+				if len(getbufvar(bufnr, '&buftype')) <= 0 && 
+					\ count(viewport_args, bufname) <= 0 && buflisted(bufnr) > 0
+
 					call add(viewport_args, bufname)
 				endif
+				call filter(viewport_args, '!empty(v:val)')	
 			endfor
-			call add(all_args, viewport_args)
+			if !empty(viewport_args)
+				call add(all_args, viewport_args)
+			endif
 		endif
     endfor    
 	call <SID>AssertOrCreateLoaderDir()
