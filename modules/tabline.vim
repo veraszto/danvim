@@ -22,4 +22,4 @@ function! <SID>BuildTabline()
 	return l:line . "%<%=" . getcwd()
 endfunction
 
-set tabline=%!<SID>BuildTabline()
+execute "set tabline=%!" . expand("<SID>") . "BuildTabline()"

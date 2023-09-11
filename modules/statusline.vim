@@ -3,4 +3,4 @@ function! <SID>BuildStatusline()
 		\ "%=%*Col:%c L:%l/%L Byte:%B Buf:%n"
 endfunction
 
-set statusline=%!<SID>BuildStatusline()
+execute "set statusline=%!" . expand("<SID>") . "BuildStatusline()"
