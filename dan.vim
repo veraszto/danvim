@@ -1,6 +1,7 @@
-let g:danvim = #{configs: #{loaded: v:false}, lib: #{}, state_manager: [], fluid_flow: [], 
-	\ constants: #{SpaceChar: " ", BarChar: "/", SourceCmd: "source", HomeDir: expand("<sfile>:h"), DanVim: expand("<sfile>")},
-	\ cmds: #{}
+let g:danvim = #{configs: #{loaded_turns: 0}, lib: #{}, state_manager: [], fluid_flow: [], 
+	\ constants: #{SpaceChar: " ", BarChar: "/", SourceCmd: "source", HomeDir: expand("<sfile>:h"), DanVimFile: expand("<sfile>")},
+	\ cmds: #{},
+	\ messages: #{DanVimSourced: "DanVim has been sourced and finished execution"}
 \ }
 
 let s:configs = g:danvim.configs
@@ -13,7 +14,7 @@ let s:constants.ConfigsFile = s:constants.HomeDir . s:BarChar . "configs.vim"
 let s:constants.LibsDir = s:constants.HomeDir . s:BarChar . "libs" 
 let s:constants.ModulesDir = s:constants.HomeDir . s:BarChar . "modules" 
 let s:cmds = g:danvim.cmds
-let s:cmds.source_danvim = s:SourceCmd . s:SpaceChar . s:constants.DanVim
+let s:cmds.source_danvim = s:SourceCmd . s:SpaceChar . s:constants.DanVimFile
 
 execute s:SourceCmd . s:constants.SpaceChar . s:constants.ConfigsFile
 
@@ -55,7 +56,7 @@ for module_file in s:modules_files
 	execute s:SourceCmd . s:SpaceChar . module_file
 endfor
 
-
-let s:configs.loaded = v:true
-
-map ;sd <Cmd>execute g:danvim.cmds.source_danvim <Bar> echo "DanVim sourced"<CR>
+let s:configs.loaded_turns += 1
+map ;sd <Cmd>execute g:danvim.cmds.source_danvim<CR>
+redraw
+echo g:danvim.messages.DanVimSourced

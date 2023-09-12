@@ -1,5 +1,14 @@
 let lib = g:danvim.lib
 
+function! s:lib.FindDirsFromBaseVars(from)
+	for dir in a:from
+		let expanded = expand(dir)
+		if isdirectory(expanded)
+			return expanded
+		endif
+	endfor
+	throw "Could not find a dir from any of " . string(a:from)
+endfunction
 
 
 finish
@@ -40,26 +49,7 @@ function! <SID>FormatJSON( )
 	call <SID>JobStartOutFiles($MY_BASH_DIR . "/format_json.sh")
 endfunction
 
-function! <SID>SayHello( msg )
 
-	if len( a:msg ) <= 0
-		return
-	endif
-
-	call popup_create
-		\(
-			\ a:msg,
-			\ #{
-				\ time: 3000,
-				\ line:13,
-				\ highlight: "InitialMessage",
-				\ padding: [ 2, 6, 1, 6 ],
-				\ border: [ 0, 0, 1, 0],
-				\ borderchars: ["_", "", "_", ""]
-			\ }
-		\)
-
-endfunction
 
 function! <SID>ShowMeColors()
 
@@ -153,17 +143,7 @@ function! <SID>StrPad( what, with, upto )
 
 endfunction
 
-function! <SID>FindMyDirFromBaseVars( from )
 
-	for a in a:from
-		let expanded = expand( a )
-		if isdirectory( expanded  )
-			return expanded
-		endif
-	endfor
-	throw "Could not find a dir from any of " . string(a:from)
-
-endfunction
 
 func! <SID>MakeEscape(matter)
 
@@ -235,51 +215,7 @@ function! <SID>SharpSplits( JK )
 
 endfunction
 
-function! <SID>SmartReachWorkspace( )
 
-	try
-		let dir = <SID>FindMyDirFromBaseVars(s:workspaces_dir)
-	catch
-		echo v:exception
-		return 0
-	endtry
-
-	call <SID>GoThroughActiveBuffers( s:workspaces_pattern, "wincmd q", v:true )
-
-	if <SID>AreWeInAnWorkspaceFile() >= 0
-		let starting_from_this = expand("%:t")
-		let without_workspaces = substitute(starting_from_this, '.workspaces', "", "")
-		let one_dir_up = substitute(without_workspaces, '\.[^\.]\{-}$', "", "")
-		let to_bars = "/" . substitute(one_dir_up, '\.', "/", "g")
-		let starting_from_this = to_bars
-	else
-		let starting_from_this = expand("%:p:h")
-	endif
-	let to_points = substitute(starting_from_this, '/', ".", "g")
-	let build_file_name = matchstr(to_points, '\(^.\)\@<=.\+')
-
-	let safe_guard = 0
-
-	while 1
-		let searching = dir . "/" . build_file_name . ".workspaces"
-		if filereadable( searching  ) 
-			try | wa | catch | echo "Could not save all buffers! No worries!" | endtry
-			execute "vi " . searching
-			break
-		endif
-		let one_dir_up = substitute(build_file_name, '\.[^\.]\{-}$', "", "")
-		if match(one_dir_up, '\.') < 0
-			call <SID>ViInitialWorkspace()
-			break
-		endif
-		let build_file_name = one_dir_up
-		let safe_guard += 1
-		if safe_guard > 20
-			break
-		endif
-	endwhile
-
-endfunction
 
 
 function! <SID>ViInitialWorkspace()

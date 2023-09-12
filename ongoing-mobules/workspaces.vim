@@ -1,3 +1,51 @@
+let lib = g:danvim.lib
+
+function! <SID>SmartReachWorkspace( )
+
+	try
+		let dir = <SID>FindMyDirFromBaseVars(s:workspaces_dir)
+	catch
+		echo v:exception
+		return 0
+	endtry
+
+	if <SID>AreWeInAnWorkspaceFile() >= 0
+		let starting_from_this = expand("%:t")
+		let without_workspaces = substitute(starting_from_this, '.workspaces', "", "")
+		let one_dir_up = substitute(without_workspaces, '\.[^\.]\{-}$', "", "")
+		let to_bars = "/" . substitute(one_dir_up, '\.', "/", "g")
+		let starting_from_this = to_bars
+	else
+		let starting_from_this = expand("%:p:h")
+	endif
+	let to_points = substitute(starting_from_this, '/', ".", "g")
+	let build_file_name = matchstr(to_points, '\(^.\)\@<=.\+')
+
+	let safe_guard = 0
+
+	while 1
+		let searching = dir . "/" . build_file_name . ".workspaces"
+		if filereadable( searching  ) 
+			try | wa | catch | echo "Could not save all buffers! No worries!" | endtry
+			execute "vi " . searching
+			break
+		endif
+		let one_dir_up = substitute(build_file_name, '\.[^\.]\{-}$', "", "")
+		if match(one_dir_up, '\.') < 0
+			call <SID>ViInitialWorkspace()
+			break
+		endif
+		let build_file_name = one_dir_up
+		let safe_guard += 1
+		if safe_guard > 20
+			break
+		endif
+	endwhile
+
+endfunction
+
+
+
 function! <SID>GetRoofDir()
 
 	let current_dir = getcwd()

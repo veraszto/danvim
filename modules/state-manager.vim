@@ -3,13 +3,13 @@ let s:constants = g:danvim.constants
 const s:tabs_var_name = "let g:danvim.state_manager"
 const s:tabs_vim = "tabs.vim"
 const s:fluid_flow_vim = "fluid-flow.vim"
-let s:loaders_dir_base = getenv("MY_VIM_LOADERS_DIR_BASE")
+let s:loaders_dir_base = getenv("MY_VIM_STATE_MANAGER_DIR")
 if (s:loaders_dir_base == v:null)
-	let s:loaders_dir_base = s:constants.HomeDir . "/loaders"
+	let s:loaders_dir_base = s:constants.HomeDir . "/app-data/state-manager"
 endif
 
 function <SID>LoaderPath()
-	return expand(s:loaders_dir_base . "/trendingV2" . getcwd())
+	return expand(s:loaders_dir_base . getcwd())
 endfunction
 
 function <SID>MainName()
