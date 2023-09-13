@@ -1,8 +1,9 @@
-let s:constants = g:danvim.constants
+const s:constants = g:danvim.constants
 
 const s:tabs_var_name = "let g:danvim.state_manager"
 const s:tabs_vim = "tabs.vim"
 const s:fluid_flow_vim = "fluid-flow.vim"
+
 let s:loaders_dir_base = getenv("MY_VIM_STATE_MANAGER_DIR")
 if (s:loaders_dir_base == v:null)
 	let s:loaders_dir_base = s:constants.HomeDir . "/app-data/state-manager"
@@ -95,24 +96,23 @@ endfunction
 function! <SID>InflateState()
 	call <SID>AssertOrCreateLoaderDir()
 
-	const s:loader_path = <SID>LoaderPath()
-	const s:paths = [
+	const loader_path = <SID>LoaderPath()
+	const paths = [
 		\ <SID>MainFile(), 
-		\ s:loader_path  . "/" . s:tabs_vim,
-		\ s:loader_path  . "/" . s:fluid_flow_vim 
+		\ loader_path  . "/" . s:tabs_vim,
+		\ loader_path  . "/" . s:fluid_flow_vim 
 	\ ]
 
-	for path in s:paths
+	for path in paths
 		execute "try | source " . path . " | catch | echo \"Could not source: " . path . "\" | endtry"
 	endfor
 
 	%bd
 	clearjumps
-	const s:tabs_length = len(g:danvim.state_manager)
-	const s:get_context_dirs_regex = '\(/[^/]\+\)\{1,3}\(/[^/]\+$\)\@='
-	let s:counter = 0
-	while s:counter < s:tabs_length
-		let args = g:danvim.state_manager[s:counter]
+	const tabs_length = len(g:danvim.state_manager)
+	let counter = 0
+	while counter < tabs_length
+		let args = g:danvim.state_manager[counter]
 		let args_escaped = []
 		for arg in args
 			call add(args_escaped, escape(arg, ' \'))
@@ -120,7 +120,7 @@ function! <SID>InflateState()
 		execute "arglocal" . " " . join(args_escaped, " ")
 		call <SID>DistributeArgsIntoViewports()
 		tabnew
-		let s:counter += 1
+		let counter += 1
 	endwhile
 
 	let viewport_name_remove_home = substitute(getcwd(), $HOME, "", "")
@@ -133,7 +133,7 @@ function! <SID>InflateState()
 		call system("tmux rename-window " . viewport_name)
 	endtry
 
-	if s:counter <= 0
+	if counter <= 0
 		arglocal Hello 
 	else
 		tabc

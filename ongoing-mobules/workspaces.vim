@@ -1,4 +1,4 @@
-let lib = g:danvim.lib
+let s:lib = g:danvim.lib
 
 function! <SID>SmartReachWorkspace( )
 

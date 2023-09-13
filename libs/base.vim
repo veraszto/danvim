@@ -1,4 +1,4 @@
-let lib = g:danvim.lib
+let s:lib = g:danvim.lib
 
 function! s:lib.FindDirsFromBaseVars(from)
 	for dir in a:from
@@ -25,90 +25,7 @@ endfunction
 
 
 
-function! <SID>TabJump()
-	let l:count = tabpagenr("$")	
-	let current = tabpagenr()
-	let middle = l:count / 2 + 1
-	if current != middle
-		execute "normal " . middle  . "gt"
-	else
-		tabrewind
-	endif
-endfunction
 
-
-function! <SID>MakeHTML()
-	let tag = matchstr(getline("."), '[[:alnum:]\._-]\+')
-	let indent = matchstr(getline("."), '^\(\t\|\s\)\+')
-	call setline(".", indent . "<" . tag . ">")
-	call append(".", indent . "</" . tag . ">")
-endfunction
-
-function! <SID>FormatJSON( )
-	wa
-	call <SID>JobStartOutFiles($MY_BASH_DIR . "/format_json.sh")
-endfunction
-
-
-
-function! <SID>ShowMeColors()
-
-	let counter = 0xFF 
-
-	for a in range( counter ) 
-
-		let inverse = counter - a
-		execute "highlight MyHighlight" .
-					\ " ctermfg=" . ( "white" ) . 
-					\ " ctermbg=" . a
-
-		echohl MyHighlight
-		echo "ctermbg:" . a . ",  Hello how are you?"
-		echohl None
-	endfor
-
-endfunction
-
-function! <SID>RefreshAll()
-
-	let this_tab = tabpagenr()
-	let this_viewport = winnr()
-	let running = "running"
-	tabdo windo 
-		\ try |
-			\ if term_getstatus(bufnr()) != running | silent edit! | endif |
-		\ catch |
-			\ echo "Tab:" . tabpagenr() . ", Buf:" . bufnr() . ") [" . bufname() . "], " .
-			\  v:exception |
-		\ endtry
-
-	tabdo wincmd h
-
-	execute "tabn " . this_tab
-	execute this_viewport . " wincmd w" 
-		
-	"\ echo getbufinfo(winbufnr(winnr())) |
-
-	echo "Executed forced edit(:e!) throught all active buffers!"
-	
-
-endfunction
-
-function! <SID>SourceCurrent_ifVim()
-	let l:extension = <SID>ExtractExtension( expand("%") )
-	if  l:extension == ".vim"
-		let l:this_file = expand( "%" )
-		try
-			write
-			echo "Sourcing " . l:this_file
-			execute "source " . l:this_file
-		catch
-			echo v:exception
-		endtry
-	else
-		echo "Is this a vim script? it is stated as " . l:extension
-	endif
-endfunction
 
 
 function! <SID>ExtractExtension( from )
@@ -161,30 +78,7 @@ function! <SID>AreWeInAnWorkspaceFile()
 
 endfunction
 
-function! <SID>MoveTo( direction )
 
-	let this_win = winnr()
-	let last_win = winnr("$")
-
-
-	if ( a:direction =~ "^up$" )
-		if this_win > 1
-			wincmd k
-		else
-			wincmd b
-		endif
-	else
-		if this_win < last_win
-			wincmd j
-		else
-			wincmd t
-		endif
-	endif
-
-" As winheight is 999, the option below is not necessary
-"	wincmd _
-
-endfunction
 
 function! <SID>CDAtThisFile(level)
 
