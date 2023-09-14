@@ -1,4 +1,6 @@
 const s:lib = g:danvim.lib
+let s:
+const s
 const s:configs = g:danvim.configs
 
 function! <SID>SmartReachWorkspace( )

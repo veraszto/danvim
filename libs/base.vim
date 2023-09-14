@@ -1,4 +1,5 @@
 let s:lib = g:danvim.lib
+let s:lib.base = #{}
 let s:this = s:lib.base
 
 function! s:this.FindDirsFromBaseVars(from)

@@ -135,6 +135,7 @@ function! <SID>InflateState()
 	endif
 	try
 		call system("tmux rename-window " . viewport_name)
+	catch
 	endtry
 
 	if counter <= 0

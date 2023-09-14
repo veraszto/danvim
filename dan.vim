@@ -1,4 +1,4 @@
-let g:danvim = #{configs: #{loaded_turns: 0}, lib: #{base: #{}}, 
+let g:danvim = #{configs: #{loaded_turns: 0}, libs: #{root: #{}}, 
 	\ modules: #{},
 	\ app_data: #{state_manager: [], fluid_flow: []},
 	\ constants: #{SpaceChar: " ", BarChar: "/", SourceCmd: "source", HomeDir: expand("<sfile>:h"), DanVimFile: expand("<sfile>")},
@@ -7,7 +7,7 @@ let g:danvim = #{configs: #{loaded_turns: 0}, lib: #{base: #{}},
 \ }
 
 let s:configs = g:danvim.configs
-let s:lib = g:danvim.lib
+let s:libs = g:danvim.libs
 let s:constants = g:danvim.constants
 let s:BarChar = s:constants.BarChar 
 let s:SourceCmd = s:constants.SourceCmd
@@ -17,14 +17,14 @@ let s:constants.LibsDir = s:constants.HomeDir . s:BarChar . "libs"
 let s:constants.ModulesDir = s:constants.HomeDir . s:BarChar . "modules" 
 let s:cmds = g:danvim.cmds
 let s:cmds.source_danvim = s:SourceCmd . s:SpaceChar . s:constants.DanVimFile
-
+ 
 execute s:SourceCmd . s:constants.SpaceChar . s:constants.ConfigsFile
 
-function s:lib.base.FromDirToFiles(dir_or_file_array, init_array)
+function s:libs.root.FromDirToFiles(dir_or_file_array, init_array)
 	let list = a:init_array
 	for each in a:dir_or_file_array
 		if isdirectory(each)
-			call s:lib.base.FromDirToFiles(s:lib.base.ReadDirs(each), list)
+			call s:libs.root.FromDirToFiles(s:libs.root.ReadDirs(each), list)
 		elseif filereadable(each)
 			call add(list, each)
 		endif
@@ -32,7 +32,7 @@ function s:lib.base.FromDirToFiles(dir_or_file_array, init_array)
 	return list
 endfunction
 
-function s:lib.base.ReadDirs( which )
+function s:libs.root.ReadDirs( which )
 	try
 		let names = readdir( a:which )
 	catch
@@ -46,13 +46,13 @@ function s:lib.base.ReadDirs( which )
 	return response
 endfunction 
 
-let s:lib_files = s:lib.base.FromDirToFiles([s:constants.LibsDir], [])
+let s:lib_files = s:libs.root.FromDirToFiles([s:constants.LibsDir], [])
 
 for lib_file in s:lib_files
 	execute s:SourceCmd . s:SpaceChar . lib_file
 endfor
 
-let s:modules_files = s:lib.base.FromDirToFiles([s:constants.ModulesDir], [])
+let s:modules_files = s:libs.root.FromDirToFiles([s:constants.ModulesDir], [])
 
 for module_file in s:modules_files
 	execute s:SourceCmd . s:SpaceChar . module_file

@@ -1,3 +1,5 @@
+const 
+
 function! <SID>MoveTo( direction, expand )
 	if a:direction =~ '^up$'
 		wincmd W
