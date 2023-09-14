@@ -1,6 +1,7 @@
 let s:lib = g:danvim.lib
+let s:this = s:lib.base
 
-function! s:lib.FindDirsFromBaseVars(from)
+function! s:this.FindDirsFromBaseVars(from)
 	for dir in a:from
 		let expanded = expand(dir)
 		if isdirectory(expanded)

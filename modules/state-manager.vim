@@ -1,6 +1,7 @@
 const s:constants = g:danvim.constants
 
-const s:tabs_var_name = "let g:danvim.state_manager"
+const s:tabs_var_name = "let g:danvim.app_data.state_manager"
+const s:fluid_flow_var_name = "let g:danvim.app_data.fluid_flow"
 const s:tabs_vim = "tabs.vim"
 const s:fluid_flow_vim = "fluid-flow.vim"
 
@@ -69,7 +70,7 @@ function <SID>AssertOrCreateLoaderDir()
 endfunction
 
 function <SID>WriteFluidFlowToFile()
-    call writefile(["let g:danvim.fluid_flow = " . string(g:danvim.fluid_flow)], 
+    call writefile([s:fluid_flow_var_name . " = " . string(s:fluid_flow)], 
 		\ <SID>LoaderPath() . "/" . s:fluid_flow_vim)
 endfunction
 
@@ -107,12 +108,15 @@ function! <SID>InflateState()
 		execute "try | source " . path . " | catch | echo \"Could not source: " . path . "\" | endtry"
 	endfor
 
+	let s:state_manager = g:danvim.app_data.state_manager
+	let s:fluid_flow = g:danvim.app_data.fluid_flow
+
 	%bd
 	clearjumps
-	const tabs_length = len(g:danvim.state_manager)
+	const tabs_length = len(s:state_manager)
 	let counter = 0
 	while counter < tabs_length
-		let args = g:danvim.state_manager[counter]
+		let args = s:state_manager[counter]
 		let args_escaped = []
 		for arg in args
 			call add(args_escaped, escape(arg, ' \'))

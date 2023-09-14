@@ -1,4 +1,6 @@
-let g:danvim = #{configs: #{loaded_turns: 0}, lib: #{}, state_manager: [], fluid_flow: [], 
+let g:danvim = #{configs: #{loaded_turns: 0}, lib: #{base: #{}}, 
+	\ modules: #{},
+	\ app_data: #{state_manager: [], fluid_flow: []},
 	\ constants: #{SpaceChar: " ", BarChar: "/", SourceCmd: "source", HomeDir: expand("<sfile>:h"), DanVimFile: expand("<sfile>")},
 	\ cmds: #{},
 	\ messages: #{DanVimSourced: "DanVim has been sourced and finished execution"}
@@ -18,11 +20,11 @@ let s:cmds.source_danvim = s:SourceCmd . s:SpaceChar . s:constants.DanVimFile
 
 execute s:SourceCmd . s:constants.SpaceChar . s:constants.ConfigsFile
 
-function s:lib.FromDirToFiles(dir_or_file_array, init_array)
+function s:lib.base.FromDirToFiles(dir_or_file_array, init_array)
 	let list = a:init_array
 	for each in a:dir_or_file_array
 		if isdirectory(each)
-			call s:lib.FromDirToFiles(s:lib.ReadDirs(each), list)
+			call s:lib.base.FromDirToFiles(s:lib.base.ReadDirs(each), list)
 		elseif filereadable(each)
 			call add(list, each)
 		endif
@@ -30,7 +32,7 @@ function s:lib.FromDirToFiles(dir_or_file_array, init_array)
 	return list
 endfunction
 
-function s:lib.ReadDirs( which )
+function s:lib.base.ReadDirs( which )
 	try
 		let names = readdir( a:which )
 	catch
@@ -44,13 +46,13 @@ function s:lib.ReadDirs( which )
 	return response
 endfunction 
 
-let s:lib_files = s:lib.FromDirToFiles([s:constants.LibsDir], [])
+let s:lib_files = s:lib.base.FromDirToFiles([s:constants.LibsDir], [])
 
 for lib_file in s:lib_files
 	execute s:SourceCmd . s:SpaceChar . lib_file
 endfor
 
-let s:modules_files = s:lib.FromDirToFiles([s:constants.ModulesDir], [])
+let s:modules_files = s:lib.base.FromDirToFiles([s:constants.ModulesDir], [])
 
 for module_file in s:modules_files
 	execute s:SourceCmd . s:SpaceChar . module_file
