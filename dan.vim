@@ -20,39 +20,39 @@ let s:cmds.source_danvim = s:SourceCmd . s:SpaceChar . s:constants.DanVimFile
  
 execute s:SourceCmd . s:constants.SpaceChar . s:constants.ConfigsFile
 
-function s:libs.root.FromDirToFiles(dir_or_file_array, init_array)
+function s:libs.root.FilesCollector(dir_or_file_array, init_array)
 	let list = a:init_array
-	for each in a:dir_or_file_array
-		if isdirectory(each)
-			call s:libs.root.FromDirToFiles(s:libs.root.ReadDirs(each), list)
-		elseif filereadable(each)
-			call add(list, each)
+	for dir_or_file in a:dir_or_file_array
+		if isdirectory(dir_or_file)
+			call s:libs.root.FilesCollector(s:libs.root.ReadDir(dir_or_file), list)
+		elseif filereadable(dir_or_file)
+			call add(list, dir_or_file)
 		endif
 	endfor
 	return list
 endfunction
 
-function s:libs.root.ReadDirs( which )
+function s:libs.root.ReadDir(dir)
 	try
-		let names = readdir( a:which )
+		let dir_content = readdir(a:dir)
 	catch
-		echo "Could not readdir: " . a:which
+		echo "Could not readdir: " . a:dir
 		return []
 	endtry
-	let response = []
-	for name in names
-		call add(response, a:which . "/" . name )
+	let built_content = []
+	for item in dir_content
+		call add(built_content, a:dir . "/" . item )
 	endfor
-	return response
+	return built_content
 endfunction 
 
-let s:lib_files = s:libs.root.FromDirToFiles([s:constants.LibsDir], [])
+let s:lib_files = s:libs.root.FilesCollector([s:constants.LibsDir], [])
 
 for lib_file in s:lib_files
 	execute s:SourceCmd . s:SpaceChar . lib_file
 endfor
 
-let s:modules_files = s:libs.root.FromDirToFiles([s:constants.ModulesDir], [])
+let s:modules_files = s:libs.root.FilesCollector([s:constants.ModulesDir], [])
 
 for module_file in s:modules_files
 	execute s:SourceCmd . s:SpaceChar . module_file

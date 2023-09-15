@@ -1,5 +1,3 @@
-const 
-
 function! <SID>MoveTo( direction, expand )
 	if a:direction =~ '^up$'
 		wincmd W
@@ -88,8 +86,6 @@ function! <SID>RefreshAll()
 		
 	echo "Executed forced edit(:e!) throught all active buffers!"
 endfunction
-
-
 
 map <S-Right> <Cmd>call <SID>ArgsBrowsing(v:false)<CR>
 map <S-Left> <Cmd>call <SID>ArgsBrowsing(v:true)<CR>

@@ -1,17 +1,6 @@
-let s:lib = g:danvim.lib
-let s:lib.base = #{}
-let s:this = s:lib.base
-
-function! s:this.FindDirsFromBaseVars(from)
-	for dir in a:from
-		let expanded = expand(dir)
-		if isdirectory(expanded)
-			return expanded
-		endif
-	endfor
-	throw "Could not find a dir from any of " . string(a:from)
-endfunction
-
+let s:libs = g:danvim.libs
+let s:libs.base = #{}
+let s:this = s:libs.base
 
 finish
 
