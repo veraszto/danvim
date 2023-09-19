@@ -3,6 +3,19 @@ let s:libs.base = #{}
 let s:this = s:libs.base
 let s:configs = g:danvim.configs
 
+function! s:this.ViFile(file)
+	if empty(trim(a:file))
+		echo "Can not vi an empty file"
+		return
+	endif
+	if isdirectory(a:file)
+		echo a:file . " is a dir, a file is expected"
+		return
+	endif
+	wa
+	execute "vi " . escape(a:file, '#% ')
+endfunction
+
 function s:this.ViInitialWorkspace()
 	try
 		let dir = s:this.FindFirstExistentDir(s:configs.workspaces_dirs)

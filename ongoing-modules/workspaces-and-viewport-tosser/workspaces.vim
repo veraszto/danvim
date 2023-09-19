@@ -20,7 +20,7 @@ function s:modules.workspaces.Main( )
 	let build_func_name = matchstr( line_above, '\(\[\)\@<=.\+\(\]\)\@=' )
 
 	if len( build_func_name ) <= 0
-		call <SID>ReachToFileAndEditIt( line_number, this_line_content_raw )
+		call <SID>BuildFileNameAndEditIt( line_number, this_line_content_raw )
 		return
 	endif
 
@@ -39,7 +39,7 @@ function s:modules.workspaces.Main( )
 
 endfunction
 
-function! <SID>ReachToFileAndEditIt( line_number, line )
+function! <SID>BuildFileNameAndEditIt( line_number, line )
 
 	let this_line = a:line
 	let dir = <SID>GetRoofDir()
@@ -283,7 +283,6 @@ function! <SID>SearchFileAction( filename_to_stamp, prefix )
 	endif
 
 endfunction
-
 
 function! <SID>SpecialBu( this_bu )
 
