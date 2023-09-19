@@ -2,6 +2,17 @@ let s:libs = g:danvim.libs
 let s:libs.base = #{}
 let s:this = s:libs.base
 
+function s:this.FindFirstExistentDir(dirs_collection)
+	for dir in a:dirs_collection
+		let expanded = expand(dir)
+		if isdirectory(expanded)
+			return expanded
+		endif
+	endfor
+	throw "Could not find a dir from any of " . string(a:dirs_collection)
+endfunction
+
+
 finish
 
 let s:translate_buffer = v:null

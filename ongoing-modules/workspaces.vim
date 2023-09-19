@@ -1,9 +1,8 @@
-const s:lib = g:danvim.lib
-let s:
-const s
+const s:libs_base = g:danvim.libs.base
+let s:modules = g:danvim.modules
 const s:configs = g:danvim.configs
 
-function! <SID>SmartReachWorkspace( )
+function s:modules.SmartReachWorkspace( )
 
 	try
 		let dir = <SID>FindMyDirFromBaseVars(s:workspaces_dir)
