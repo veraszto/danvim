@@ -82,13 +82,13 @@ noremap <expr> ;i ":vi " . getcwd() . "/"
 noremap <expr> ;I ":vi " . expand("%:h") . "/"
 
 
+
 finish
 
 
 call <SID>MapShortcut( "<Space>", 'SpacebarAction()' )
 call <SID>MapShortcut( "<C-S-Right>", 'FirstJumpDiffBuf(1)' )
 call <SID>MapShortcut( "<C-S-Left>", 'FirstJumpDiffBuf(0)' )
-call <SID>MapShortcut( "<Del>", 'SmartReachWorkspace()' )
 call <SID>MapShortcut( "<F2>", 'WrapperHideAndShowPopups()' )
 call <SID>MapShortcut( "<F1>", 'CopyRegisterToFileAndClipboard()' )
 call <SID>MapShortcut( "[1;2P", 'PasteFromClipboard( v:false )' )

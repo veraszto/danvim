@@ -1,6 +1,32 @@
 let s:libs = g:danvim.libs
 let s:libs.base = #{}
 let s:this = s:libs.base
+let s:configs = g:danvim.configs
+
+function s:this.ViInitialWorkspace()
+	try
+		let dir = s:this.FindFirstExistentDir(s:configs.workspaces_dirs)
+	catch
+		echo v:exception
+		return 0
+	endtry
+
+	let guesses = []
+	for a in s:initial_workspace_tries	
+		let guess = dir . "/" . a . ".workspaces"
+		call add(guesses, guess)
+		if file_readable( guess  )
+			execute "vi " . guess
+			return
+		endif
+	endfor
+
+	echo "Could not reach initial workspace, looked for in: " . string(guesses)
+endfunction
+
+function s:this.AreWeInAnWorkspaceFile()
+	return match( bufname(), s:workspaces_pattern )
+endfunction
 
 function s:this.FindFirstExistentDir(dirs_collection)
 	for dir in a:dirs_collection
@@ -74,11 +100,7 @@ func! <SID>MakeEscape(matter)
 
 endfunction
 
-function! <SID>AreWeInAnWorkspaceFile()
-	
-	return match( bufname(), s:workspaces_pattern )
 
-endfunction
 
 
 
@@ -114,29 +136,7 @@ endfunction
 
 
 
-function! <SID>ViInitialWorkspace()
 
-	try
-		let dir = <SID>FindMyDirFromBaseVars( s:workspaces_dir )
-	catch
-		echo v:exception
-		return 0
-	endtry
-
-	let guesses = []
-	for a in s:initial_workspace_tries	
-		let guess = dir . "/" . a . ".workspaces"
-		call add(guesses, guess)
-		if file_readable( guess  )
-			execute "vi " . guess
-			return
-		endif
-	endfor
-
-	echo "Could not reach initial workspace, looked for in: " . string(guesses)
-
-
-endfunction
 
 function! <SID>CopyRegisterToFileAndClipboard( )
 

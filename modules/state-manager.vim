@@ -1,4 +1,6 @@
 const s:constants = g:danvim.constants
+let s:modules = g:danvim.modules
+let s:modules.state_manager = #{}
 
 const s:tabs_var_name = "let g:danvim.app_data.state_manager"
 const s:fluid_flow_var_name = "let g:danvim.app_data.fluid_flow"
@@ -22,7 +24,7 @@ function <SID>MainFile()
 	return <SID>LoaderPath() . "/" . <SID>MainName() . ".vim"
 endfunction
 
-function <SID>SaveArgs(by_viewport)
+function s:modules.state_manager.SaveState(by_viewport)
 	let tab_page_number = tabpagenr() 
     let all_args = []
     for tab in range(tabpagenr("$"))
@@ -94,7 +96,7 @@ function <SID>DistributeArgsIntoViewports()
 	wincmd t 
 endfunction
 
-function! <SID>InflateState()
+function s:modules.state_manager.InflateState()
 	call <SID>AssertOrCreateLoaderDir()
 
 	const loader_path = <SID>LoaderPath()
@@ -146,5 +148,5 @@ function! <SID>InflateState()
 	endif
 endfunction
 
-map <F11> <Cmd>call <SID>InflateState()<CR>
-map <F12> <Cmd>call <SID>SaveArgs(v:true)<CR>
+map <F11> <Cmd>call g:danvim.modules.state_manager.InflateState()<CR>
+map <F12> <Cmd>call g:danvim.modules.state_manager.SaveState(v:true)<CR>

@@ -1,17 +1,73 @@
 const s:libs_base = g:danvim.libs.base
 let s:modules = g:danvim.modules
+let s:modules.workspaces = #{}
 const s:configs = g:danvim.configs
 
-function s:modules.SmartReachWorkspace( )
+function s:modules.workspaces.Main( )
 
+	let line_number = line(".")
+	let this_line_content_raw = getline( line_number )
+	let this_line_content = trim( this_line_content_raw )
+
+	if ( len( this_line_content ) <= 0 )
+		echo "Line empty"
+		return
+	endif
+
+	let line_above = getline( line_number - 1 )
+	let msg = line_above
+
+	let build_func_name = matchstr( line_above, '\(\[\)\@<=.\+\(\]\)\@=' )
+
+	if len( build_func_name ) <= 0
+		call <SID>ReachToFileAndEditIt( line_number, this_line_content_raw )
+		return
+	endif
+
+	let func_name = 
+			\ expand("<SID>") . "SpaceBarAction_" . 
+			\ substitute( tolower(build_func_name), '\s', "", "g")
+
+	if ! exists( "*" . func_name )
+		echo "There is not an action regarding " . build_func_name
+		return
+	endif
+
+	let Func = function(func_name)
+
+	call Func( line_number, this_line_content ) 
+
+endfunction
+
+function! <SID>ReachToFileAndEditIt( line_number, line )
+
+	let this_line = a:line
+	let dir = <SID>GetRoofDir()
+
+	if dir < 0
+		return
+	endif
+
+	let tree_prefix = matchstr( this_line, s:tree_special_chars )
+	let len_tree_prefix = strchars( tree_prefix )
+	if len_tree_prefix > 0
+		call <SID>BuFromGNUTree( a:line_number, a:line, len_tree_prefix, dir )
+		return
+	endif
+	let built = dir . trim( this_line )
+	return <SID>SpecialBu( built )
+
+endfunction
+
+function s:modules.workspaces.SmartReachWorkspace( )
 	try
-		let dir = <SID>FindMyDirFromBaseVars(s:workspaces_dir)
+		let dir = s:libs_base.FindFirstExistentDir(s:configs.workspaces_dirs)
 	catch
 		echo v:exception
 		return 0
 	endtry
 
-	if <SID>AreWeInAnWorkspaceFile() >= 0
+	if s:libs_base.AreWeInAnWorkspaceFile() >= 0
 		let starting_from_this = expand("%:t")
 		let without_workspaces = substitute(starting_from_this, '.workspaces', "", "")
 		let one_dir_up = substitute(without_workspaces, '\.[^\.]\{-}$', "", "")
@@ -34,7 +90,7 @@ function s:modules.SmartReachWorkspace( )
 		endif
 		let one_dir_up = substitute(build_file_name, '\.[^\.]\{-}$', "", "")
 		if match(one_dir_up, '\.') < 0
-			call <SID>ViInitialWorkspace()
+			call s:libs_base.ViInitialWorkspace()
 			break
 		endif
 		let build_file_name = one_dir_up
@@ -43,7 +99,6 @@ function s:modules.SmartReachWorkspace( )
 			break
 		endif
 	endwhile
-
 endfunction
 
 
@@ -81,46 +136,7 @@ function! <SID>GoAfterAWorkSpace()
 
 endfunction
 
-function! <SID>SpacebarActionAtWorkspaces( )
 
-	if match( buffer_name(), s:workspaces_pattern ) < 0
-		call <SID>GoAfterAWorkSpace()
-		return
-	endif
-
-	let line_number = line(".")
-	let this_line_content_raw = getline( line_number )
-	let this_line_content = trim( this_line_content_raw )
-
-	if ( len( this_line_content ) <= 0 )
-		echo "Line empty"
-		return
-	endif
-
-	let line_above = getline( line_number - 1 )
-	let msg = line_above
-
-	let build_func_name = matchstr( line_above, '\(\[\)\@<=.\+\(\]\)\@=' )
-
-	if len( build_func_name ) <= 0
-		call <SID>SpaceBarAction( line_number, this_line_content_raw )
-		return
-	endif
-
-	let func_name = 
-			\ expand("<SID>") . "SpaceBarAction_" . 
-			\ substitute( tolower(build_func_name), '\s', "", "g")
-
-	if ! exists( "*" . func_name )
-		echo "There is not an action regarding " . build_func_name
-		return
-	endif
-
-	let Func = function(func_name)
-
-	call Func( line_number, this_line_content ) 
-
-endfunction
 
 function! <SID>SpaceBarAction_maketree( line_number, line )
 
@@ -367,25 +383,7 @@ function! <SID>SpaceBarAction_wearehere( line_number, line )
 
 endfunction
 
-function! <SID>SpaceBarAction( line_number, line )
 
-	let this_line = a:line
-	let dir = <SID>GetRoofDir()
-
-	if dir < 0
-		return
-	endif
-
-	let tree_prefix = matchstr( this_line, s:tree_special_chars )
-	let len_tree_prefix = strchars( tree_prefix )
-	if len_tree_prefix > 0
-		call <SID>BuFromGNUTree( a:line_number, a:line, len_tree_prefix, dir )
-		return
-	endif
-	let built = dir . trim( this_line )
-	return <SID>SpecialBu( built )
-
-endfunction
 
 function! <SID>BuFromGNUTree( line_number, line, len_tree_prefix, roof_dir )
 
@@ -516,3 +514,12 @@ function! <SID>MakeSearchNoEscape( matter, search_flags )
 	call search( a:matter, a:search_flags )
 	
 endfunction
+
+
+
+
+map <Del> <Cmd>call g:danvim.modules.workspaces.SmartReachWorkspace()<CR>
+
+
+
+
