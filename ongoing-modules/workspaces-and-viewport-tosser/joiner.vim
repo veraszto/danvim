@@ -1,4 +1,3 @@
-
 let s:workspaces_pattern = '\.workspaces$'
 
 function! <SID>Decide()
