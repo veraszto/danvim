@@ -3,6 +3,7 @@ let g:danvim = #{configs: #{loaded_turns: 0}, libs: #{root: #{}},
 	\ app_data: #{state_manager: [], fluid_flow: []},
 	\ constants: #{SpaceChar: " ", BarChar: "/", SourceCmd: "source", HomeDir: expand("<sfile>:h"), DanVimFile: expand("<sfile>")},
 	\ cmds: #{},
+	\ broad_regexes: #{workspaces_file: '\.workspaces$'},
 	\ messages: #{DanVimSourced: "DanVim has been sourced and finished execution"}
 \ }
 

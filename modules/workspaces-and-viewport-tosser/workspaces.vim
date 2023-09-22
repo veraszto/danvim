@@ -4,6 +4,8 @@ let s:modules.workspaces = #{}
 const s:configs = g:danvim.configs
 let s:we_are_here = '^\[\(we.are.here\|base.dir\|context.dir\)\]'
 let s:tree_special_chars = '^\(\s\{-}\(\%u2500\|\%u2502\|\%u251C\|\%u2514\|\%xA0\)\+\s\+\)\+'
+let s:last_bar = '\(\\\|/\)\{-\}$'
+let s:max_file_search = 36
 
 function s:modules.workspaces.Main()
 
@@ -39,6 +41,13 @@ function s:modules.workspaces.Main()
 
 	call Func(line_number, this_line_content) 
 
+endfunction
+
+function! <SID>CloseAllTrees()
+	if s:libs_base.AreWeInAnWorkspaceFile() < 0
+		return
+	endif
+	execute "g/" . s:tree_special_chars . "/normal \"_dd"
 endfunction
 
 function! <SID>BuildFileNameAndEditIt(line_number, line)
@@ -128,18 +137,6 @@ function! <SID>GetRoofDir()
 
 endfunction
 
-function! <SID>GoAfterAWorkSpace()
-
-	split
-	wincmd J
-	call <SID>SmartReachWorkspace()
-
-"	echo "An active workspace buffer is currently no present at this tab"
-
-endfunction
-
-
-
 function! <SID>SpaceBarAction_maketree(line_number, line)
 
 	let should_draw = <SID>TreeHasAlreadyBeenDrawed(a:line_number)
@@ -169,27 +166,16 @@ function! <SID>SpaceBarAction_maketree(line_number, line)
 endfunction
 
 function! <SID>TreeHasAlreadyBeenDrawed(line_number)
-
 	let next_line = a:line_number + 1
-
 	let sequence_amount = 0
-
 	while next_line <= line("$")
-
 		let line = trim(getline(next_line))
-
 		if match(line, s:tree_special_chars) >= 0
-
 			let sequence_amount += 1
-
 		elseif sequence_amount > 0 || len(line) > 0
-
 			break
-
 		endif
-
 		let next_line += 1
-
 	endwhile
 
 	if sequence_amount <= 0
@@ -202,7 +188,6 @@ function! <SID>TreeHasAlreadyBeenDrawed(line_number)
 	call setpos(".", [ 0, a:line_number, 1, 0 ])
 "	echo sequence_amount
 	return 1
-
 endfunction
 
 function! <SID>SpaceBarAction_search(line_number, line)
@@ -223,6 +208,7 @@ function! <SID>SpaceBarAction_search(line_number, line)
 
 	let files = systemlist(build_find) 
 	let b:search_result = []
+
 	for a in files
 		call add(b:search_result, substitute(a, roof, "", ""))
 	endfor
@@ -231,13 +217,11 @@ function! <SID>SpaceBarAction_search(line_number, line)
 	if len(files) > s:max_file_search
 		echo "Result for " . this_line . 
 				\ " has gone through the limit of " . s:max_file_search .
-				\ " please tune your search better"
+				\ " please narrow your search"
 		return
 	endif
 
 	call <SID>BuildSearchMenu(this_line, roof)
-	
-
 endfunction
 
 function! <SID>BuildSearchMenu(is_searching, where)
@@ -285,106 +269,6 @@ function! <SID>SearchFileAction(filename_to_stamp, prefix)
 	endif
 
 endfunction
-
-function! <SID>SpecialBu(this_bu)
-
-	let built = a:this_bu
-
-	if len(trim(built)) == 0
-		echo "Could not SpecialBu an empty file: " . built
-		return
-	endif
-
-
-	let 
-		\ [
-				\ pattern_prefix,
-				\ pattern_bufvar_suffix,
-				\ pattern_bufvar_suffix_with_error,
-				\ filtered_built
-		\ ] =
-		\ <SID>MatchedAndAllRemoved
-		\	(
-				\ built, 
-				\ [
-						\ s:cmd_buf_pattern,
-						\ s:add_as_bufvar,
-						\ s:add_as_bufvar_missing_bar
-				\ ] 
-		\)
-
-	let built = filtered_built
-
-	if len(pattern_bufvar_suffix_with_error) > 0
-		echo "Please, the hash must be escaped(\\) and adjacent to curly open({), like:" .
-			\ "\nfilename.abc__\\#{a:1,b:2, \"hello\": \"Hi!\"}" 
-		return
-	endif
-
-"	let space = match(built, '[[:space:]]')
-"	if space > -1
-"		echo "Cannot args " . built . ", there is a [[:space:]]"
-"		return
-"	endif
-
-	if isdirectory(built)
-		echo built . " is a directory, please select a file"
-		return
-	endif
-	
-	wa
-	execute "vi " . escape(built, '#% ')
-
-"	argglobal
-"	if argc() > 0
-"		argd *
-"	endif
-"	execute "argadd " . escape(built, '#% ')
-"	let first_file = argv()[0]
-"	let to_execute = "buffer " . pattern_prefix . first_file 
-"	try
-"		wa
-"	catch
-"		echo "Could not WA to enter buf, " . v:exception
-"		e!
-"	endtry
-"	try
-"		execute to_execute 
-"	catch
-"		echo "Could not " .  to_execute . ", because: " . v:exception . 
-"				\ ", so trying to just buffer the asked file " . first_file
-"	endtry
-"	call <SID>LoadBufferVars(bufnr(),  pattern_bufvar_suffix)
-"	arglocal
-
-endfunction
-
-function! <SID>MatchedAndAllRemoved(matter, cycle)
-
-	let gather = []
-	let hold_matter = a:matter
-
-	for a in a:cycle
-		
-		call add(gather, matchstr(a:matter, a))
-		let filtered = substitute(hold_matter, a, "", "")
-		let hold_matter = filtered
-
-	endfor
-
-	call add(gather, filtered)
-
-	return gather
-
-endfunction
-
-function! <SID>SpaceBarAction_wearehere(line_number, line)
-
-	call <SID>LocalCDAtFirstRoof()
-
-endfunction
-
-
 
 function! <SID>BuFromGNUTree(line_number, line, len_tree_prefix, roof_dir)
 
@@ -445,16 +329,7 @@ function! <SID>BuFromGNUTree(line_number, line, len_tree_prefix, roof_dir)
 endfunction
 
 
-function! <SID>CloseAllTrees()
 
-	if <SID>AreWeInAnWorkspaceFile() < 0
-		echo s:when_only_at_workspaces_message
-		return
-	endif
-
-	execute "g/" . s:tree_special_chars . "/normal \"_dd"
-	
-endfunction
 
 function! <SID>WriteBasicStructure()
 
@@ -465,8 +340,7 @@ function! <SID>WriteBasicStructure()
 		return 0
 	endtry
 
-	if <SID>AreWeInAnWorkspaceFile() < 0
-		echo s:when_only_at_workspaces_message
+	if s:libs_base.AreWeInAnWorkspaceFile() < 0
 		return
 	endif
 
@@ -513,7 +387,6 @@ endfunction
 function! <SID>MakeSearchNoEscape(matter, search_flags)
 	call search(a:matter, a:search_flags)
 endfunction
-
 
 
 

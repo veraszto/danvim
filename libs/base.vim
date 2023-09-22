@@ -2,6 +2,8 @@ let s:libs = g:danvim.libs
 let s:libs.base = #{}
 let s:this = s:libs.base
 let s:configs = g:danvim.configs
+let s:when_only_at_workspaces_message = "This makes sense only in a .workspaces buffer"
+let s:regexes = g:danvim.broad_regexes
 
 function! s:this.ViFile(file)
 	if empty(trim(a:file))
@@ -38,7 +40,11 @@ function s:this.ViInitialWorkspace()
 endfunction
 
 function s:this.AreWeInAnWorkspaceFile()
-	return match( bufname(), s:workspaces_pattern )
+	const match_index = match(bufname(), s:regexes.workspaces_file)
+	if match_index < 0
+		echo s:when_only_at_workspaces_message
+	endif
+	return match_index 
 endfunction
 
 function s:this.FindFirstExistentDir(dirs_collection)
