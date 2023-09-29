@@ -109,7 +109,8 @@ function! <SID>MakeMappings()
 
 "	map <S-Down> <Cmd>call <SID>RaiseAndLowerViewport()<CR>
 "	imap <S-Down> <Cmd>call <SID>RaiseAndLowerViewport()<CR>
-	map <S-Down> <C-W>_
+"	map <S-Down> <C-W>_
+	call <SID>MapShortcut( "<S-Down>", 'DuplicateViewportInTheMostStackedColumn()' )
 	imap <S-Down> <Cmd>wincmd _<CR>
 
 	call <SID>MapShortcut( "<Del>", 'SmartReachWorkspace()' )

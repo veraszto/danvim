@@ -2933,6 +2933,42 @@ function! <SID>StageBufferSwitcher()
 
 endfunction
 
+function <SID>StudyViewportsLayout()
+	let layouts = #{}
+	for viewport in range(winnr("$"))
+		let cur_viewport = viewport + 1
+		let cur_pos = win_screenpos(cur_viewport)
+		let pack = #{pos: cur_pos, buffer: winbufnr(cur_viewport), viewport: cur_viewport}
+		if !exists("layouts[cur_pos[1]]")
+			let layouts[cur_pos[1]] = [pack]
+		else
+			call add(layouts[cur_pos[1]], pack)
+		endif
+	endfor
+	return layouts
+endfunction
+
+function <SID>DuplicateViewportInTheMostStackedColumn()
+	let bufnr = bufnr()
+	let winnr = winnr()
+	for viewport in range(winnr("$"))
+		let cur_viewport = viewport + 1
+		if winbufnr(cur_viewport) == bufnr && winnr != cur_viewport
+			return
+		endif
+	endfor
+	const layouts = <SID>StudyViewportsLayout()
+	let highest_stack = []
+	for value in values(layouts)
+		if len(value) > len(highest_stack)
+			let highest_stack = value
+		endif
+	endfor
+	execute highest_stack[0].viewport . "wincmd w"
+	split
+	execute "bu " . bufnr
+endfunction
+
 runtime! base.vars/**/*.vim
 
 execute "let s:base_vars = " . g:Danvim_current_being_sourced . "BaseVars()"
