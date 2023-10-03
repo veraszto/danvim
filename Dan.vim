@@ -2967,6 +2967,7 @@ function <SID>DuplicateViewportInTheMostStackedColumn()
 	execute highest_stack[0].viewport . "wincmd w"
 	split
 	execute "bu " . bufnr
+	execute winnr . "wincmd w"
 endfunction
 
 runtime! base.vars/**/*.vim
