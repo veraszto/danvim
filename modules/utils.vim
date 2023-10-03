@@ -1,3 +1,5 @@
+let s:base_lib = g:danvim.libs.base
+
 function! <SID>MoveTo( direction, expand )
 	if a:direction =~ '^up$'
 		wincmd W
@@ -87,6 +89,30 @@ function! <SID>RefreshAll()
 	echo "Executed forced edit(:e!) throught all active buffers!"
 endfunction
 
+function <SID>DuplicateViewportInTheMostStackedColumn()
+	let bufnr = bufnr()
+	let winnr = winnr()
+	for viewport in range(winnr("$"))
+		let cur_viewport = viewport + 1
+		if winbufnr(cur_viewport) == bufnr && winnr != cur_viewport
+			return
+		endif
+	endfor
+	const layouts = s:base_lib.StudyViewportsLayoutWithHorizontalGroups()
+	let highest_stack = []
+	for value in values(layouts)
+		if len(value) > len(highest_stack)
+			let highest_stack = value
+		endif
+	endfor
+	execute highest_stack[0].viewport . "wincmd w"
+	split
+	execute "bu " . bufnr
+	execute winnr . "wincmd w"
+endfunction
+
+
+map <S-Down> <Cmd>call <SID>DuplicateViewportInTheMostStackedColumn()<CR>
 map <S-Right> <Cmd>call <SID>ArgsBrowsing(v:false)<CR>
 map <S-Left> <Cmd>call <SID>ArgsBrowsing(v:true)<CR>
 imap <S-Right> <Cmd>call <SID>ArgsBrowsing(v:false)<CR>

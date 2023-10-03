@@ -1,4 +1,8 @@
-function! <SID>FirstJumpDiffBuf(right_or_left)
+let s:modules = g:danvim.modules
+let s:modules.higher_jumps = #{}
+let s:this = s:modules.higher_jumps
+
+function s:this.Main(right_or_left)
     let cur_bufnr = bufnr()
     const [list, current_jump] = getjumplist()
     const len_list = len(list)
@@ -18,7 +22,7 @@ function! <SID>FirstJumpDiffBuf(right_or_left)
         while (counter) < (len_list) 
             let supposed_buffer = list[counter]["bufnr"]
             if (cur_bufnr != supposed_buffer) && 
-				\ (match(bufname(supposed_buffer), s:workspaces_pattern) < 0) &&
+				\ (match(bufname(supposed_buffer), g:danvim.broad_regexes.workspaces_file) < 0) &&
 				\ index(w:jump_diff_buff_jump_these_buffs, supposed_buffer) < 0
 
 		            let counter += 1
@@ -46,7 +50,7 @@ function! <SID>FirstJumpDiffBuf(right_or_left)
             let supposed_buffer = list[counter]["bufnr"]
             if 
 				\ (cur_bufnr != supposed_buffer) && 
-				\ (match(bufname(supposed_buffer), s:workspaces_pattern) < 0) &&
+				\ (match(bufname(supposed_buffer), g:danvim.broad_regexes.workspaces_file) < 0) &&
 				\ index(w:jump_diff_buff_jump_these_buffs, supposed_buffer) < 0
 	                execute "normal " . (current_jump - counter) . "\<c-o>" 
 					return
@@ -55,3 +59,8 @@ function! <SID>FirstJumpDiffBuf(right_or_left)
         endwhile
     endif
 endfunction
+
+" Forward
+map <C-S-Right> <Cmd>call g:danvim.modules.higher_jumps.Main(1)<CR>
+" Backwards
+map <C-S-Left> <Cmd>call g:danvim.modules.higher_jumps.Main(-1)<CR>

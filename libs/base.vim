@@ -57,6 +57,20 @@ function s:this.FindFirstExistentDir(dirs_collection)
 	throw "Could not find a dir from any of " . string(a:dirs_collection)
 endfunction
 
+function s:this.StudyViewportsLayoutWithHorizontalGroups()
+	let layouts = #{}
+	for viewport in range(winnr("$"))
+		let cur_viewport = viewport + 1
+		let cur_pos = win_screenpos(cur_viewport)
+		let pack = #{pos: cur_pos, buffer: winbufnr(cur_viewport), viewport: cur_viewport}
+		if !exists("layouts[cur_pos[1]]")
+			let layouts[cur_pos[1]] = [pack]
+		else
+			call add(layouts[cur_pos[1]], pack)
+		endif
+	endfor
+	return layouts
+endfunction
 
 finish
 
