@@ -43,8 +43,7 @@ function! <SID>LastDir( matter )
 endfunction
 
 function! <SID>BuildStatusLine2()
-	return "%m%#SameAsExtensionToStatusLine#%f%*" . 
-		\ "%=%*Col:%c L:%l/%L Byte:%B Buf:%n"
+	return "%m%f%=%*Col:%c L:%l/%L Byte:%B Buf:%n"
 endfunction
 
 

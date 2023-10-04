@@ -11,12 +11,15 @@ function! <SID>HighLight()
 	let purple = 55
 	let status_line_background = 237
 	let choose_separator_color = 237 
+	let green_fg_statusline = 40
+	let pink_fg_statusline = 213
+
 	let date_color = 21
 
 	let highlights =
 	\[
-		\ [ "StatusLine", status_line_background, 213, "NONE" ],
-		\ [ "StatusLineNC", status_line_background, 40, "NONE" ],
+		\ [ "StatusLine", 239, 248, "NONE" ],
+		\ [ "StatusLineNC", 237, 246, "NONE" ],
 		\ [ "VertSplit", 16, 16, "NONE" ],
 		\ [ "Visual", purple, 207, "NONE" ],
 		\ [ "TabLineSel", 235, 189, "NONE" ],
