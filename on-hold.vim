@@ -564,18 +564,6 @@ function! <SID>IsMatchedWithExcludeFromTraditionalJBufs( matter )
 endfunction
 
 
-function! <SID>TraditionalPertinentJumps( bufinfo )
-
-	return <SID>IsMatchedWithExcludeFromTraditionalJBufs( a:bufinfo["name"] )[ 0 ] > 0 ||
-				\ <SID>IsMatchedWithStamp( a:bufinfo["name"] ) < 0
-
-endfunction
-
-function! <SID>WorkspacesPertinentJumps( bufinfo )
-
-	return ! ( <SID>IsMatchedWithExcludeFromTraditionalJBufs( a:bufinfo["name"] )[ 1 ] == 0 )
-
-endfunction
 
 
 function! <SID>CycleLastTwoExcluded()

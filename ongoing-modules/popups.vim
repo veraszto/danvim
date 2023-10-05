@@ -1,50 +1,4 @@
-function! <SID>CollectPertinentJumps( limit, what_is_pertinent )
 
-	let do_not_repeat = [ bufnr() ]
-	let jumps = getjumplist()[0]
-	let length = len( jumps ) - 1
-	let i = length
-	let jumps_togo = []
-
-	while i >= 0
-
-		let jump = get( jumps, i )
-		let bufnr = jump["bufnr"]
-		let buf = getbufinfo( bufnr )
-		
-		if len( buf ) == 0
-			let i -= 1
-			continue			
-		endif
-
-		let bufinfo = buf[0]
-
-		if
-		\(
-				\ count( do_not_repeat, bufnr ) > 0 ||
-				\ bufnr == 0 || 
-				\ len( bufinfo["name"] ) == 0 ||
-				\ <SID>{a:what_is_pertinent}PertinentJumps( bufinfo ) == v:true
-		\)
-			let i -= 1
-			continue
-
-		endif
-
-		call add( do_not_repeat, bufnr )	
-		call add( jumps_togo, jump )
-
-		if len( jumps_togo ) == a:limit
-			break
-		endif
-		
-		let i -= 1
-
-	endwhile
-
-	return jumps_togo 
-
-endfunction
 
 
 function! <SID>PopupJumps( )
@@ -72,19 +26,7 @@ function! <SID>PopupJumps( )
 
 endfunction
 
-function! <SID>ChooseBestPlaceToGetJumps( limit, type )
 
-	let popup_and_jumps = <SID>PopupExists( <SID>BuildOverlayNameArray(a:type) )
-
-	if 
-		\ len( popup_and_jumps ) > 0 &&
-		\ ( s:last_win_tab[ 0 ] != winnr() || s:last_win_tab[ 1 ] != tabpagenr() )
-		return popup_and_jumps[ 1 ]
-	endif
-
-	return <SID>CollectPertinentJumps( a:limit, a:type )
-
-endfunction
 
 function! <SID>PopupWorkspaces( )
 	

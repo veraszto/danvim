@@ -1,6 +1,10 @@
-function! <SID>AutoCommandsOverlay( wipe )
+let g:danvim.modules.wing_mirror = #{}
+let s:types_of_overlays = [ "Traditional" ]
+let s:popup_winids = {}
+let s:last_win_tab = [0, 0]
 
-	aug my_overlays
+function! <SID>AutoCommandsOverlay( wipe )
+	aug danvim_wing_mirror
 		au!
 	aug END
 
@@ -8,52 +12,35 @@ function! <SID>AutoCommandsOverlay( wipe )
 		return
 	endif
 
-	autocmd my_overlays BufEnter *
+	autocmd danvim_wing_mirror BufEnter *
 		\ call <SID>RefreshingOverlays( 0 )
-"	autocmd my_overlays WinEnter *
-"		\ call <SID>RefreshingOverlays( 0 )
-
 endfunction
 
 function! <SID>TurnOnOffOverlays( on_off )
-
 	if a:on_off == 0
-
 		let this_tabnr = tabpagenr()
-
 		call <SID>AutoCommandsOverlay( 1 )
 		tabdo call popup_clear()
 		let s:popup_winids = {}
-
 		execute "normal" . " " . this_tabnr . "gt"
-
 		echo "Overlays are turned OFF"
-
 	else
-
 		call <SID>AutoCommandsOverlay( 0 )
 		let s:overlay_allowed_to_show = v:true
 		call <SID>RefreshingOverlays( 0 )
 		echo "Overlays are turned ON"
 	endif
-
 endfunction
 
 function! <SID>BuildOverlayTabName()
-
 	if exists("t:overlay_id")
 		return t:overlay_id
 	endif
-
 	let t:overlay_id = "tab" . ( rand() * rand() )
-
 	return t:overlay_id
-
 endfunction
 
 function!<SID>ShowPopups()
-
-	
 	for a in keys( s:popup_winids )
 		echo a
 		for b in keys( s:popup_winids[ a ] )
@@ -61,124 +48,80 @@ function!<SID>ShowPopups()
 			echo s:popup_winids[ a ][ b ][ 0 ]
 		endfor
 	endfor
-
 endfunction!
 
 function! <SID>PopupCreate( what, config, name )
-	"
 	let popup = popup_create( a:what[ 0 ], a:config )
 	let s:popup_winids[ <SID>BuildOverlayTabName() ][ join( a:name, "" ) ] = [ popup, a:what[ 1 ] ]
-
 endfunction
 
 function! <SID>GetWinnrFromOverlayKey( key )
-
 	return matchstr( a:key, '\d\+$')
-
 endfunction
 
 function! <SID>HideAndShowPopups( name, this_type )
-
 	if s:popup_winids == {}
-		
 		echo "Overlays are turned off for the type:" . a:this_type . ", " .
 			\ "turn them on using the normal command [  ;O1  ]," .
 			\ "semicolon, letter O uppercased and number one"
 		return
-
 	endif
 
 	let tabname = <SID>BuildOverlayTabName()
 	let str_name = join( a:name, "" )
 
-
 	for key in keys( s:popup_winids[ tabname ] )
-		
 		if match( key, a:this_type ) < 0
 			continue
 		endif
-
 		if str_name == key && s:overlay_allowed_to_show == v:true
 			call popup_show( s:popup_winids[ tabname ][ key ][ 0 ] )
 		else
 			call popup_hide( s:popup_winids[ tabname ][ key ][ 0 ] )
 		endif
-
 	endfor
-
 endfunction
 
 function! <SID>PopupExists( name )
-	
 	let tabname = <SID>BuildOverlayTabName()
 	let str_name = join( a:name, "" )
-
 	if has_key( s:popup_winids, tabname )
-		
 		if has_key( s:popup_winids[ tabname ], str_name  )
 			return s:popup_winids[ tabname ][ str_name ]
 		endif
-
 	else
 		let s:popup_winids[ tabname ] = {}
 	endif
-
 	return []
-
 endfunction
 
 
 function! <SID>AddAtCwd( jumps )
-
 	let current = matchstr( bufname(), s:tail_with_upto_two_dirs )
-
-	call extend
-	\ ( 
-			\ a:jumps[0], 
-			\ [ "", current , matchstr( getcwd(), s:tail_with_upto_two_dirs ) ]
-	\ )
-
+	call extend(a:jumps[0], ["", current, matchstr(getcwd(), s:tail_with_upto_two_dirs )])
 endfunction
 
 
 function! <SID>RefreshingOverlays( type )
 
-"	echo "Type:" . a:type
-"	echo s:popup_winids
-
 	let types = s:types_of_overlays
-
 	if ! exists("types[" . a:type . "]")
 		return
 	endif
-	
 	let this_type = types[ a:type ]
-
 	let name = <SID>BuildOverlayNameArray( this_type )
-
 	let popup_exists = <SID>PopupExists( name )
-
 	let len_popup = len( popup_exists )
-
 	let jumps = <SID>BuildJBufs( this_type )
-
 "	call <SID>AddAtCwd( jumps )
-
 	if  len_popup == 0
-
 		call <SID>PopupConfigThenCreate( jumps, name, a:type )
-
 	else
-
 		call <SID>UpdateOverlay( popup_exists, jumps, this_type )
-
 	endif
-
 	call <SID>HideAndShowPopups( name, this_type )
-
 	let increase = a:type + 1
 	call <SID>RefreshingOverlays( increase )
-
 	if ( increase ) == len( types )
 		let s:last_win_tab = [ winnr(), tabpagenr() ]
 	endif
@@ -186,9 +129,7 @@ function! <SID>RefreshingOverlays( type )
 endfunction
 
 function! <SID>BuildOverlayNameArray( type )
-
 	return [ "jbuf", ".", a:type, ".", winnr() ]
-
 endfunction
 
 function! <SID>PopupConfigThenCreate( content, name, type )
@@ -227,10 +168,61 @@ function! <SID>PopupConfigThenCreate( content, name, type )
 endfunction
 
 function! <SID>BuildJBufs( type )
-
 	let jumps = <SID>ChooseBestPlaceToGetJumps( -1, a:type )
 	return <SID>JBufsViewAndRaw( jumps, a:type )
+endfunction
 
+function! <SID>ChooseBestPlaceToGetJumps( limit, type )
+	let popup_and_jumps = <SID>PopupExists( <SID>BuildOverlayNameArray(a:type) )
+	if 
+		\ len( popup_and_jumps ) > 0 &&
+		\ ( s:last_win_tab[ 0 ] != winnr() || s:last_win_tab[ 1 ] != tabpagenr() )
+		return popup_and_jumps[ 1 ]
+	endif
+	return <SID>CollectPertinentJumps( a:limit, a:type )
+endfunction
+
+
+function! <SID>TraditionalPertinentJumps( bufinfo )
+	return <SID>IsMatchedWithExcludeFromTraditionalJBufs( a:bufinfo["name"] )[ 0 ] > 0 ||
+				\ <SID>IsMatchedWithStamp( a:bufinfo["name"] ) < 0
+endfunction
+
+function! <SID>WorkspacesPertinentJumps( bufinfo )
+	return ! ( <SID>IsMatchedWithExcludeFromTraditionalJBufs( a:bufinfo["name"] )[ 1 ] == 0 )
+endfunction
+
+function! <SID>CollectPertinentJumps( limit, what_is_pertinent )
+	let do_not_repeat = [ bufnr() ]
+	let jumps = getjumplist()[0]
+	let length = len( jumps ) - 1
+	let i = length
+	let jumps_togo = []
+
+	while i >= 0
+		let jump = get( jumps, i )
+		let bufnr = jump["bufnr"]
+		let buf = getbufinfo( bufnr )
+		if len( buf ) == 0
+			let i -= 1
+			continue			
+		endif
+		let bufinfo = buf[0]
+
+		if (count(do_not_repeat, bufnr) > 0 || bufnr == 0 || len( bufinfo["name"] ) == 0 || 
+				\ <SID>{a:what_is_pertinent}PertinentJumps( bufinfo ) == v:true) 
+			let i -= 1
+			continue
+		endif
+
+		call add( do_not_repeat, bufnr )	
+		call add( jumps_togo, jump )
+		if len( jumps_togo ) == a:limit
+			break
+		endif
+		let i -= 1
+	endwhile
+	return jumps_togo 
 endfunction
 
 function! <SID>JBufsViewAndRaw( jumps, type )
@@ -253,9 +245,7 @@ function! <SID>JBufsViewAndRaw( jumps, type )
 endfunction
 
 function! <SID>JBufsViewWorkspaces( counter, jump )
-
 	return a:counter . "  " . <SID>MakeJump( a:jump )
-
 endfunction
 
 function! <SID>JBufsViewTraditional( counter, jump )
@@ -268,13 +258,10 @@ function! <SID>JBufsViewTraditional( counter, jump )
 	if a:counter == 5
 		let divisor = "- "
 	endif
-
 	return  divisor .  <SID>MakeJump( a:jump )
-
 endfunction
 
 function! <SID>UpdateOverlay( which, content, type )
-	
 	call popup_settext
 			\ ( 
 				\ a:which[ 0 ], a:content[ 0 ]
@@ -282,9 +269,7 @@ function! <SID>UpdateOverlay( which, content, type )
 
 	let str_name = join( <SID>BuildOverlayNameArray( a:type ), "" )
 	let tabname = <SID>BuildOverlayTabName()
-
 	let a:which[ 1 ] = a:content[ 1 ]
-
 endfunction
 
 call <SID>AutoCommandsOverlay( 0 ) 

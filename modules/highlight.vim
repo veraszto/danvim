@@ -3,11 +3,6 @@ function! <SID>MakeMarksPopupHiLight()
 	highlight PmenuSel ctermbg=red ctermfg=24
 endfunction
 
-function! <SID>MakeBuffersPopupHiLight()
-	highlight Pmenu ctermbg=8 ctermfg=213
-	highlight PmenuSel ctermbg=black ctermfg=213
-endfunction
-
 function! <SID>MakeHighlight( highlight, ctermbg, ctermfg, cterm )
 	execute "highlight " . a:highlight . " ctermbg=" . a:ctermbg . " ctermfg=" . a:ctermfg . " cterm=" . a:cterm
 endfunction
@@ -21,8 +16,8 @@ let choose_separator_color = 237
 let date_color = 21
 
 let highlights = [
-	\ [ "StatusLine", status_line_background, 213, "NONE" ],
-	\ [ "StatusLineNC", status_line_background, 40, "NONE" ],
+	\ [ "StatusLine", 239, 248, "NONE" ],
+	\ [ "StatusLineNC", 237, 246, "NONE" ],
 	\ [ "VertSplit", 16, 16, "NONE" ],
 	\ [ "Visual", purple, 207, "NONE" ],
 	\ [ "TabLineSel", 235, 189, "NONE" ],
