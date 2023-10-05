@@ -2852,7 +2852,7 @@ function! <SID>FirstJumpDiffBuf(right_or_left)
 
 		            let counter += 1
 				    let cur_bufnr = supposed_buffer
-
+					wa
 					while (counter) < (len_list)
 			            let supposed_buffer = list[counter]["bufnr"]
 						if cur_bufnr != supposed_buffer
@@ -2877,6 +2877,7 @@ function! <SID>FirstJumpDiffBuf(right_or_left)
 				\ (cur_bufnr != supposed_buffer) && 
 				\ (match(bufname(supposed_buffer), s:workspaces_pattern) < 0) &&
 				\ index(w:jump_diff_buff_jump_these_buffs, supposed_buffer) < 0
+					wa
 	                execute "normal " . (current_jump - counter) . "\<c-o>" 
 					return
             endif
