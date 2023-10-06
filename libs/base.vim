@@ -72,6 +72,19 @@ function s:this.StudyViewportsLayoutWithHorizontalGroups()
 	return layouts
 endfunction
 
+
+func s:this.MakeEscape(matter)
+	return escape(a:matter, '\" .')
+endfunction
+
+function s:this.StrPad( what, with, upto )
+	let padded = a:what
+	while len( padded ) < a:upto
+		let padded .= a:with
+	endwhile
+	return padded
+endfunction
+
 finish
 
 let s:translate_buffer = v:null
@@ -109,29 +122,10 @@ function! <SID>WriteToFile( content, file )
 endfunction
 
 
-function! <SID>StrPad( what, with, upto )
-
-	let padded = a:what
-
-	while len( padded ) < a:upto
-		let padded .= a:with
-	endwhile
-
-	return padded
-
-endfunction
 
 
 
-func! <SID>MakeEscape(matter)
 
-	return escape
-		\(
-			\a:matter, 
-			\'\" .'
-		\)
-
-endfunction
 
 
 

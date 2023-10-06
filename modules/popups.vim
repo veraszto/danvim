@@ -1,4 +1,5 @@
 let g:danvim.modules.popups = #{}
+let s:libs_base = g:danvim.libs.base
 let s:this = g:danvim.modules.popups
 
 function s:this.Jumps()
@@ -6,14 +7,14 @@ function s:this.Jumps()
 		nunme danvim_jumps
 	catch
 	endtry
-	let jumps = <SID>CollectPertinentJumps(13)
+	let jumps = <SID>CollectPertinentJumps(-1)
 	for jump in jumps
-		execute "nmenu danvim_jumps." . <SID>MakeEscape(<SID>MakeJump(jump)) . " " . 
+		execute "nmenu danvim_jumps." . s:libs_base.MakeEscape(<SID>MakeJump(jump)) . " " . 
 			\ ":wa <Bar> try <Bar> buffer " . jump["bufnr"]  . " " . 
 			\ "<Bar> catch <Bar> echo \"Could not buf:\" . v:exception <Bar> endtry<CR>" 
 	endfor
 	if len(jumps) > 0
-		popup jumps
+		popup danvim_jumps
 	else
 		echo "The list of jumps is empty"
 	endif
@@ -31,12 +32,12 @@ function s:this.Buffers()
 			\ get( buffer, "listed" ) == 0
 			continue
 		endif
-		execute "nmenu danvim_buffers." . <SID>MakeEscape( <SID>BuildBufferPopupItem( buffer ) ) . 
+		execute "nmenu danvim_buffers." . s:libs_base.MakeEscape( <SID>BuildBufferPopupItem( buffer ) ) . 
 			\ " :wa <Bar> buffer" . get(buffer, "bufnr")  . "<CR>"
 		let counter += 1
 	endfor
 	if counter > 0
-		popup buffers
+		popup danvim_buffers
 	else
 		echo "No eligible buffers to fill the list popup"
 	endif
@@ -62,8 +63,8 @@ endfunction
 
 function! <SID>BuildBufferPopupItem( buffer )
 	let label = "buf: " . 
-		\ <SID>StrPad( get(a:buffer, "bufnr"), " ", 3 ) . 
-		\ matchstr( get(a:buffer, "name"), s:tail_file )
+		\ s:libs_base.StrPad( get(a:buffer, "bufnr"), " ", 3 ) . 
+		\ slice(get(a:buffer, "name"), -20)
 	return label
 endfunction
 

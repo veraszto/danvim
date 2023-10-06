@@ -113,10 +113,10 @@ endfunction
 
 
 map <S-Down> <Cmd>call <SID>DuplicateViewportInTheMostStackedColumn()<CR>
-map <S-Right> <Cmd>call <SID>ArgsBrowsing(v:false)<CR>
-map <S-Left> <Cmd>call <SID>ArgsBrowsing(v:true)<CR>
-imap <S-Right> <Cmd>call <SID>ArgsBrowsing(v:false)<CR>
-imap <S-Left> <Cmd>call <SID>ArgsBrowsing(v:true)<CR>
+map <C-S-Right> <Cmd>call <SID>ArgsBrowsing(v:false)<CR>
+map <C-S-Left> <Cmd>call <SID>ArgsBrowsing(v:true)<CR>
+imap <C-S-Right> <Cmd>call <SID>ArgsBrowsing(v:false)<CR>
+imap <C-S-Left> <Cmd>call <SID>ArgsBrowsing(v:true)<CR>
 
 
 map <C-Up> <Cmd>call <SID>MoveTo("up", 0)<CR>

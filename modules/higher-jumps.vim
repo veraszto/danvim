@@ -62,6 +62,6 @@ function s:this.Main(right_or_left)
 endfunction
 
 " Forward
-map <C-S-Right> <Cmd>call g:danvim.modules.higher_jumps.Main(1)<CR>
+map <S-Right> <Cmd>call g:danvim.modules.higher_jumps.Main(1)<CR>
 " Backwards
-map <C-S-Left> <Cmd>call g:danvim.modules.higher_jumps.Main(-1)<CR>
+map <S-Left> <Cmd>call g:danvim.modules.higher_jumps.Main(-1)<CR>
