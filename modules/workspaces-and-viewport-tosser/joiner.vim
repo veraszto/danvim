@@ -6,4 +6,4 @@ function! <SID>Decide()
 	endif
 endfunction
 
-map <Space> <Cmd>call <SID>Decide()<CR>
+noremap <Space> <Cmd>call <SID>Decide()<CR>
