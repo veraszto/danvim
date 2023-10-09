@@ -85,6 +85,11 @@ function s:this.StrPad( what, with, upto )
 	return padded
 endfunction
 
+function s:this.VieportWidthAndHeight()
+	const this_viewport = winnr()
+	return [winwidth(this_viewport), winheight(this_viewport), this_viewport]
+endfunction
+
 finish
 
 let s:translate_buffer = v:null
