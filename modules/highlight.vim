@@ -1,6 +1,8 @@
 function! <SID>MakeMarksPopupHiLight()
-	highlight Pmenu ctermbg=24 ctermfg=214
-	highlight PmenuSel ctermbg=red ctermfg=24
+	highlight Pmenu ctermbg=232 ctermfg=246
+	highlight PmenuSel ctermbg=219 ctermfg=232
+	"highlight Pmenu ctermbg=24 ctermfg=214
+	"highlight PmenuSel ctermbg=red ctermfg=24
 endfunction
 
 function! <SID>MakeHighlight( highlight, ctermbg, ctermfg, cterm )
@@ -27,7 +29,6 @@ let highlights = [
 execute "highlight DiaryDivisorDate ctermbg=197 ctermfg=" . date_color
 execute "highlight DiaryDivisor ctermbg=" . choose_separator_color . " ctermfg=" . choose_separator_color
 execute "highlight CallingAttention ctermbg=" . choose_separator_color . " ctermfg=197"
-
 highlight InitialMessage ctermfg=242
 highlight MyLightGray ctermfg=242
 highlight MyLightGrayForText ctermfg=246
