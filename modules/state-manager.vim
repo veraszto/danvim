@@ -1,4 +1,5 @@
 const s:constants = g:danvim.constants
+const s:configs = g:danvim.configs
 let s:modules = g:danvim.modules
 let s:libs_base = g:danvim.libs.base
 let s:modules.state_manager = #{}
@@ -9,7 +10,7 @@ const s:tabs_vim = "tabs.vim"
 const s:fluid_flow_vim = "fluid-flow.vim"
 
 try
-	let s:loaders_dir_base = s:libs_base.FindFirstExistentDir(s:configs.workspaces_dirs)
+	let s:loaders_dir_base = s:libs_base.FindFirstExistentDir(s:configs.state_manager_dirs)
 catch
 	echo "Could not run module: state-manager.vim" 
 	echo v:exception
