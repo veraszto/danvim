@@ -1,5 +1,6 @@
 const s:constants = g:danvim.constants
 let s:modules = g:danvim.modules
+let s:libs_base = g:danvim.libs.base
 let s:modules.state_manager = #{}
 
 const s:tabs_var_name = "let g:danvim.app_data.state_manager"
@@ -7,10 +8,14 @@ const s:fluid_flow_var_name = "let g:danvim.app_data.fluid_flow"
 const s:tabs_vim = "tabs.vim"
 const s:fluid_flow_vim = "fluid-flow.vim"
 
-let s:loaders_dir_base = getenv("MY_VIM_STATE_MANAGER_DIR")
-if (s:loaders_dir_base == v:null)
-	let s:loaders_dir_base = s:constants.HomeDir . "/app-data/state-manager"
-endif
+try
+	let s:loaders_dir_base = s:libs_base.FindFirstExistentDir(s:configs.workspaces_dirs)
+catch
+	echo "Could not run module: state-manager.vim" 
+	echo v:exception
+	finish
+endtry
+
 
 function <SID>LoaderPath()
 	return expand(s:loaders_dir_base . getcwd())

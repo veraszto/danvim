@@ -1,25 +1,38 @@
 let g:danvim = #{configs: #{loaded_turns: 0}, libs: #{root: #{}}, 
 	\ modules: #{},
 	\ app_data: #{state_manager: [], fluid_flow: []},
-	\ constants: #{SpaceChar: " ", BarChar: "/", SourceCmd: "source", HomeDir: expand("<sfile>:h"), DanVimFile: expand("<sfile>")},
+	\ constants: #{SpaceChar: " ", BarChar: "/", SourceCmd: "source",  
+		\ UserDataDefaultHomeDir: $HOME . '/.danvim', CodebaseHomeDir: expand("<sfile>:h"), 
+		\ DanVimFile: expand("<sfile>")},
 	\ cmds: #{},
 	\ broad_regexes: #{workspaces_file: '\.workspaces$'},
 	\ messages: #{DanVimSourced: "DanVim has been sourced and finished execution"}
 \ }
 
+let s:constants = g:danvim.constants
 let s:configs = g:danvim.configs
 let s:libs = g:danvim.libs
-let s:constants = g:danvim.constants
 let s:BarChar = s:constants.BarChar 
 let s:SourceCmd = s:constants.SourceCmd
 let s:SpaceChar = s:constants.SpaceChar
-let s:constants.ConfigsFile = s:constants.HomeDir . s:BarChar . "configs.vim" 
-let s:constants.LibsDir = s:constants.HomeDir . s:BarChar . "libs" 
-let s:constants.ModulesDir = s:constants.HomeDir . s:BarChar . "modules" 
+let s:constants.ConfigsFile = s:constants.CodebaseHomeDir . s:BarChar . "configs.vim" 
+let s:constants.LibsDir = s:constants.CodebaseHomeDir . s:BarChar . "libs" 
+let s:constants.ModulesDir = s:constants.CodebaseHomeDir . s:BarChar . "modules" 
 let s:cmds = g:danvim.cmds
 let s:cmds.source_danvim = s:SourceCmd . s:SpaceChar . s:constants.DanVimFile
- 
+
 execute s:SourceCmd . s:constants.SpaceChar . s:constants.ConfigsFile
+
+if !isdirectory(s:constants.UserDataDefaultHomeDir)
+	try
+	 call mkdir(s:constants.UserDataDefaultHomeDir, "p")
+	catch
+		echo "Could not create $HOME/.danvim user data home dir which turned out to: " . 
+			\ s:constants.UserDataDefaultHomeDir
+		echo "Please arrange this creation to be successful"
+		finish
+	endtry
+endif
 
 function s:libs.root.FilesCollector(dir_or_file_array, init_array)
 	let list = a:init_array
