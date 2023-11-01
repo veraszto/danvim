@@ -9,15 +9,6 @@ const s:fluid_flow_var_name = "let g:danvim.app_data.fluid_flow"
 const s:tabs_vim = "tabs.vim"
 const s:fluid_flow_vim = "fluid-flow.vim"
 
-try
-	let s:loaders_dir_base = s:libs_base.FindFirstExistentDir(s:configs.state_manager_dirs)
-catch
-	echo "Could not run module: state-manager.vim" 
-	echo v:exception
-	finish
-endtry
-
-
 function <SID>LoaderPath()
 	return expand(s:loaders_dir_base . getcwd())
 endfunction
@@ -29,6 +20,24 @@ endfunction
 function <SID>MainFile()
 	return <SID>LoaderPath() . "/" . <SID>MainName() . ".vim"
 endfunction
+
+function <SID>AssertOrCreateLoaderDir()
+	const loader_path = <SID>LoaderPath() 
+	const main_file = <SID>MainFile()
+	if ! isdirectory(loader_path) || len(findfile(main_file)) <= 0
+		call mkdir(loader_path, "p")
+		call writefile([""], main_file)	
+		call writefile([s:tabs_var_name . ' = []'], loader_path . "/" . s:tabs_vim)	
+		call <SID>WriteFluidFlowToFile()
+	endif
+endfunction
+
+try
+	let s:loaders_dir_base = s:libs_base.FindFirstExistentDir(s:configs.state_manager_dirs)
+catch
+	call input("Could not run module: \nstate-manager.vim\n" . v:exception . "\nPress any key to continue")
+	finish
+endtry
 
 function s:modules.state_manager.SaveState(by_viewport)
 	let tab_page_number = tabpagenr() 
@@ -66,16 +75,7 @@ function s:modules.state_manager.SaveState(by_viewport)
 	echo "Saved to " . save_to
 endfunction
 
-function <SID>AssertOrCreateLoaderDir()
-	const loader_path = <SID>LoaderPath() 
-	const main_file = <SID>MainFile()
-	if ! isdirectory(loader_path) || len(findfile(main_file)) <= 0
-		call mkdir(loader_path, "p")
-		call writefile([""], main_file)	
-		call writefile([s:tabs_var_name . ' = []'], loader_path . "/" . s:tabs_vim)	
-		call <SID>WriteFluidFlowToFile()
-	endif
-endfunction
+
 
 function <SID>WriteFluidFlowToFile()
     call writefile([s:fluid_flow_var_name . " = " . string(s:fluid_flow)], 
