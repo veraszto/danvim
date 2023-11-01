@@ -27,7 +27,7 @@ if !isdirectory(s:constants.UserDataDefaultHomeDir)
 	try
 		call mkdir(s:constants.UserDataDefaultHomeDir, "p")
 	catch
-		echo "Could not create $HOME/.danvim user data home dir which turned out to: " . 
+		echo "Could not create $HOME/.danvim user data home dir: " . 
 			\ s:constants.UserDataDefaultHomeDir
 		echo "Please allow this creation to be successful"
 		finish
