@@ -4,7 +4,6 @@ let s:this = s:libs.base
 let s:configs = g:danvim.configs
 let s:when_only_at_workspaces_message = "This makes sense only in a .workspaces buffer"
 let s:regexes = g:danvim.broad_regexes
-
 function! s:this.ViFile(file)
 	if empty(trim(a:file))
 		echo "Can not vi an empty file"

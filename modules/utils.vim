@@ -131,5 +131,3 @@ map <C-End> <Cmd>call <SID>MoveTo("down", 1)<CR>
 
 map ;ea <Cmd>call <SID>RefreshAll()<CR>
 map ;sc <Cmd>call <SID>ShowColors()<CR>
-
-

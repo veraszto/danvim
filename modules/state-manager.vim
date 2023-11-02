@@ -32,12 +32,7 @@ function <SID>AssertOrCreateLoaderDir()
 	endif
 endfunction
 
-try
-	let s:loaders_dir_base = s:libs_base.FindFirstExistentDir(s:configs.state_manager_dirs)
-catch
-	call input("Could not run module: \nstate-manager.vim\n" . v:exception . "\nPress any key to continue")
-	finish
-endtry
+let s:loaders_dir_base = s:libs_base.FindFirstExistentDir(s:configs.state_manager_dirs)
 
 function s:modules.state_manager.SaveState(by_viewport)
 	let tab_page_number = tabpagenr() 

@@ -389,9 +389,4 @@ function! <SID>MakeSearchNoEscape(matter, search_flags)
 endfunction
 
 
-
 map <Del> <Cmd>call g:danvim.modules.workspaces.SmartReachWorkspace()<CR>
-
-
-
-

@@ -60,19 +60,33 @@ function s:libs.root.ReadDir(dir)
 	return built_content
 endfunction 
 
+function s:libs.root.InputLog(message_collection)
+	call input(join(a:message_collection, "\n") . "\nVim exception:\n" . v:exception . 
+		\ "\nPress any key to continue")
+endfunction
+
 let s:lib_files = s:libs.root.FilesCollector([s:constants.LibsDir], [])
 
 for lib_file in s:lib_files
-	execute s:SourceCmd . s:SpaceChar . lib_file
+	try
+		execute s:SourceCmd . s:SpaceChar . lib_file
+	catch
+		call s:libs.root.InputLog(["Could not load lib:", lib_file])
+	endtry
 endfor
 
 let s:modules_files = s:libs.root.FilesCollector([s:constants.ModulesDir], [])
 
 for module_file in s:modules_files
-	execute s:SourceCmd . s:SpaceChar . module_file
+	echo module_file
+	try
+		execute s:SourceCmd . s:SpaceChar . module_file
+	catch
+		call s:libs.root.InputLog(["Could not load module:", module_file])
+	endtry
 endfor
 
 let s:configs.loaded_turns += 1
 map ;sd <Cmd>execute g:danvim.cmds.source_danvim<CR>
-redraw
-echo g:danvim.messages.DanVimSourced
+"redraw
+"echo g:danvim.messages.DanVimSourced
