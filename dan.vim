@@ -78,7 +78,6 @@ endfor
 let s:modules_files = s:libs.root.FilesCollector([s:constants.ModulesDir], [])
 
 for module_file in s:modules_files
-	echo module_file
 	try
 		execute s:SourceCmd . s:SpaceChar . module_file
 	catch
