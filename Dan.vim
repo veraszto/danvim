@@ -2898,38 +2898,54 @@ endfunction
 
 function! <SID>StageBufferSwitcher()
 
-	let winheights = []
-	let curviewport = winnr() - 1
-	for viewport in range(winnr("$"))
-		let config = getwininfo(win_getid(viewport + 1))
-		call add(winheights, config[0].height)
-	endfor
-	let highest_with_index = [0, 0]
-	let index = 0
-	for height in winheights
-		if height > highest_with_index[0]
-			let highest_with_index = [height, index]
-		endif
-		let index += 1
-	endfor
+	let winnr = winnr()
+	const viewports_layout = <SID>StudyViewportsLayout()
 
-	if curviewport == highest_with_index[1] && curviewport == 0
-		wincmd L
-		wincmd h
-	elseif curviewport == highest_with_index[1]
-		wincmd H
-	else
-		wa
-		let cur_buffer = bufnr()
-		let cur_viewport = winnr()
-		execute (highest_with_index[1] + 1) . "wincmd w"
-		let target_buffer = bufnr()
-		execute "bu " . cur_buffer
-		execute (cur_viewport) . "wincmd w"
-		execute "bu " . target_buffer
-		execute (highest_with_index[1] + 1) . "wincmd w"
-		wincmd H
+	const cur_viewport_layout = win_screenpos(winnr)
+	let column = 1
+	let ordered_viewports_layout_keys = sort(map(keys(viewports_layout), 'str2nr(v:val)'), 'n')
+	const len_columns = len(ordered_viewports_layout_keys)
+	if len_columns <= 1
+		return
 	endif
+	echo ordered_viewports_layout_keys
+	for ys in ordered_viewports_layout_keys
+		if cur_viewport_layout[1] == ys
+			if len(viewports_layout[ys]) <= 1
+				return
+			endif
+			break
+		endif
+		let column += 1
+	endfor
+	const bufnr = bufnr()
+	const target_column_index = column % len_columns
+	let target_column = viewports_layout[ordered_viewports_layout_keys[target_column_index]]
+	let winnr_highest = [-1, 0]
+	for viewport in target_column
+		let height = getwininfo(win_getid(viewport.viewport))[0].height
+		if height > winnr_highest[1]
+			let winnr_highest[0] = viewport.viewport
+			let winnr_highest[1] = height
+		endif
+	endfor
+	execute target_column[0].viewport . "wincmd w"
+	split
+	execute "bu " . bufnr
+	let target_offset = 0
+	if (column - 1) < target_column_index
+		execute winnr . "wincmd w"
+	else
+		execute (winnr + 1) . "wincmd w"
+		let target_offset = 1
+	endif
+	quit
+	let winnr = winnr()
+	execute (winnr_highest[0] + target_offset) . "wincmd w"
+	wincmd _
+	execute winnr . "wincmd w"
+	wincmd _
+
 
 endfunction
 

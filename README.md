@@ -1,9 +1,10 @@
 
 <img src="images/vim.logo.png" alt="Vim logo" height="200" /> 
 
-# DanVim is an extendable Vim framework, written in Vim script
+# DanVim is a Vim library
 a proposed way of using Vim, with the intent to make Vim usage better and faster.
 
+## This doc is outdated and in progress
 
 
 - [Introduction](#introduction)
@@ -200,6 +201,4 @@ Please consider donating,
 </tr>
 </table>
 
-#### There are several features still to be documented about DanVim, as these docs are ongoing
-#### Please let me know if DanVim behaves unexpectedly
 #### Thank you!
