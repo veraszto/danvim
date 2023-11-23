@@ -82,16 +82,20 @@ function! <SID>MakeMappings()
 
 	"call <SID>MapShortcut( "<S-Left>", 'NavigateThroughLocalMarksAndWorkspaces( "down" )' )
 	"call <SID>MapShortcut( "<S-Right>", 'NavigateThroughLocalMarksAndWorkspaces( "up" )' )
-	call <SID>MapShortcut( "<C-S-Down>", 'FluidFlowNavigate( v:true, -1 )' )
-	call <SID>MapShortcut( "<C-S-Up>", 'FluidFlowNavigate( v:true, 1 )' )
+	"call <SID>MapShortcut( "<C-S-Down>", 'FluidFlowNavigate( v:true, -1 )' )
+	"call <SID>MapShortcut( "<C-S-Up>", 'FluidFlowNavigate( v:true, 1 )' )
+	call <SID>MapShortcut( "<C-S-Down>", 'TranslateViewport("down")' )
+	call <SID>MapShortcut( "<C-S-Up>", 'TranslateViewport("up")' )
+	call <SID>MapShortcut( "<C-S-Left>", 'TranslateViewport("left")' )
+	call <SID>MapShortcut( "<C-S-Right>", 'TranslateViewport("right")' )
 	call <SID>MapShortcut( "<F3>", 'FluidFlowCreate(v:false)' )
 	call <SID>MapShortcut( "<S-F3>", 'FluidFlowCreate(v:true)' )
 	call <SID>MapShortcut( "<", 'FluidFlowNavigate( v:false, -1 )' )
 	call <SID>MapShortcut( ">", 'FluidFlowNavigate( v:false, 1 )' )
 "	map <C-S-Left>	:previous<CR>
 "	map <C-S-Right>	:next<CR>
-	call <SID>MapShortcut( "<C-S-Right>", 'FirstJumpDiffBuf(1)' )
-	call <SID>MapShortcut( "<C-S-Left>", 'FirstJumpDiffBuf(0)' )
+	"call <SID>MapShortcut( "<C-S-Right>", 'FirstJumpDiffBuf(1)' )
+	"call <SID>MapShortcut( "<C-S-Left>", 'FirstJumpDiffBuf(0)' )
 
 	if !has_key(environ(), "MY_VIM_OVERLAY_NAVIGATOR_OFF") || ($MY_VIM_OVERLAY_NAVIGATOR_OFF) == "0"
 		call <SID>OverlayMaps()
