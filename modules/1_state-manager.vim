@@ -82,9 +82,9 @@ function <SID>DistributeArgsIntoViewports()
 	argu1
 	vertical split
 	wincmd p
-	let i = 0
-	while i < argc()
-		try | execute "argu" . (i+1) | catch | endtry
+	let i = 2
+	while i <= argc()
+		try | execute "argu" . (i) | catch | endtry
 		split
 		wincmd w
 		let i += 1
