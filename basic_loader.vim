@@ -98,22 +98,16 @@ endfunction
 
 function <SID>DistributeArgsIntoViewports()
 	only
-	argu1
-	vertical split
-	wincmd p
-	let i = 0
-	while i < argc()
-		try | execute "argu" . (i+1) | catch | endtry
+	let i = 1
+	while i <= argc()
+		try | execute "argu" . (i) | catch | endtry
 		split
 		wincmd w
 		let i += 1
 	endwhile
 	quit
-	if winnr("$") > 2
-		3wincmd w
-	endif
+	1wincmd w
 	wincmd _
-	wincmd t 
 endfunction
 
 call <SID>AssertOrCreateLoaderDir()
