@@ -56,7 +56,7 @@ function s:this.FindFirstExistentDir(dirs_collection)
 	throw "Could not find a dir from any of " . string(a:dirs_collection)
 endfunction
 
-function s:this.StudyViewportsLayoutWithHorizontalGroups()
+function s:this.StudyViewportsLayoutWithVerticalGroups()
 	let layouts = #{}
 	for viewport in range(winnr("$"))
 		let cur_viewport = viewport + 1

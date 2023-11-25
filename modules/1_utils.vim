@@ -98,7 +98,7 @@ function <SID>DuplicateViewportInTheMostStackedColumn()
 			return
 		endif
 	endfor
-	const layouts = s:base_lib.StudyViewportsLayoutWithHorizontalGroups()
+	const layouts = s:base_lib.StudyViewportsLayoutWithVerticalGroups()
 	let highest_stack = []
 	for value in values(layouts)
 		if len(value) > len(highest_stack)
