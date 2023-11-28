@@ -5,7 +5,10 @@ let s:libs_base = g:danvim.libs.base
 let s:modules.state_manager = #{}
 
 const s:tabs_var_name = "let g:danvim.app_data.state_manager"
+const s:viewport_pane_breaker = "let g:danvim.app_data.state_manager_pane_breaker"
+const s:highests_viewports = "let g:danvim.app_data.state_manager_highests_viewports"
 const s:fluid_flow_var_name = "let g:danvim.app_data.fluid_flow"
+
 const s:tabs_vim = "tabs.vim"
 const s:fluid_flow_vim = "fluid-flow.vim"
 
@@ -37,6 +40,8 @@ let s:loaders_dir_base = s:libs_base.FindFirstExistentDir(s:configs.state_manage
 function s:modules.state_manager.SaveState(by_viewport)
 	let tab_page_number = tabpagenr() 
     let all_args = []
+	let column_splitter = []
+	let highests = []
     for tab in range(tabpagenr("$"))
         execute (tab + 1) . "tabn"
 		if a:by_viewport == v:false
@@ -45,17 +50,47 @@ function s:modules.state_manager.SaveState(by_viewport)
 			endif
 		else
 			let viewport_args = []
+			let current_column_and_height = [win_screenpos(1)[1], getwininfo(win_getid(1))[0].height]
+			call add(column_splitter, [])
+			call add(highests, [])
+			let has_set_height = v:false
+			let index_cur_highest_counter = 0
 			for viewport in range(winnr("$"))
-				let bufnr = winbufnr(viewport + 1)
+				let current_viewport = viewport + 1
+				let bufnr = winbufnr(current_viewport)
 				let bufname = bufname(bufnr)
 
 				if len(getbufvar(bufnr, '&buftype')) <= 0 && 
 					\ count(viewport_args, bufname) <= 0 && buflisted(bufnr) > 0
 
 					call add(viewport_args, bufname)
+					let column = win_screenpos(current_viewport)[1]
+					let height = getwininfo(win_getid(1))[0].height
+					if column > current_column_and_height[0]
+						call add(column_splitter[tab], current_viewport)
+						let current_column_and_height[0] = column
+						let current_column_and_height[1] = height
+						if has_set_height == v:false
+							if len(highests[tab]) <= 0
+								call add(highests[tab], viewport)
+							else
+								let highests[tab][index_cur_highest_counter] = viewport
+							endif
+						endif
+						let index_cur_highest_counter += 1
+					endif
+					if height > current_column_and_height[1]
+						if len(highests[tab]) <= 0
+							call add(highests[tab], current_viewport)
+						else
+							let highests[tab][index_cur_highest_counter] = current_viewport
+						endif
+						let current_column_and_height[1] = height
+						let has_set_height = v:true
+					endif
 				endif
-				call filter(viewport_args, '!empty(v:val)')	
 			endfor
+			call filter(viewport_args, '!empty(v:val)')	
 			if !empty(viewport_args)
 				call add(all_args, viewport_args)
 			endif
@@ -64,7 +99,10 @@ function s:modules.state_manager.SaveState(by_viewport)
 	call <SID>AssertOrCreateLoaderDir()
 	const loader_path = <SID>LoaderPath()
 	const save_to = loader_path . "/" . s:tabs_vim
-    call writefile([s:tabs_var_name . " = " . string(all_args)], save_to)
+	let tabs_viewports = s:tabs_var_name . " = " . string(all_args)
+	let pane_breaker = s:viewport_pane_breaker . " = " . string(column_splitter)
+	let highests_viewports = s:highests_viewports . " = " . string(highests)
+    call writefile([tabs_viewports, pane_breaker, highests_viewports], save_to)
 	call <SID>WriteFluidFlowToFile()
 	execute tab_page_number . "tabnext"
 	echo "Saved to " . save_to
