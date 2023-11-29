@@ -52,7 +52,7 @@ function s:modules.state_manager.SaveState(by_viewport)
 			let viewport_args = []
 			let current_column_and_height = [win_screenpos(1)[1], getwininfo(win_getid(1))[0].height]
 			call add(column_splitter, [])
-			call add(highests, [])
+			call add(highests, [current_column_and_height[1]])
 			let has_set_height = v:false
 			let index_cur_highest_counter = 0
 			for viewport in range(winnr("$"))
@@ -65,28 +65,16 @@ function s:modules.state_manager.SaveState(by_viewport)
 
 					call add(viewport_args, bufname)
 					let column = win_screenpos(current_viewport)[1]
-					let height = getwininfo(win_getid(1))[0].height
+					let height = getwininfo(win_getid(current_viewport))[0].height
 					if column > current_column_and_height[0]
 						call add(column_splitter[tab], current_viewport)
+						call add(highests[tab], current_viewport)
 						let current_column_and_height[0] = column
 						let current_column_and_height[1] = height
-						if has_set_height == v:false
-							if len(highests[tab]) <= 0
-								call add(highests[tab], viewport)
-							else
-								let highests[tab][index_cur_highest_counter] = viewport
-							endif
-						endif
 						let index_cur_highest_counter += 1
-					endif
-					if height > current_column_and_height[1]
-						if len(highests[tab]) <= 0
-							call add(highests[tab], current_viewport)
-						else
-							let highests[tab][index_cur_highest_counter] = current_viewport
-						endif
+					elseif height >= current_column_and_height[1]
+						let highests[tab][index_cur_highest_counter] = current_viewport
 						let current_column_and_height[1] = height
-						let has_set_height = v:true
 					endif
 				endif
 			endfor
@@ -115,14 +103,11 @@ function <SID>WriteFluidFlowToFile()
 		\ <SID>LoaderPath() . "/" . s:fluid_flow_vim)
 endfunction
 
-function <SID>DistributeArgsIntoViewports()
+function <SID>DistributeArgsIntoViewports(tab)
 	only
-	argu1
-	vertical split
-	wincmd p
-	let i = 2
-	while i <= argc()
-		try | execute "argu" . (i) | catch | endtry
+	let i = 0
+	while i < argc()
+		try | execute "argu" . (i + 1) | catch | endtry
 		split
 		wincmd w
 		let i += 1
@@ -163,7 +148,7 @@ function s:modules.state_manager.InflateState()
 			call add(args_escaped, escape(arg, ' \'))
 		endfor
 		execute "arglocal" . " " . join(args_escaped, " ")
-		call <SID>DistributeArgsIntoViewports()
+		call <SID>DistributeArgsIntoViewports(counter)
 		tabnew
 		let counter += 1
 	endwhile
