@@ -328,9 +328,6 @@ function! <SID>BuFromGNUTree(line_number, line, len_tree_prefix, roof_dir)
 
 endfunction
 
-
-
-
 function! <SID>WriteBasicStructure()
 
 	try
@@ -359,34 +356,6 @@ function! <SID>WriteBasicStructure()
 
 endfunction
 
-
-function! <SID>LoadBufferVars(bufnr, string_dict)
-
-	if len(a:string_dict) <= 0
-		return
-	endif
-
-	let cropped = substitute(a:string_dict, '^...', "", "")
-
-	try
-"		execute "let dict = " . escape(cropped, '"')
-		execute "let dict = " . cropped
-	catch
-		echo "Could not parse: " . cropped . ", because: " . v:exception .
-			\ "\nUsage: filename.abc__\\#{a:1, b:2, \"jBufs_overlay_amend\":\"(Hello)\"}"
-		return
-	endtry
-
-	for a in keys(dict)
-		call setbufvar(a:bufnr, a, dict[ a ])
-	endfor
-
-endfunction
-
-
-function! <SID>MakeSearchNoEscape(matter, search_flags)
-	call search(a:matter, a:search_flags)
-endfunction
 
 
 map <Del> <Cmd>call g:danvim.modules.workspaces.SmartReachWorkspace()<CR>

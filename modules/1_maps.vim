@@ -61,6 +61,7 @@ map ;/ <Cmd>echo "Searching for >>>>>, <<<<<<, \|\|\|\|\|\|" <Bar> call search( 
 
 map ;hn :new<CR>
 map ;he :tabnew <Bar> help function-list <Bar> only<CR>
+map ;tn :tabnew<CR>
 map ;ju :jumps<CR>
 map ;hs :split<CR>
 map ;ks :keepjumps /

@@ -113,11 +113,8 @@ function <SID>DistributeArgsIntoViewports(tab)
 		let i += 1
 	endwhile
 	quit
-	if winnr("$") > 2
-		3wincmd w
-	endif
+	1wincmd w
 	wincmd _
-	wincmd t 
 endfunction
 
 function s:modules.state_manager.InflateState()
