@@ -3044,6 +3044,71 @@ function <SID>DuplicateViewportInTheMostStackedColumn()
 	execute winnr . "wincmd w"
 endfunction
 
+function! <SID>CompletionIntelligenceSelected(id, selected)
+	if a:selected < 1
+		return
+	endif
+	const selected = s:completion_intelligence_findings[a:selected - 1]
+	"let @z = selected
+	"normal bved"zpl
+	const new_line = substitute(s:completion_intelligence_context_line, 
+	 \ s:completion_intelligence_to_replace, selected, "")
+	call setline(".", new_line)
+	normal bel
+endfunction
+
+let s:completion_intelligence_findings = []
+let s:completion_intelligence_context_line = ""
+let s:completion_intelligence_to_replace = ""
+
+function! <SID>CompletionIntelligence()
+	const cursorPositionInItsViewport = getpos(".")
+	let s:completion_intelligence_context_line = getline(".")
+	if cursorPositionInItsViewport[2] > 1
+		normal b
+	endif
+	const lookFor = expand("<cword>")
+	let s:completion_intelligence_to_replace = lookFor
+	if len(lookFor) < 3
+		echo "At least three chars to to begin the search"
+		return
+	endif
+	const lineFound = search(lookFor, "w")
+	if lineFound <= 0
+		return
+	endif
+	"normal zz
+	let findings = []
+	normal G$
+	let flags = "w"
+	while search(lookFor, flags) > 0
+		call add(findings, expand("<cword>"))
+		let flags = "W"
+	endwhile
+	let fromDictionary = systemlist("grep " . lookFor . " $MY_STUFF/vim/dictionary")
+	let s:completion_intelligence_findings = extend(findings, fromDictionary)
+	call uniq(sort(s:completion_intelligence_findings))
+	call filter(s:completion_intelligence_findings, 'v:val != lookFor && v:val =~ ("^" . lookFor)')
+	call setpos(".", cursorPositionInItsViewport)
+	if len(s:completion_intelligence_findings) == 1
+		call <SID>CompletionIntelligenceSelected(-1, 1)
+		return
+	endif
+	if len(s:completion_intelligence_findings) > 0
+		redraw!
+		const screenPos2 = screenpos(win_getid(winnr()), 
+			\ cursorPositionInItsViewport[1], cursorPositionInItsViewport[2])
+		"echo screenPos
+		"echo screenPos2
+		let popup_id = popup_menu(s:completion_intelligence_findings, 
+			\ #{border:[0,0,0,0], padding:[0,0,0,0], pos:"topleft",
+			\ line: screenPos2.row + 1, col:screenPos2.curscol + 1, 
+			\ callback:"<SID>CompletionIntelligenceSelected"})
+	else
+		echo "No match has been found"
+	endif
+endfunction
+
 runtime! base.vars/**/*.vim
 
 execute "let s:base_vars = " . g:Danvim_current_being_sourced . "BaseVars()"

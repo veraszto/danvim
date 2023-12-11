@@ -9,6 +9,8 @@ function! <SID>MakeMappings()
 
 "	Easing autocomplete
 	imap jj <C-X><C-N>
+	imap ja <Cmd>call writefile([expand("<cword>")], expand("$MY_STUFF/vim/dictionary"), "a")<CR>
+	call <SID>iMapShortcut("jj", 'CompletionIntelligence()' )
 	imap jn <C-X><C-N>
 	imap jk <C-X><C-K>
 	imap jv <C-X><C-V>
