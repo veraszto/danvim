@@ -31,7 +31,7 @@ function <SID>AssertOrCreateLoaderDir()
 		call mkdir(loader_path, "p")
 		call writefile([""], main_file)	
 		call writefile([s:tabs_var_name . ' = []'], loader_path . "/" . s:tabs_vim)	
-		call <SID>WriteFluidFlowToFile()
+		call <SID>WriteFluidFlowToFile([])
 	endif
 endfunction
 
@@ -91,15 +91,13 @@ function s:modules.state_manager.SaveState(by_viewport)
 	let pane_breaker = s:viewport_pane_breaker . " = " . string(column_splitter)
 	let highests_viewports = s:highests_viewports . " = " . string(highests)
     call writefile([tabs_viewports, pane_breaker, highests_viewports], save_to)
-	call <SID>WriteFluidFlowToFile()
+	call <SID>WriteFluidFlowToFile(s:fluid_flow)
 	execute tab_page_number . "tabnext"
 	echo "Saved to " . save_to
 endfunction
 
-
-
-function <SID>WriteFluidFlowToFile()
-    call writefile([s:fluid_flow_var_name . " = " . string(s:fluid_flow)], 
+function <SID>WriteFluidFlowToFile(content)
+    call writefile([s:fluid_flow_var_name . " = " . string(a:content)], 
 		\ <SID>LoaderPath() . "/" . s:fluid_flow_vim)
 endfunction
 
@@ -118,6 +116,7 @@ function <SID>DistributeArgsIntoViewports(tab)
 endfunction
 
 function s:modules.state_manager.InflateState()
+
 	call <SID>AssertOrCreateLoaderDir()
 
 	const loader_path = <SID>LoaderPath()

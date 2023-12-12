@@ -2,33 +2,39 @@ let s:libs_base = g:danvim.libs.base
 const s:configs = g:danvim.configs
 
 let s:dictionaries_dir = s:libs_base.FindFirstExistentDir(s:configs.dictionaries_dir)
+let s:bridge_file = s:libs_base.FindFirstExistentValue(s:configs.bridge_file)
 
-function! <SID>MoveTo( direction, expand )
+function! <SID>MoveTo(direction, expand)
 	if a:direction =~ '^up$'
 		wincmd W
 	else
 		wincmd w
 	endif
-
 	if a:expand
 		wincmd _
 	endif
 endfunction
 
-
-function! <SID>ArgsBrowsing(left)
-	try
-		wa
-		if a:left
-			previous
-		else
-			next
-		endif
-	catch
-		echo v:exception
-	endtry
+function! <SID>CopyRegisterToFileAndClipboard()
+	let tmp = @" 
+	call writefile([tmp], s:bridge_file, "a")
+	call system(s:configs.clipboard_commands[0] . " -- " . shellescape(tmp))
+	echo "Copied \"... " . trim(matchstr(tmp, '.\{1,50}')) . " ...\" to main clipboard"
 endfunction
 
+function! <SID>PasteFromClipboard(only_to_main_register)
+	let from_regular_clipboard = systemlist(s:configs.clipboard_commands[1])
+	if a:only_to_main_register == v:false
+		call append(line("."), from_regular_clipboard)
+	else
+		echo "Clipboard has been put to main register"
+		let @" = join(from_regular_clipboard, "\n")
+	endif
+endfunction
+
+map <F1> <Cmd>call <SID>CopyRegisterToFileAndClipboard()<CR>
+map <F2> <Cmd>call <SID>PasteFromClipboard(v:false)<CR>
+map ;pr  <Cmd>call <SID>PasteFromClipboard(v:true)<CR>
 
 function! <SID>TabJump()
 	let l:count = tabpagenr("$")	
@@ -41,7 +47,6 @@ function! <SID>TabJump()
 	endif
 endfunction
 
-
 function! <SID>MakeHTMLTags()
 	let tag = matchstr(getline("."), '[[:alnum:]\._-]\+')
 	let indent = matchstr(getline("."), '^\(\t\|\s\)\+')
@@ -49,28 +54,16 @@ function! <SID>MakeHTMLTags()
 	call append(".", indent . "</" . tag . ">")
 endfunction
 
-
-function! <SID>FormatJSON( )
-	wa
-	call <SID>JobStartOutFiles($MY_BASH_DIR . "/format_json.sh")
-endfunction
-
-
 function! <SID>ShowColors()
-	let counter = 0xFF 
-	for a in range( counter ) 
-
-		let inverse = counter - a
-		execute "highlight MyHighlight" .
-					\ " ctermfg=" . ( "white" ) . 
-					\ " ctermbg=" . a
-
-		echohl MyHighlight
-		echo "ctermbg:" . a . ",  Hello how are you?"
+	let color_range = 0xFF 
+	for color in range(color_range) 
+		let inverse = color_range - color
+		execute "highlight DanVimColorPresentation ctermfg=white ctermbg=" . color
+		echohl DanVimColorPresentation
+		echo "ctermbg:" . color . ",  Hello how are you?"
 		echohl None
 	endfor
 endfunction
-
 
 function! <SID>RefreshAll()
 	let this_tab = tabpagenr()
@@ -85,17 +78,19 @@ function! <SID>RefreshAll()
 		\ endtry
 
 	tabdo wincmd h
-
 	execute "tabn " . this_tab
 	execute this_viewport . " wincmd w" 
-		
 	echo "Executed forced edit(:e!) throught all active buffers!"
 endfunction
 
 function <SID>AddToDictionary()
-	call writefile([expand("<cword>")], s:dictionaries_dir . "/default", "a")
+	const word = expand("<cword>")
+	if len(word) > 0
+		echo "Not added, the subject is zero length"
+	else
+		call writefile([word], s:dictionaries_dir . "/default", "a")
+	endif
 endfunction
-
 
 imap ja <Cmd>call <SID>AddToDictionary()<CR>
 

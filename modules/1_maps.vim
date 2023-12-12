@@ -31,7 +31,7 @@ map { g;
 map } g,
 
 map ;ab :ab<CR>
-map ;bl :ls<CR>
+map ;ls :ls<CR>
 map ;bu :bu<Space>
 map ;ch :changes<CR>
 map ;cj :clearjumps<CR>
@@ -64,7 +64,8 @@ map ;he :tabnew <Bar> help function-list <Bar> only<CR>
 map ;tn :tabnew<CR>
 map ;ju :jumps<CR>
 map ;hs :split<CR>
-map ;ks :keepjumps /
+map ;vn :vertical new<CR>
+map ;vs :vertical split<CR>
 map ;lc :lcd 
 map ;pw :pwd<CR>
 map ;q :quit<CR>
@@ -72,13 +73,11 @@ map ;Q :tabclose<CR>
 map ;rg :reg<CR>
 map ;sm :marks<CR>
 map ;ms ;sm
-map ;md <Cmd>delmarks! \| echo "All marks deleted for " .bufname()<CR>
+map ;dm <Cmd>delmarks! \| echo "All marks deleted for " .bufname()<CR>
 map ;, <Cmd>try \| tabm- \| catch \| echo "Even more?" \| endtry <CR>
 map ;. <Cmd>try \| tabm+ \| catch \| echo "Even more?" \| endtry <CR>
 map ;< <Cmd>tabm0<CR>
 map ;> <Cmd>tabm$<CR>
-map ;vn :vertical new<CR>
-map ;vs :vertical split<CR>
 noremap <expr> ;i ":vi " . getcwd() . "/"
 noremap <expr> ;I ":vi " . expand("%:h") . "/"
 
