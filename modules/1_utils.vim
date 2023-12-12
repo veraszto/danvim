@@ -92,12 +92,12 @@ function! <SID>RefreshAll()
 	echo "Executed forced edit(:e!) throught all active buffers!"
 endfunction
 
-function <SID>AddToDictironary()
+function <SID>AddToDictionary()
 	call writefile([expand("<cword>")], s:dictionaries_dir . "/default", "a")
 endfunction
 
 
-imap ja <Cmd>call AddToDictironary()<CR>
+imap ja <Cmd>call <SID>AddToDictionary()<CR>
 
 map <C-Up> <Cmd>call <SID>MoveTo("up", 0)<CR>
 map <C-Down> <Cmd>call <SID>MoveTo("down", 0)<CR>

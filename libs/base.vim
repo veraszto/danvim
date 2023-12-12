@@ -27,7 +27,7 @@ function s:this.ViInitialWorkspace()
 	endtry
 
 	let guesses = []
-	for a in s:initial_workspace_tries	
+	for a in s:configs.initial_workspace_tries	
 		let guess = dir . "/" . a . ".workspaces"
 		call add(guesses, guess)
 		if file_readable( guess  )
