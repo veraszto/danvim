@@ -85,14 +85,16 @@ endfunction
 
 function <SID>AddToDictionary()
 	const word = expand("<cword>")
-	if len(word) > 0
+	if len(word) <= 0
 		echo "Not added, the subject is zero length"
 	else
-		call writefile([word], s:dictionaries_dir . "/default", "a")
+		let path = s:dictionaries_dir . "/default"
+		call writefile([word], path, "a")
+		echo "Added " . word . " to dictionary " . path
 	endif
 endfunction
 
-imap ja <Cmd>call <SID>AddToDictionary()<CR>
+map ;ja <Cmd>call <SID>AddToDictionary()<CR>
 
 map <C-Up> <Cmd>call <SID>MoveTo("up", 0)<CR>
 map <C-Down> <Cmd>call <SID>MoveTo("down", 0)<CR>

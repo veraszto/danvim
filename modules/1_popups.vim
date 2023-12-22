@@ -38,7 +38,8 @@ function s:this.Jumps()
 	const this_viewport_width_and_height = s:libs_base.VieportWidthAndHeight()
 	const viewport_pos = win_screenpos(this_viewport_width_and_height[2]) 
 	let jump_list = getjumplist()[0]
-	let s:parallel_jumps_list = reverse(uniq(map(jump_list, 'v:val.bufnr')))
+	let s:parallel_jumps_list = reverse(uniq(map(filter(jump_list, 'len(bufname(v:val.bufnr)) > 0'), 
+		\ 'v:val.bufnr')))
 	let s:final_popup_jumps_list = map(copy(s:parallel_jumps_list), 
 		\ 'slice(bufname(v:val), -' . (s:common_popup_options.maxwidth)  . ')')
 	let s:popup_jumps_id = popup_create(s:final_popup_jumps_list, extend(copy(s:common_popup_options), 

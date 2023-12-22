@@ -161,7 +161,7 @@ function s:modules.state_manager.InflateState()
 	endtry
 
 	if counter <= 0
-		arglocal Hello 
+		echo "This is a new project"
 	else
 		tabc
 		tabn 1
