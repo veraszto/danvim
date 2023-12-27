@@ -10,8 +10,8 @@ imap jv <C-X><C-V>
 "   Viewport Navigation
 map <C-Left> <C-W>h
 map <C-Right> <C-W>l
-imap <C-Left> <Esc><C-W>hi
-imap <C-Right> <Esc><C-W>li
+imap <C-Left> <Cmd>wincmd h<CR>
+imap <C-Right> <Cmd>wincmd l<CR>
 
 "Alternate buffer navigation
 map <S-Tab> :up <Bar> :e#<CR>
@@ -80,37 +80,3 @@ map ;< <Cmd>tabm0<CR>
 map ;> <Cmd>tabm$<CR>
 noremap <expr> ;i ":vi " . getcwd() . "/"
 noremap <expr> ;I ":vi " . expand("%:h") . "/"
-
-
-
-finish
-
-
-call <SID>MapShortcut( "<Space>", 'SpacebarAction()' )
-call <SID>MapShortcut( "<C-S-Right>", 'FirstJumpDiffBuf(1)' )
-call <SID>MapShortcut( "<C-S-Left>", 'FirstJumpDiffBuf(0)' )
-call <SID>MapShortcut( "<F2>", 'WrapperHideAndShowPopups()' )
-call <SID>MapShortcut( "<F1>", 'CopyRegisterToFileAndClipboard()' )
-call <SID>MapShortcut( "[1;2P", 'PasteFromClipboard( v:false )' )
-call <SID>MapShortcut( ";cp", 'CopyRegisterToFileAndClipboard()' )
-call <SID>MapShortcut( ";pt", 'PasteFromClipboard( v:false )' )
-call <SID>MapShortcut( "[1;6P", 'PasteFromClipboard( 1 )' )
-"	call <SID>MapShortcut( "<F3>", 'MarkNext()' )
-"	call <SID>MapShortcut( "<F4>", 'WriteBasicStructure()' )
-"	call <SID>MapShortcut( "<F4>", 'TranslatePaneViewport()' )
-"	call <SID>MapShortcut( "<F10>", "BuffersMatteringNow()" )
-"	call <SID>MapShortcut( "<F10>", 'StageBufferSwitcher()' )
-call <SID>MapShortcut( "<F5>", 'CloseAllTrees()' )
-
-function! <SID>RaiseAndLowerViewport()
-	if !exists("w:is_raised")
-		let w:is_raised = v:false
-	endif
-	if w:is_raised == v:true
-		wincmd =
-		let w:is_raised = v:false
-	else
-		wincmd _
-		let w:is_raised = v:true
-	endif
-endfunction
