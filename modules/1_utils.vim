@@ -1,8 +1,27 @@
+let g:danvim.modules.utils = #{}
+let s:this = g:danvim.modules.utils
 let s:libs_base = g:danvim.libs.base
 const s:configs = g:danvim.configs
 
 let s:dictionaries_dir = s:libs_base.FindFirstExistentDir(s:configs.dictionaries_dir)
 let s:bridge_file = s:libs_base.FindFirstExistentValue(s:configs.bridge_file)
+
+function s:this.InflateViewports()
+	let winnr_current = winnr()
+	wincmd p
+	let winnr_previous = winnr()
+	const vertical_panes_length = len(s:libs_base.StudyViewportsLayoutWithVerticalGroups()) - 1
+	wincmd t
+	wincmd _
+	for column in range(vertical_panes_length)
+		wincmd l
+		wincmd _
+	endfor
+	execute winnr_previous . "wincmd w"
+	wincmd _
+	execute winnr_current . "wincmd w"
+	wincmd _
+endfunction
 
 function! <SID>MoveTo(direction, expand)
 	if a:direction =~ '^up$'
@@ -96,14 +115,12 @@ endfunction
 
 map ;ja <Cmd>call <SID>AddToDictionary()<CR>
 
-map <C-Up> <Cmd>call <SID>MoveTo("up", 0)<CR>
-map <C-Down> <Cmd>call <SID>MoveTo("down", 0)<CR>
-map <C-Up> <Cmd>call <SID>MoveTo("up", 0)<CR>
-map <C-Down> <Cmd>call <SID>MoveTo("down", 0)<CR>
-map <C-Home> <Cmd>call <SID>MoveTo("up", 1)<CR>
-map <C-End> <Cmd>call <SID>MoveTo("down", 1)<CR>
-map <C-Home> <Cmd>call <SID>MoveTo("up", 1)<CR>
-map <C-End> <Cmd>call <SID>MoveTo("down", 1)<CR>
+map <C-Up> <Cmd>call <SID>MoveTo("up", 1)<CR>
+map <C-Down> <Cmd>call <SID>MoveTo("down", 1)<CR>
+imap <C-Up> <Cmd>call <SID>MoveTo("up", 1)<CR>
+imap <C-Down> <Cmd>call <SID>MoveTo("down", 1)<CR>
+"map <C-Home> <Cmd>call <SID>MoveTo("up", 1)<CR>
+"map <C-End> <Cmd>call <SID>MoveTo("down", 1)<CR>
 
 
 map ;ea <Cmd>call <SID>RefreshAll()<CR>

@@ -4,11 +4,11 @@ let s:constants = g:danvim.constants
 const s:UserDataDefaultHomeDir = s:constants.UserDataDefaultHomeDir
 const s:CodebaseHomeDir = s:constants.CodebaseHomeDir
 
-let s:configs.dictionaries_dir = [ $DANVIM_DICTS, s:UserDataDefaultHomeDir . "/app-data/dictionaries" ]
-let s:configs.workspaces_dirs = [ $DANVIM_WORKSPACES, s:UserDataDefaultHomeDir . "/app-data/workspaces" ]
+let s:configs.dictionaries_dir = [ $DANVIM_DICTS, s:UserDataDefaultHomeDir . "/dictionaries" ]
+let s:configs.workspaces_dirs = [ $DANVIM_WORKSPACES, s:UserDataDefaultHomeDir . "/workspaces" ]
 let s:configs.initial_workspace_tries = [ "all", "root", "basic", "workspaces", "core", "source" ]
 let s:configs.state_manager_dirs = [ $DANVIM_STATE_MANAGER_DIR, 
-	\ s:UserDataDefaultHomeDir . "/app-data/state-manager" ]
+	\ s:UserDataDefaultHomeDir . "/state-manager" ]
 let s:configs.basic_structure_initial_dir = [ $DANVIM_INITIAL_DIR, s:UserDataDefaultHomeDir . "/" ]
 let s:configs.bridge_file = [$DANVIM_BRIDGE_FILE, "/tmp/danvim.bridge"]
 
