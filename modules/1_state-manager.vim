@@ -104,15 +104,27 @@ endfunction
 function <SID>DistributeArgsIntoViewports(tab)
 	only
 	let i = 0
-	while i < argc()
+	const argc = argc()
+"	if argc > 1
+"		try | execute "argu" . (i + 1) | catch | endtry
+"		vertical split
+"		let i += 1
+"	else
+"		vertical split
+"	endif
+"	wincmd p
+	vertical split
+	wincmd p
+	while i < argc
 		try | execute "argu" . (i + 1) | catch | endtry
 		split
 		wincmd w
 		let i += 1
 	endwhile
 	quit
-	1wincmd w
+	2wincmd w
 	wincmd _
+	1wincmd w
 endfunction
 
 function s:modules.state_manager.InflateState()
@@ -156,7 +168,7 @@ function s:modules.state_manager.InflateState()
 		let viewport_name = "HOME"
 	endif
 	try
-		call system("tmux rename-window " . viewport_name)
+		call system("tmux rename-window " . matchstr(viewport_name, '[^/]\+$'))
 	catch
 	endtry
 

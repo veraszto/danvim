@@ -6,6 +6,7 @@ imap jj <C-X><C-N>
 imap jn <C-X><C-N>
 imap jk <C-X><C-K>
 imap jv <C-X><C-V>
+imap jf <C-X><C-F>
 
 "   Viewport Navigation
 map <C-Left> <C-W>h

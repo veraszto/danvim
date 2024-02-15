@@ -62,6 +62,7 @@ highligh WorkspacesMetaDataEnclosure ctermfg=45
 highligh WorkspacesMetaDataContainer ctermfg=81
 highligh WorkspacesMetaData ctermfg=84 
 highligh WorkspacesCurlyBraces ctermfg=45
+highlight Comment ctermfg=243 
 
 
 call <SID>MakeMarksPopupHiLight()
