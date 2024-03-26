@@ -14,7 +14,8 @@ function! <SID>BuildTabline()
 "			let title = bufname
 "		endif
 
-		let title = nr2char(0x41 + i)
+		let title = gettabvar(added_one, "title", nr2char(0x41 + i))
+		
 		if added_one == tabpagenr()
 			let focused = "%#TabLineSel# " .  ( title ) . " %0*"
 		else

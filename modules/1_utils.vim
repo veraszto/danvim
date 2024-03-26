@@ -99,7 +99,7 @@ function! <SID>RefreshAll()
 	tabdo wincmd h
 	execute "tabn " . this_tab
 	execute this_viewport . " wincmd w" 
-	echo "Executed forced edit(:e!) throught all active buffers!"
+	echo "Executed forced edit(:e!) through all active buffers!"
 endfunction
 
 function <SID>AddToDictionary()
@@ -113,7 +113,26 @@ function <SID>AddToDictionary()
 	endif
 endfunction
 
+function <SID>ArgsToViewports()
+	const argc = argc()
+	if argc > 39
+		echo "There are over 39 files to edit, that is too many"
+		return
+	endif
+	let viewport_count = winnr("$")
+	argdo split
+	let counter = argc + viewport_count
+	while counter > viewport_count
+		execute counter . "wincmd w"
+		if isdirectory(bufname())
+			quit
+		endif
+		let counter -= 1
+	endwhile
+endfunction
+
 map ;ja <Cmd>call <SID>AddToDictionary()<CR>
+map <F9> <Cmd>call <SID>ArgsToViewports()<CR>
 
 map <C-Up> <Cmd>call <SID>MoveTo("up", 1)<CR>
 map <C-Down> <Cmd>call <SID>MoveTo("down", 1)<CR>

@@ -7,6 +7,7 @@ let s:modules.state_manager = #{}
 const s:tabs_var_name = "let g:danvim.app_data.state_manager"
 const s:viewport_pane_breaker = "let g:danvim.app_data.state_manager_pane_breaker"
 const s:highests_viewports = "let g:danvim.app_data.state_manager_highests_viewports"
+const s:tabs_titles = "let g:danvim.app_data.state_manager_tabs_titles"
 const s:fluid_flow_var_name = "let g:danvim.app_data.fluid_flow"
 
 const s:tabs_vim = "tabs.vim"
@@ -42,8 +43,11 @@ function s:modules.state_manager.SaveState(by_viewport)
     let all_args = []
 	let column_splitter = []
 	let highests = []
+	let tabs_titles = []
     for tab in range(tabpagenr("$"))
         execute (tab + 1) . "tabn"
+		let tab_title = gettabvar(tab + 1, "title", v:null)
+		call add(tabs_titles, tab_title)
 		if a:by_viewport == v:false
 			if argc()
 				call add(all_args, argv())
@@ -90,7 +94,8 @@ function s:modules.state_manager.SaveState(by_viewport)
 	let tabs_viewports = s:tabs_var_name . " = " . string(all_args)
 	let pane_breaker = s:viewport_pane_breaker . " = " . string(column_splitter)
 	let highests_viewports = s:highests_viewports . " = " . string(highests)
-    call writefile([tabs_viewports, pane_breaker, highests_viewports], save_to)
+	let write_tabs_titles = s:tabs_titles . " = " . string(tabs_titles)
+    call writefile([tabs_viewports, pane_breaker, highests_viewports, write_tabs_titles], save_to)
 	call <SID>WriteFluidFlowToFile(s:fluid_flow)
 	execute tab_page_number . "tabnext"
 	echo "Saved to " . save_to
@@ -103,7 +108,7 @@ endfunction
 
 function <SID>DistributeArgsIntoViewports(tab)
 	only
-	let i = 0
+	let i = 2
 	const argc = argc()
 "	if argc > 1
 "		try | execute "argu" . (i + 1) | catch | endtry
@@ -115,16 +120,20 @@ function <SID>DistributeArgsIntoViewports(tab)
 "	wincmd p
 	vertical split
 	wincmd p
-	while i < argc
-		try | execute "argu" . (i + 1) | catch | endtry
+	while i <= argc
+		try | execute "argu" . i | catch | endtry
 		split
 		wincmd w
 		let i += 1
 	endwhile
-	quit
-	2wincmd w
-	wincmd _
-	1wincmd w
+	if argc > 1
+		quit
+		2wincmd w
+		wincmd _
+		1wincmd w
+	else
+		wincmd p
+	endif
 endfunction
 
 function s:modules.state_manager.InflateState()
@@ -144,10 +153,17 @@ function s:modules.state_manager.InflateState()
 
 	let s:state_manager = g:danvim.app_data.state_manager
 	let s:fluid_flow = g:danvim.app_data.fluid_flow
-
 	%bd
 	clearjumps
 	const tabs_length = len(s:state_manager)
+	if !exists("g:danvim.app_data.state_manager_tabs_titles")
+		let tabs_titles = []
+		for fill_null in range(tabs_length)
+			call add(tabs_titles, v:null)
+		endfor
+	else
+		let tabs_titles = g:danvim.app_data.state_manager_tabs_titles
+	endif
 	let counter = 0
 	while counter < tabs_length
 		let args = s:state_manager[counter]
@@ -157,6 +173,9 @@ function s:modules.state_manager.InflateState()
 		endfor
 		execute "arglocal" . " " . join(args_escaped, " ")
 		call <SID>DistributeArgsIntoViewports(counter)
+		if tabs_titles[counter] != v:null
+			let t:title = tabs_titles[counter]
+		endif
 		tabnew
 		let counter += 1
 	endwhile
