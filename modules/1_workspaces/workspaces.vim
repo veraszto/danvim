@@ -240,7 +240,7 @@ function! <SID>BuildSearchMenu(is_searching, where)
 		endif
 
 		let to_execute = 
-			\ "nmenu <silent> searchfilesmenu." . <SID>MakeEscape(prefix . search_file) . " " . 
+			\ "nmenu <silent> searchfilesmenu." . s:libs_base.MakeEscape(prefix . search_file) . " " . 
 			\ ":try <Bar> call <SID>SearchFileAction(\"" . search_file . "\", \"" . prefix . "\") <Bar> " .
 			\ "catch <Bar> echo \"Could not stamp file\" . v:exception <Bar> endtry<CR>"
 
