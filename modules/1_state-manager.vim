@@ -36,7 +36,7 @@ function <SID>AssertOrCreateLoaderDir()
 	endif
 endfunction
 
-let s:loaders_dir_base = s:libs_base.FindFirstExistentDir(s:configs.state_manager_dirs)
+let s:loaders_dir_base = s:configs.dirs.StateManager
 
 function s:modules.state_manager.SaveState(by_viewport)
 	let tab_page_number = tabpagenr() 

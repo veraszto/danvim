@@ -19,13 +19,7 @@ function! s:this.ViFile(file)
 endfunction
 
 function s:this.ViInitialWorkspace()
-	try
-		let dir = s:this.FindFirstExistentDir(s:configs.workspaces_dirs)
-	catch
-		echo v:exception
-		return 0
-	endtry
-
+	let dir = s:configs.dirs.Workspaces
 	let guesses = []
 	for attempt in s:configs.initial_workspace_tries	
 		let guess = dir . "/" . attempt . ".workspaces"
@@ -41,9 +35,6 @@ endfunction
 
 function s:this.AreWeInAnWorkspaceFile()
 	const match_index = match(bufname(), s:regexes.workspaces_file)
-	if match_index < 0
-		echo s:when_only_at_workspaces_message
-	endif
 	return match_index 
 endfunction
 

@@ -3,8 +3,8 @@ let s:this = g:danvim.modules.utils
 let s:libs_base = g:danvim.libs.base
 const s:configs = g:danvim.configs
 
-let s:dictionaries_dir = s:libs_base.FindFirstExistentDir(s:configs.dictionaries_dir)
-let s:bridge_file = s:libs_base.FindFirstExistentValue(s:configs.bridge_file)
+let s:dictionaries_dir = s:configs.dirs.Dictionaries
+let s:bridge_file = s:configs.files.Clipboard
 
 function s:this.InflateViewports()
 	let winnr_current = winnr()

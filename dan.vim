@@ -1,13 +1,21 @@
-let g:danvim = #{configs: #{loaded_turns: 0}, libs: #{root: #{}}, 
+let g:danvim = #{configs: #{loaded_turns: 0, clipboard_commands: #{},
+		\ dirs:#{
+			\ UserDataDefaultHome: $HOME . '/.danvim/app-data',
+			\ CodebaseHome: expand("<sfile>:h")
+		\ },
+		\ files: #{
+			\ DanVim: expand("<sfile>"),
+			\ Clipboard: "/tmp/danvim.clipboard"
+		\ },
+	\ }, libs: #{root: {}}, 
 	\ modules: #{},
 	\ app_data: #{state_manager: [], fluid_flow: []},
-	\ constants: #{SpaceChar: " ", BarChar: "/", SourceCmd: "source",  
-		\ UserDataDefaultHomeDir: $HOME . '/.danvim/app-data', CodebaseHomeDir: expand("<sfile>:h"), 
-		\ DanVimFile: expand("<sfile>")},
+	\ constants: #{SpaceChar: " ", BarChar: "/", SourceCmd: "source", Let: 'let'},
 	\ cmds: #{},
 	\ broad_regexes: #{workspaces_file: '\.workspaces$'},
 	\ messages: #{DanVimSourced: "DanVim has been sourced and finished execution"}
 \ }
+
 
 let s:constants = g:danvim.constants
 let s:configs = g:danvim.configs
@@ -15,24 +23,39 @@ let s:libs = g:danvim.libs
 let s:BarChar = s:constants.BarChar 
 let s:SourceCmd = s:constants.SourceCmd
 let s:SpaceChar = s:constants.SpaceChar
-let s:constants.ConfigsFile = s:constants.CodebaseHomeDir . s:BarChar . "configs.vim" 
-let s:constants.LibsDir = s:constants.CodebaseHomeDir . s:BarChar . "libs" 
-let s:constants.ModulesDir = s:constants.CodebaseHomeDir . s:BarChar . "modules" 
+let s:constants.ConfigsFile = s:configs.dirs.CodebaseHome . s:BarChar . "configs.vim" 
+let s:constants.LibsDir = s:configs.dirs.CodebaseHome . s:BarChar . "libs" 
+let s:constants.ModulesDir = s:configs.dirs.CodebaseHome . s:BarChar . "modules" 
 let s:cmds = g:danvim.cmds
-let s:cmds.source_danvim = s:SourceCmd . s:SpaceChar . s:constants.DanVimFile
+let s:cmds.source_danvim = s:SourceCmd . s:SpaceChar . s:configs.files.DanVim
+
+const s:UserDataDefaultHomeDir = s:configs.dirs.UserDataDefaultHome
+
+let s:configs.clipboard_commands.copy = "wl-copy"
+let s:configs.clipboard_commands.paste = "wl-paste"
+
+let s:dirs = #{
+	\ Dictionaries: s:UserDataDefaultHomeDir . "/dictionaries",
+	\ Workspaces: s:UserDataDefaultHomeDir . "/workspaces",
+	\ StateManager: s:UserDataDefaultHomeDir . "/state-manager"
+\ }
+
+call extend(s:configs.dirs, s:dirs)
 
 execute s:SourceCmd . s:constants.SpaceChar . s:constants.ConfigsFile
 
-if !isdirectory(s:constants.UserDataDefaultHomeDir)
-	try
-		call mkdir(s:constants.UserDataDefaultHomeDir, "p")
-	catch
-		echo "Could not create $HOME/.danvim user data home dir: " . 
-			\ s:constants.UserDataDefaultHomeDir
-		echo "Please allow this creation to be successful"
-		finish
-	endtry
-endif
+for s:dir in values(s:configs.dirs)
+	if !isdirectory(s:dir)
+		try
+			call mkdir(s:dir, "p")
+		catch
+			echo "Could not create " s:dir 
+			echo "Please allow this action to be successful"
+			finish
+		endtry
+	endif
+endfor
+
 
 function s:libs.root.FilesCollector(dir_or_file_array, init_array)
 	let list = a:init_array

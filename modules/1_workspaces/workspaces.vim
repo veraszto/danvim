@@ -71,13 +71,7 @@ function! <SID>BuildFileNameAndEditIt(line_number, line)
 endfunction
 
 function s:modules.workspaces.SmartReachWorkspace()
-	try
-		let dir = s:libs_base.FindFirstExistentDir(s:configs.workspaces_dirs)
-	catch
-		echo v:exception
-		return 0
-	endtry
-
+	let dir = s:configs.dirs.Workspaces
 	if s:libs_base.AreWeInAnWorkspaceFile() >= 0
 		let starting_from_this = expand("%:t")
 		let without_workspaces = substitute(starting_from_this, '.workspaces', "", "")
