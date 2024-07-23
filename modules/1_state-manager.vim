@@ -8,10 +8,8 @@ const s:tabs_var_name = "let g:danvim.app_data.state_manager"
 const s:viewport_pane_breaker = "let g:danvim.app_data.state_manager_pane_breaker"
 const s:highests_viewports = "let g:danvim.app_data.state_manager_highests_viewports"
 const s:tabs_titles = "let g:danvim.app_data.state_manager_tabs_titles"
-const s:fluid_flow_var_name = "let g:danvim.app_data.fluid_flow"
 
 const s:tabs_vim = "tabs.vim"
-const s:fluid_flow_vim = "fluid-flow.vim"
 
 function <SID>LoaderPath()
 	return expand(s:loaders_dir_base . getcwd())
@@ -31,9 +29,18 @@ function <SID>AssertOrCreateLoaderDir()
 	if ! isdirectory(loader_path) || len(findfile(main_file)) <= 0
 		call mkdir(loader_path, "p")
 		call writefile([""], main_file)	
-		call writefile([s:tabs_var_name . ' = []'], loader_path . "/" . s:tabs_vim)	
-		call <SID>WriteFluidFlowToFile([])
+		call writefile([s:tabs_var_name . ' = []',
+				\ s:viewport_pane_breaker . ' = []',
+				\ s:highests_viewports . ' = []',
+				\ s:tabs_titles . ' = []'
+			\ ], loader_path . "/" . s:tabs_vim)	
 	endif
+endfunction
+
+function <SID>ColumnHeightResolution(column_height_resolution)
+	return reduce(a:column_height_resolution, 
+			\ {acc, val -> val[0] > acc[0] ? val : acc
+			\ }, a:column_height_resolution[0])[1]
 endfunction
 
 let s:loaders_dir_base = s:configs.dirs.StateManager
@@ -41,25 +48,23 @@ let s:loaders_dir_base = s:configs.dirs.StateManager
 function s:modules.state_manager.SaveState(by_viewport)
 	let tab_page_number = tabpagenr() 
     let all_args = []
-	let column_splitter = []
+	let column_splitters = []
 	let highests = []
 	let tabs_titles = []
     for tab in range(tabpagenr("$"))
         execute (tab + 1) . "tabn"
-		let tab_title = gettabvar(tab + 1, "title", v:null)
-		call add(tabs_titles, tab_title)
 		if a:by_viewport == v:false
 			if argc()
 				call add(all_args, argv())
 			endif
 		else
 			let viewport_args = []
-			let current_column_and_height = [win_screenpos(1)[1], getwininfo(win_getid(1))[0].height]
-			call add(column_splitter, [])
-			call add(highests, [current_column_and_height[1]])
+			call add(column_splitters, [])
+			let column_height_resolution = []
+		call add(highests, [])
 			let has_set_height = v:false
-			let index_cur_highest_counter = 0
-			for viewport in range(winnr("$"))
+			let views_amount = winnr("$")
+			for viewport in range(views_amount)
 				let current_viewport = viewport + 1
 				let bufnr = winbufnr(current_viewport)
 				let bufname = bufname(bufnr)
@@ -68,23 +73,23 @@ function s:modules.state_manager.SaveState(by_viewport)
 					\ count(viewport_args, bufname) <= 0 && buflisted(bufnr) > 0
 
 					call add(viewport_args, bufname)
-					let column = win_screenpos(current_viewport)[1]
 					let height = getwininfo(win_getid(current_viewport))[0].height
-					if column > current_column_and_height[0]
-						call add(column_splitter[tab], current_viewport)
-						call add(highests[tab], current_viewport)
-						let current_column_and_height[0] = column
-						let current_column_and_height[1] = height
-						let index_cur_highest_counter += 1
-					elseif height >= current_column_and_height[1]
-						let highests[tab][index_cur_highest_counter] = current_viewport
-						let current_column_and_height[1] = height
+					if win_screenpos(current_viewport)[1] > win_screenpos(viewport)[1]
+						call add(column_splitters[tab], current_viewport)
+						call add(highests[tab], <SID>ColumnHeightResolution(column_height_resolution))
+						let column_height_resolution = []
+					elseif current_viewport == views_amount
+						call add(column_height_resolution, [height, current_viewport])
+						call add(highests[tab], <SID>ColumnHeightResolution(column_height_resolution))
 					endif
+					call add(column_height_resolution, [height, current_viewport])						
 				endif
 			endfor
 			call filter(viewport_args, '!empty(v:val)')	
 			if !empty(viewport_args)
 				call add(all_args, viewport_args)
+				let tab_title = gettabvar(tab + 1, "title", v:null)
+				call add(tabs_titles, tab_title)
 			endif
 		endif
     endfor    
@@ -92,48 +97,58 @@ function s:modules.state_manager.SaveState(by_viewport)
 	const loader_path = <SID>LoaderPath()
 	const save_to = loader_path . "/" . s:tabs_vim
 	let tabs_viewports = s:tabs_var_name . " = " . string(all_args)
-	let pane_breaker = s:viewport_pane_breaker . " = " . string(column_splitter)
+	let pane_breaker = s:viewport_pane_breaker . " = " . string(column_splitters)
 	let highests_viewports = s:highests_viewports . " = " . string(highests)
 	let write_tabs_titles = s:tabs_titles . " = " . string(tabs_titles)
     call writefile([tabs_viewports, pane_breaker, highests_viewports, write_tabs_titles], save_to)
-	call <SID>WriteFluidFlowToFile(s:fluid_flow)
 	execute tab_page_number . "tabnext"
 	echo "Saved to " . save_to
 endfunction
 
-function <SID>WriteFluidFlowToFile(content)
-    call writefile([s:fluid_flow_var_name . " = " . string(a:content)], 
-		\ <SID>LoaderPath() . "/" . s:fluid_flow_vim)
-endfunction
-
-function <SID>DistributeArgsIntoViewports(tab)
+function <SID>DistributeArgsIntoViewports(tab, pane_breaker, highests_viewports)
 	only
 	let i = 2
 	const argc = argc()
-"	if argc > 1
-"		try | execute "argu" . (i + 1) | catch | endtry
-"		vertical split
-"		let i += 1
-"	else
-"		vertical split
-"	endif
-"	wincmd p
-	vertical split
-	wincmd p
-	while i <= argc
-		try | execute "argu" . i | catch | endtry
-		split
-		wincmd w
-		let i += 1
-	endwhile
-	if argc > 1
-		quit
-		2wincmd w
-		wincmd _
-		1wincmd w
+	const this_tab_pane_breaker = get(a:pane_breaker, a:tab, [])
+	const this_tab_highests_viewports = get(a:highests_viewports, a:tab, [])
+
+	if len(this_tab_pane_breaker)
+		while i <= argc
+			if count(this_tab_pane_breaker, i)
+				vertical split
+				wincmd p
+				wincmd L
+			else
+				split
+				wincmd w
+			endif
+			try | execute "argu" . i | catch | endtry
+			let i += 1
+		endwhile
+		for highest in this_tab_highests_viewports
+			execute highest . "wincmd w"
+			wincmd _
+		endfor
 	else
+		vertical split
 		wincmd p
+		while i <= argc
+			try | execute "argu" . i | catch | endtry
+			split
+			wincmd w
+			let i += 1
+		endwhile
+		if argc > 1
+			quit
+			2wincmd w
+			wincmd _
+			1wincmd w
+		else
+			wincmd p
+		endif
+
 	endif
+	
 endfunction
 
 function s:modules.state_manager.InflateState()
@@ -144,52 +159,36 @@ function s:modules.state_manager.InflateState()
 	const paths = [
 		\ <SID>MainFile(), 
 		\ loader_path  . "/" . s:tabs_vim,
-		\ loader_path  . "/" . s:fluid_flow_vim 
 	\ ]
 
 	for path in paths
 		execute "try | source " . path . " | catch | echo \"Could not source: " . path . "\" | endtry"
 	endfor
 
-	let s:state_manager = g:danvim.app_data.state_manager
-	let s:fluid_flow = g:danvim.app_data.fluid_flow
+	const state_manager = g:danvim.app_data.state_manager
+	const tabs_titles = g:danvim.app_data.state_manager_tabs_titles
+	const highests_viewports = g:danvim.app_data.state_manager_highests_viewports
+	const pane_breaker = g:danvim.app_data.state_manager_pane_breaker
+
 	%bd
 	clearjumps
-	const tabs_length = len(s:state_manager)
-	if !exists("g:danvim.app_data.state_manager_tabs_titles")
-		let tabs_titles = []
-		for fill_null in range(tabs_length)
-			call add(tabs_titles, v:null)
-		endfor
-	else
-		let tabs_titles = g:danvim.app_data.state_manager_tabs_titles
-	endif
+	const tabs_length = len(state_manager)
 	let counter = 0
 	while counter < tabs_length
-		let args = s:state_manager[counter]
+		let args = state_manager[counter]
 		let args_escaped = []
 		for arg in args
 			call add(args_escaped, escape(arg, ' \'))
 		endfor
 		execute "arglocal" . " " . join(args_escaped, " ")
-		call <SID>DistributeArgsIntoViewports(counter)
-		if tabs_titles[counter] != v:null
-			let t:title = tabs_titles[counter]
+		call <SID>DistributeArgsIntoViewports(counter, pane_breaker, highests_viewports)
+		let title = get(tabs_titles, counter, v:null)
+		if title != v:null
+			let t:title = title
 		endif
 		tabnew
 		let counter += 1
 	endwhile
-
-	let viewport_name_remove_home = substitute(getcwd(), $HOME, "", "")
-	let viewport_name_remove_bar_prefix = substitute(viewport_name_remove_home, '^/', "", "")
-	let viewport_name = viewport_name_remove_bar_prefix
-	if len(viewport_name) <= 0
-		let viewport_name = "HOME"
-	endif
-	try
-		call system("tmux rename-window " . matchstr(viewport_name, '[^/]\+$'))
-	catch
-	endtry
 
 	if counter <= 0
 		echo "This is a new project"

@@ -131,8 +131,14 @@ function <SID>ArgsToViewports()
 	endwhile
 endfunction
 
+function <SID>CurrentProjectToTmuxViewportName()
+	const this_project = getcwd()
+	call system("tmux rename-window " . matchstr(this_project, '\(/\)\@<=[^/]\+$'))
+endfunction
+
 map ;ja <Cmd>call <SID>AddToDictionary()<CR>
 map <F9> <Cmd>call <SID>ArgsToViewports()<CR>
+map <F8> <Cmd>call <SID>CurrentProjectToTmuxViewportName()<CR>
 
 map <C-Up> <Cmd>call <SID>MoveTo("up", 1)<CR>
 map <C-Down> <Cmd>call <SID>MoveTo("down", 1)<CR>
