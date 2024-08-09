@@ -37,12 +37,12 @@ endfunction
 function! <SID>CopyRegisterToFileAndClipboard()
 	let tmp = @" 
 	call writefile([tmp], s:bridge_file, "a")
-	call system(s:configs.clipboard_commands[0] . " -- " . shellescape(tmp))
+	call system(s:configs.clipboard_commands.copy . " -- " . shellescape(tmp))
 	echo "Copied \"... " . trim(matchstr(tmp, '.\{1,50}')) . " ...\" to main clipboard"
 endfunction
 
 function! <SID>PasteFromClipboard(only_to_main_register)
-	let from_regular_clipboard = systemlist(s:configs.clipboard_commands[1])
+	let from_regular_clipboard = systemlist(s:configs.clipboard_commands.paste)
 	if a:only_to_main_register == v:false
 		call append(line("."), from_regular_clipboard)
 	else
