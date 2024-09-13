@@ -57,11 +57,15 @@ for s:dir in values(s:configs.dirs)
 endfor
 
 
-function s:libs.root.FilesCollector(dir_or_file_array, init_array)
+function s:libs.root.FilesCollector(dir_or_file_array)
+	return  <SID>FilesCollector(flatten([a:dir_or_file_array]))
+endfunction
+
+function <SID>FilesCollector(dir_or_file_array, init_array = [])
 	let list = a:init_array
 	for dir_or_file in a:dir_or_file_array
 		if isdirectory(dir_or_file)
-			call s:libs.root.FilesCollector(s:libs.root.ReadDir(dir_or_file), list)
+			call <SID>FilesCollector(s:libs.root.ReadDir(dir_or_file), list)
 		elseif filereadable(dir_or_file)
 			call add(list, dir_or_file)
 		endif
@@ -88,7 +92,7 @@ function s:libs.root.InputLog(message_collection)
 		\ "\nPress any key to continue")
 endfunction
 
-let s:lib_files = s:libs.root.FilesCollector([s:constants.LibsDir], [])
+let s:lib_files = s:libs.root.FilesCollector([s:constants.LibsDir])
 
 for lib_file in s:lib_files
 	try
@@ -98,7 +102,7 @@ for lib_file in s:lib_files
 	endtry
 endfor
 
-let s:modules_files = s:libs.root.FilesCollector([s:constants.ModulesDir], [])
+let s:modules_files = s:libs.root.FilesCollector([s:constants.ModulesDir])
 
 for module_file in s:modules_files
 	try

@@ -2,6 +2,7 @@ let g:danvim.modules.utils = #{}
 let s:this = g:danvim.modules.utils
 let s:libs_base = g:danvim.libs.base
 const s:configs = g:danvim.configs
+const s:libs_root = g:danvim.libs.root 
 
 let s:dictionaries_dir = s:configs.dirs.Dictionaries
 let s:bridge_file = s:configs.files.Clipboard
@@ -147,8 +148,13 @@ imap <C-Down> <Cmd>call <SID>MoveTo("down", 1)<CR>
 "map <C-Home> <Cmd>call <SID>MoveTo("up", 1)<CR>
 "map <C-End> <Cmd>call <SID>MoveTo("down", 1)<CR>
 
-
 map ;ea <Cmd>call <SID>RefreshAll()<CR>
 map ;sc <Cmd>call <SID>ShowColors()<CR>
 
-execute "set dictionary=" . s:dictionaries_dir . "/default"
+let s:dictionaries_files = s:libs_root.FilesCollector([s:dictionaries_dir])
+if len(s:dictionaries_files)
+	execute "set dictionary=" . join(s:dictionaries_files, ",")
+else
+	execute "set dictionary=" . s:dictionaries_dir . "/default"
+endif
+
