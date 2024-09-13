@@ -1,10 +1,10 @@
 
-<img src="images/vim.logo.png" alt="Vim logo" height="200" /> 
+<img src="images/vim-logo.png" alt="Vim logo" height="200" /> 
 
 # DanVim is a Vim library
 a proposed way of using Vim, with the intent to make Vim usage better and faster.
 
-## This doc is outdated and in progress
+### This doc and this branch are outdated and being replaced
 
 
 - [Introduction](#introduction)
