@@ -1,5 +1,5 @@
 
-<img src="/../main/images/vim-logo.png" alt="Vim logo" height="200" /> 
+<img src="/../master/images/vim-logo.png" alt="Vim logo" height="200" /> 
 
 ### This docs is under development
 
