@@ -9,8 +9,6 @@ let s:bridge_file = s:configs.files.Clipboard
 
 function s:this.InflateViewports()
 	let winnr_current = winnr()
-	wincmd p
-	let winnr_previous = winnr()
 	const vertical_panes_length = len(s:libs_base.StudyViewportsLayoutWithVerticalGroups()) - 1
 	wincmd t
 	wincmd _
@@ -18,21 +16,36 @@ function s:this.InflateViewports()
 		wincmd l
 		wincmd _
 	endfor
-	execute winnr_previous . "wincmd w"
-	wincmd _
+	if exists("t:danvim.column_viewport")
+		for column_viewport in values(t:danvim.column_viewport)
+			execute column_viewport . "wincmd w"
+			wincmd _
+		endfor
+	endif
 	execute winnr_current . "wincmd w"
 	wincmd _
 endfunction
 
-function! <SID>MoveTo(direction, expand)
+function! <SID>MoveUpDown(direction)
 	if a:direction =~ '^up$'
 		wincmd W
 	else
 		wincmd w
 	endif
-	if a:expand
-		wincmd _
+	wincmd _
+endfunction
+
+function! <SID>MoveLeftRight(direction)
+	if a:direction =~ '^left$'
+		wincmd h
+	else
+		wincmd l
 	endif
+	let column = win_screenpos(winnr())[1]
+	if exists("t:danvim.column_viewport[column]")
+		execute t:danvim.column_viewport[column] . "wincmd w"
+	endif
+	wincmd _
 endfunction
 
 function! <SID>CopyRegisterToFileAndClipboard()
@@ -99,7 +112,8 @@ function! <SID>RefreshAll()
 
 	tabdo wincmd h
 	execute "tabn " . this_tab
-	execute this_viewport . " wincmd w" 
+	execute this_viewport . " wincmd w"
+	call s:this.InflateViewports()
 	echo "Executed forced edit(:e!) through all active buffers!"
 endfunction
 
@@ -141,12 +155,15 @@ map ;ja <Cmd>call <SID>AddToDictionary()<CR>
 map <F9> <Cmd>call <SID>ArgsToViewports()<CR>
 map <F8> <Cmd>call <SID>CurrentProjectToTmuxViewportName()<CR>
 
-map <C-Up> <Cmd>call <SID>MoveTo("up", 1)<CR>
-map <C-Down> <Cmd>call <SID>MoveTo("down", 1)<CR>
-imap <C-Up> <Cmd>call <SID>MoveTo("up", 1)<CR>
-imap <C-Down> <Cmd>call <SID>MoveTo("down", 1)<CR>
-"map <C-Home> <Cmd>call <SID>MoveTo("up", 1)<CR>
-"map <C-End> <Cmd>call <SID>MoveTo("down", 1)<CR>
+map <C-Up> <Cmd>call <SID>MoveUpDown("up")<CR>
+map <C-Down> <Cmd>call <SID>MoveUpDown("down")<CR>
+imap <C-Up> <Cmd>call <SID>MoveUpDown("up")<CR>
+imap <C-Down> <Cmd>call <SID>MoveUpDown("down")<CR>
+
+map <C-Left> <Cmd>call <SID>MoveLeftRight("left")<CR>
+map <C-Right> <Cmd>call <SID>MoveLeftRight("right")<CR>
+imap <C-Left> <Cmd>call <SID>MoveLeftRight("left")<CR>
+imap <C-Right> <Cmd>call <SID>MoveLeftRight("right")<CR>
 
 map ;ea <Cmd>call <SID>RefreshAll()<CR>
 map ;sc <Cmd>call <SID>ShowColors()<CR>
