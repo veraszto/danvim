@@ -10,6 +10,9 @@ let s:bridge_file = s:configs.files.Clipboard
 function s:this.InflateViewports()
 	let winnr_current = winnr()
 	const vertical_panes_length = len(s:libs_base.StudyViewportsLayoutWithVerticalGroups()) - 1
+	if exists("t:danvim.column_viewport")
+		let column_viewport_values = values(t:danvim.column_viewport)
+	endif
 	wincmd t
 	wincmd _
 	for column in range(vertical_panes_length)
@@ -17,7 +20,7 @@ function s:this.InflateViewports()
 		wincmd _
 	endfor
 	if exists("t:danvim.column_viewport")
-		for column_viewport in values(t:danvim.column_viewport)
+		for column_viewport in column_viewport_values 
 			execute column_viewport . "wincmd w"
 			wincmd _
 		endfor
@@ -98,23 +101,42 @@ function! <SID>ShowColors()
 	endfor
 endfunction
 
+function! <SID>CompareHeightsWithinArrayWithBufferNumber(i1, i2)
+	return a:i1[0] - a:i2[0]
+endfunction
+
 function! <SID>RefreshAll()
 	let this_tab = tabpagenr()
-	let this_viewport = winnr()
-	let running = "running"
-	tabdo windo 
-		\ try |
-			\ if term_getstatus(bufnr()) != running | silent edit! | endif |
-		\ catch |
-			\ echo "Tab:" . tabpagenr() . ", Buf:" . bufnr() . ") [" . bufname() . "], " .
-			\  v:exception |
-		\ endtry
-
-	tabdo wincmd h
-	execute "tabn " . this_tab
-	execute this_viewport . " wincmd w"
-	call s:this.InflateViewports()
-	echo "Executed forced edit(:e!) through all active buffers!"
+	const running = "running"
+	for tab_index in range(tabpagenr('$'))
+		let tab = tab_index + 1
+		execute "tabn" . tab
+		let heights = []
+		for viewport_index in range(winnr('$'))
+			let viewport = viewport_index + 1
+			execute viewport . "wincmd w"
+			call add(heights, [winheight(0), viewport])
+			try
+				if term_getstatus(bufnr()) != running
+					silent edit!
+				endif
+			catch
+				echo "Tab:" . tabpagenr() . ", Buf:" . bufnr() . ") [" . bufname() . "], " . v:exception
+			endtry
+		endfor
+		call sort(heights, '<SID>CompareHeightsWithinArrayWithBufferNumber')
+		let vertical_panes_length = len(s:libs_base.StudyViewportsLayoutWithVerticalGroups())
+		let len_heights = len(heights)
+		let column_counter = 0
+		while column_counter < vertical_panes_length
+			execute heights[len_heights - column_counter - 1][1] . "wincmd w"
+			wincmd _
+			let column_counter += 1
+		endwhile
+	endfor
+	execute this_tab . "tabn"
+	echon "Executed force edit(:e!) for each of the all " . len(getbufinfo(#{buflisted: v:true})) . 
+		\ " listed buffers"
 endfunction
 
 function <SID>AddToDictionary()

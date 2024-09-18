@@ -12,7 +12,7 @@ let s:overrides = {
 
 let s:configs.initial_workspace_tries = ["all", "root", "basic", "workspaces", "core", "source"]
 
-let s:configs.initial_messages = ["DanVim loaded"]
+let s:configs.initial_messages = ["danvim loaded"]
 
 let s:configs.extra_sources_places = [$DANVIM_SOURCE]
 

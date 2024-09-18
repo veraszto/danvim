@@ -23,5 +23,4 @@ set comments=""
 set iskeyword+=-
 set shortmess+=A
 filetype on
-filetype indent off
-filetype plugin off
+filetype indent plugin off
