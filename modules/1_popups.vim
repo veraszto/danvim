@@ -13,7 +13,7 @@ function <SID>JumpsCallback(id, key)
 	const item = s:parallel_jumps_list[a:key - 1]
 	try
 		wa
-		execute "bu " . item
+		execute "sb " . item
 	catch
 		echo "Could not buffer(" . item . "), " . v:exception
 	endtry
@@ -25,8 +25,7 @@ function <SID>BuffersCallback(id, key)
 	endif
 	const item = s:parallel_buffers_list[a:key - 1]
 	try
-		wa
-		execute "bu " . item.bufnr
+		execute "sb " . matchstr(item, '[^/]\+$')
 	catch
 		echo "Could not vi buffer(" . item . "), " . v:exception
 	endtry
@@ -45,21 +44,28 @@ function s:this.Jumps()
 	let s:popup_jumps_id = popup_create(s:final_popup_jumps_list, extend(copy(s:common_popup_options), 
 		\ #{line: this_viewport_width_and_height[1] + viewport_pos[0] - 1, callback: '<SID>JumpsCallback',
 			\ col: this_viewport_width_and_height[0] + viewport_pos[1] - 1, 
-				\ maxheight: this_viewport_width_and_height[1]}))
+			\ maxwidth: float2nr(this_viewport_width_and_height[0] * 0.75),
+			\ maxheight: this_viewport_width_and_height[1]
+		\ }))
 endfunction
 
 function s:this.Buffers()
 	echo "Buffer selection, CTRL-C to exit"
 	const this_viewport_width_and_height = s:libs_base.VieportWidthAndHeight()
 	const viewport_pos = win_screenpos(this_viewport_width_and_height[2]) 
-	const filter_string = '!empty(v:val.name) && v:val.listed > 0 && v:val.hidden <= 0 && v:val.bufnr != ' . bufnr()
-	const map_string = 'v:val.bufnr . ")" . slice(v:val.name, -' . (s:common_popup_options.maxwidth - 3)  . ')'
+	const filter_string = '!empty(v:val.name) && v:val.listed > 0 && v:val.hidden <= 0'
+	const map_string = 'matchstr(v:val.name, "[^/]\\+$") . "/" . v:val.bufnr'
 	let buffers = getbufinfo()
-	let s:parallel_buffers_list = filter(buffers, filter_string)
-	let s:final_popup_buffers_list = map(copy(s:parallel_buffers_list), map_string)
-	let s:popup_buffers_id = popup_create(s:final_popup_buffers_list, extend(copy(s:common_popup_options), 
-		\ #{line: this_viewport_width_and_height[1] + viewport_pos[0] - 1, callback: '<SID>BuffersCallback',
-			\ col: this_viewport_width_and_height[0] + viewport_pos[1] - 1, maxheight: this_viewport_width_and_height[1]}))
+	"let s:parallel_buffers_list = filter(buffers, filter_string)
+	"let s:final_popup_buffers_list = map(copy(s:parallel_buffers_list), map_string)
+	let s:parallel_buffers_list = sort(map(filter(buffers, filter_string), map_string))
+	let s:popup_buffers_id = popup_create(s:parallel_buffers_list, extend(copy(s:common_popup_options), 
+		\ #{line: this_viewport_width_and_height[1] + viewport_pos[0] - 1, 
+			\ callback: '<SID>BuffersCallback',
+			\ col: this_viewport_width_and_height[0] + viewport_pos[1] - 1, 
+			\ maxheight: this_viewport_width_and_height[1],
+			\ maxwidth: float2nr(this_viewport_width_and_height[0] * 0.75),
+		\ }))
 endfunction
 
 map <S-Home> <Cmd>call g:danvim.modules.popups.Jumps()<CR>
