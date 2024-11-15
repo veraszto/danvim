@@ -89,3 +89,14 @@ function s:this.VieportWidthAndHeight()
 	const this_viewport = winnr()
 	return [winwidth(this_viewport), winheight(this_viewport), this_viewport]
 endfunction
+
+function! s:this.UpdateTabDanVimObject(key, value)
+	if !exists("t:danvim")
+		let t:danvim = #{}
+	elseif exists("t:danvim." . a:key)
+		return #{has_value: v:true, value: t:danvim[a:key]}
+	endif
+	execute "let t:danvim." . a:key . " = " . a:value
+	return #{has_value: v:false, value: a:value}
+endfunction
+
