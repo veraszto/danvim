@@ -8,6 +8,7 @@ const s:tabs_var_name = "let g:danvim.app_data.state_manager"
 const s:viewport_pane_breaker = "let g:danvim.app_data.state_manager_pane_breaker"
 const s:highests_viewports = "let g:danvim.app_data.state_manager_highests_viewports"
 const s:tabs_titles = "let g:danvim.app_data.state_manager_tabs_titles"
+const s:tabs_buffers = "let g:danvim.app_data.state_manager_tabs_buffers"
 
 const s:tabs_vim = "tabs.vim"
 
@@ -33,6 +34,7 @@ function <SID>AssertOrCreateLoaderDir()
 				\ s:viewport_pane_breaker . ' = []',
 				\ s:highests_viewports . ' = []',
 				\ s:tabs_titles . ' = []'
+				\ s:tabs_buffers . ' = []'
 			\ ], loader_path . "/" . s:tabs_vim)	
 	endif
 endfunction
@@ -51,6 +53,7 @@ function s:modules.state_manager.SaveState(by_viewport)
 	let column_splitters = []
 	let highests = []
 	let tabs_titles = []
+	let tabs_buffers = []
     for tab in range(tabpagenr("$"))
         execute (tab + 1) . "tabn"
 		if a:by_viewport == v:false
@@ -61,7 +64,7 @@ function s:modules.state_manager.SaveState(by_viewport)
 			let viewport_args = []
 			call add(column_splitters, [])
 			let column_height_resolution = []
-		call add(highests, [])
+			call add(highests, [])
 			let has_set_height = v:false
 			let views_amount = winnr("$")
 			for viewport in range(views_amount)
@@ -88,8 +91,16 @@ function s:modules.state_manager.SaveState(by_viewport)
 			call filter(viewport_args, '!empty(v:val)')	
 			if !empty(viewport_args)
 				call add(all_args, viewport_args)
-				let tab_title = gettabvar(tab + 1, "title", v:null)
+				let tab_title = v:null
+				if exists("t:danvim.title")
+					let tab_title = t:danvim.title
+				endif
 				call add(tabs_titles, tab_title)
+				let tab_buffers = []
+				if exists("t:danvim.buffers")
+					let tab_buffers = t:danvim.buffers
+				endif
+				call add(tabs_buffers, tab_buffers)
 			endif
 		endif
     endfor    
@@ -100,7 +111,12 @@ function s:modules.state_manager.SaveState(by_viewport)
 	let pane_breaker = s:viewport_pane_breaker . " = " . string(column_splitters)
 	let highests_viewports = s:highests_viewports . " = " . string(highests)
 	let write_tabs_titles = s:tabs_titles . " = " . string(tabs_titles)
-    call writefile([tabs_viewports, pane_breaker, highests_viewports, write_tabs_titles], save_to)
+	let write_tabs_buffers = s:tabs_buffers . " = " . string(tabs_buffers)
+    call writefile(
+		\ [ 
+			\ tabs_viewports, pane_breaker, highests_viewports, 
+			\ write_tabs_titles, write_tabs_buffers
+		\ ], save_to)
 	execute tab_page_number . "tabnext"
 	echo "Saved to " . save_to
 endfunction
@@ -169,6 +185,10 @@ function s:modules.state_manager.InflateState()
 	const tabs_titles = g:danvim.app_data.state_manager_tabs_titles
 	const highests_viewports = g:danvim.app_data.state_manager_highests_viewports
 	const pane_breaker = g:danvim.app_data.state_manager_pane_breaker
+	let tabs_buffers = []
+	if exists("g:danvim.app_data.state_manager_tabs_buffers")
+		let tabs_buffers = g:danvim.app_data.state_manager_tabs_buffers
+	endif
 
 	%bd
 	clearjumps
@@ -176,16 +196,15 @@ function s:modules.state_manager.InflateState()
 	let counter = 0
 	while counter < tabs_length
 		let args = state_manager[counter]
-		let args_escaped = []
-		for arg in args
-			call add(args_escaped, escape(arg, ' \'))
-		endfor
-		execute "arglocal" . " " . join(args_escaped, " ")
+		execute "arglocal" . " " . join(args->map("escape(v:val, ' \')"), " ")
 		call <SID>DistributeArgsIntoViewports(counter, pane_breaker, highests_viewports)
 		let title = get(tabs_titles, counter, v:null)
 		if title != v:null
-			let t:title = title
+			call s:libs_base.UpdateTabDanVimObject("title", "\"" . title . "\"")
 		endif
+		let tab_buffers = tabs_buffers->get(counter, [])
+		call s:libs_base.UpdateTabDanVimObject("buffers", string(tab_buffers))
+		execute "argadd" . " " . join(tab_buffers->map("escape(v:val, ' \')"), " ")
 		tabnew
 		let counter += 1
 	endwhile

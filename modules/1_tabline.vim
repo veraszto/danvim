@@ -13,9 +13,11 @@ function! <SID>BuildTabline()
 "		elseif !len(title)
 "			let title = bufname
 "		endif
-
-		let title = gettabvar(added_one, "title", nr2char(0x41 + i))
-		
+		let title = nr2char(0x41 + i)
+		let tab_danvim = gettabvar(added_one, "danvim", #{title: v:null})
+		if exists("tab_danvim.title") 
+			let title = tab_danvim.title
+		endif
 		if added_one == tabpagenr()
 			let focused = "%#TabLineSel# " .  ( title ) . " %0*"
 		else
