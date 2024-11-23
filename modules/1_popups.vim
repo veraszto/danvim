@@ -2,7 +2,7 @@ let g:danvim.modules.popups = #{}
 let s:libs_base = g:danvim.libs.base
 let s:this = g:danvim.modules.popups
 
-let s:common_popup_options = #{pos: 'botright', line: 1, col: 1, maxwidth: 30, minheight: 1, 
+let s:common_popup_options = #{pos: 'botright', line: 1, col: 1, minheight: 1, 
 	\ filter: 'popup_filter_menu', cursorline: 1, padding: [0,0,0,0]}
 
 function <SID>JumpsCallback(id, key)
@@ -33,7 +33,8 @@ function <SID>TabBuffersCallback(id, key)
 	endif
 	const item = s:parallel_tabs_buffers_list[a:key - 1]
 	"execute "sb " . matchstr(item, '[^/]\+$')
-	execute "sb " . item
+	"execute "sb " . item
+	execute "sb " . matchstr(item, '\d\+$')
 	wincmd _
 endfunction
 
@@ -61,7 +62,7 @@ function s:this.Buffers()
 	const viewport_pos = win_screenpos(this_viewport_width_and_height[2]) 
 	const filter_string = '!empty(v:val.name) && v:val.listed > 0 && v:val.hidden <= 0'
 	"const map_string = 'matchstr(v:val.name, "[^/]\\+$") . "/" . v:val.bufnr'
-	const map_string = 'v:val.name'
+	const map_string = 'bufname(v:val.bufnr)'
 	let buffers = getbufinfo()
 	"let s:parallel_buffers_list = filter(buffers, filter_string)
 	"let s:final_popup_buffers_list = map(copy(s:parallel_buffers_list), map_string)
@@ -70,8 +71,7 @@ function s:this.Buffers()
 		\ #{line: this_viewport_width_and_height[1] + viewport_pos[0] - 1, 
 			\ callback: '<SID>BuffersCallback',
 			\ col: this_viewport_width_and_height[0] + viewport_pos[1] - 1, 
-			\ maxheight: this_viewport_width_and_height[1],
-			\ maxwidth: float2nr(this_viewport_width_and_height[0] * 0.75),
+			\ maxheight: this_viewport_width_and_height[1]
 		\ }))
 endfunction
 
@@ -89,15 +89,15 @@ function! s:this.TabsBuffers()
 		echo "There are no buffers bound to this tab[ " . tab_title  . " ]"
 		return
 	endif
-	const map_string = 'v:val'
-	let s:parallel_tabs_buffers_list = sort(map(tab_buffers, map_string))
+	"const max_width = float2nr(this_viewport_width_and_height[0] * 0.75)
+	const map_string = "matchstr(v:val, '[^/]\\+$') . \" \" . bufnr(v:val)"
+	let s:parallel_tabs_buffers_list = sort(map(copy(tab_buffers), map_string))
 	let s:popup_buffers_id = popup_create(s:parallel_tabs_buffers_list, 
 		\ extend(copy(s:common_popup_options),
 		\ #{line: this_viewport_width_and_height[1] + viewport_pos[0] - 1, 
 			\ callback: '<SID>TabBuffersCallback',
 			\ col: this_viewport_width_and_height[0] + viewport_pos[1] - 1, 
 			\ maxheight: this_viewport_width_and_height[1],
-			\ maxwidth: float2nr(this_viewport_width_and_height[0] * 0.75),
 		\ }))
 endfunction
 

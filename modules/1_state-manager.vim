@@ -189,8 +189,15 @@ function s:modules.state_manager.InflateState()
 	if exists("g:danvim.app_data.state_manager_tabs_buffers")
 		let tabs_buffers = g:danvim.app_data.state_manager_tabs_buffers
 	endif
-
-	%bd
+	
+	try
+		%bd
+	catch
+		echo "Could not wipe buffers before loading project from " . getcwd() 
+		echo "Please save and resolve your buffers state"
+		return
+	endtry
+	unlet t:danvim
 	clearjumps
 	const tabs_length = len(state_manager)
 	let counter = 0

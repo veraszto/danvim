@@ -4,6 +4,8 @@ const s:module_utils = g:danvim.modules.utils
 function! <SID>Decide()
 	if match( buffer_name(), g:danvim.broad_regexes.workspaces_file ) < 0
 		call s:module_utils.InflateViewports()
+		normal bveye
+		echo "Copied [" . @" . "] to main register" 
 	else
 		call g:danvim.modules.workspaces.Main()
 	endif
