@@ -71,6 +71,8 @@ function! <SID>BuildFileNameAndEditIt(line_number, line)
 endfunction
 
 function s:modules.workspaces.SmartReachWorkspace()
+	split
+	wincmd _
 	let dir = s:configs.dirs.Workspaces
 	if s:libs_base.AreWeInAnWorkspaceFile() >= 0
 		let starting_from_this = expand("%:t")

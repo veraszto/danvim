@@ -14,7 +14,7 @@ function! <SID>BuildTabline()
 "			let title = bufname
 "		endif
 		let title = nr2char(0x41 + i)
-		let tab_danvim = gettabvar(added_one, "danvim", #{title: v:null})
+		let tab_danvim = gettabvar(added_one, "danvim", #{title: title})
 		if exists("tab_danvim.title") 
 			let title = tab_danvim.title
 		endif

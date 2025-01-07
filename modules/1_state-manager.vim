@@ -197,7 +197,7 @@ function s:modules.state_manager.InflateState()
 		echo "Please save and resolve your buffers state"
 		return
 	endtry
-	unlet t:danvim
+	let t:danvim = {}
 	clearjumps
 	const tabs_length = len(state_manager)
 	let counter = 0
