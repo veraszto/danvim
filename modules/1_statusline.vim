@@ -1,11 +1,15 @@
-const s:none = ""
-const s:buf_and_file_tail_only = "%m%{winnr()}  %n  %t"
-const s:extended =  "%mView:%{winnr()} Buf:%n %f%=%*Col:%c L:%l/%L Byte:%B"
-const s:available_formats = [s:extended, s:buf_and_file_tail_only, s:none ]
+"const s:extended =  "%mView:%{winnr()} Buf:%n %f%=%*Col:%c L:%l/%L Byte:%B"
+const s:available_formats = [
+	\ "%-6.6(%m%n%) %-30.30(%t%) %l/%L%= %r%h",
+	\ "%-6.6(%m%n%) %-40.40(%f%) Line:%l/%L%= Col:%-3.3c Byte:%2.2B %r%h"
+\ ]
 let s:switcher = 0
 
+let s:len_available_formats = len(s:available_formats)
+
 function! <SID>BuildStatusline()
-	return s:available_formats[s:switcher % 3]
+	let cycle = s:switcher % s:len_available_formats 
+	return s:available_formats[cycle]
 endfunction
 
 function! <SID>UpdateStatuslineDisplayFormat()

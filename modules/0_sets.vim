@@ -8,7 +8,7 @@ set shiftwidth=0
 set scrolloff=5
 set noloadplugins
 set nohlsearch
-set number
+set nonumber
 set nocompatible
 set noincsearch
 set autoread

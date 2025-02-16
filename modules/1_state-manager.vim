@@ -72,9 +72,7 @@ function s:modules.state_manager.SaveState(by_viewport)
 				let bufnr = winbufnr(current_viewport)
 				let bufname = bufname(bufnr)
 
-				if len(getbufvar(bufnr, '&buftype')) <= 0 && 
-					\ count(viewport_args, bufname) <= 0 && buflisted(bufnr) > 0
-
+				if len(getbufvar(bufnr, '&buftype')) <= 0 && buflisted(bufnr) > 0
 					call add(viewport_args, bufname)
 					let height = getwininfo(win_getid(current_viewport))[0].height
 					if win_screenpos(current_viewport)[1] > win_screenpos(viewport)[1]
@@ -146,7 +144,6 @@ function <SID>DistributeArgsIntoViewports(tab, pane_breaker, highests_viewports)
 			wincmd _
 		endfor
 	else
-		vertical split
 		wincmd p
 		while i <= argc
 			try | execute "argu" . i | catch | endtry

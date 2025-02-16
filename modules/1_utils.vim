@@ -11,7 +11,8 @@ function s:this.InflateViewports()
 	let winnr_current = winnr()
 	const vertical_panes_length = len(s:libs_base.StudyViewportsLayoutWithVerticalGroups()) - 1
 	if exists("t:danvim.column_viewport")
-		let column_viewport_values = values(t:danvim.column_viewport)
+		let last_viewport = winnr("$")
+		let column_viewport_values = values(t:danvim.column_viewport)->filter('v:val <= ' . last_viewport)
 	endif
 	wincmd t
 	wincmd _
