@@ -8,6 +8,6 @@ endfunction
 
 aug DanVim
 	au!
-	autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+	"autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 	autocmd WinLeave * call <SID>RecordColumnViewport(winnr())
 aug END

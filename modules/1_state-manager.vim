@@ -139,28 +139,18 @@ function <SID>DistributeArgsIntoViewports(tab, pane_breaker, highests_viewports)
 			try | execute "argu" . i | catch | endtry
 			let i += 1
 		endwhile
-		for highest in this_tab_highests_viewports
-			execute highest . "wincmd w"
-			wincmd _
-		endfor
 	else
-		wincmd p
 		while i <= argc
-			try | execute "argu" . i | catch | endtry
 			split
 			wincmd w
+			try | execute "argu" . i | catch | endtry
 			let i += 1
 		endwhile
-		if argc > 1
-			quit
-			2wincmd w
-			wincmd _
-			1wincmd w
-		else
-			wincmd p
-		endif
-
 	endif
+	for highest in this_tab_highests_viewports
+		execute highest . "wincmd w"
+		wincmd _
+	endfor
 	
 endfunction
 
