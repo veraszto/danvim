@@ -100,3 +100,17 @@ function! s:this.UpdateTabDanVimObject(key, value)
 	return #{has_value: v:false, value: a:value}
 endfunction
 
+function! s:this.UpdateBufferDanVimObject(key, value)
+	return s:this.UpdateScopeDanVimObject("b", a:key, a:value)
+endfunction
+
+function! s:this.UpdateScopeDanVimObject(var_scope, key, value)
+	if !exists(a:var_scope . ":danvim")
+		execute "let " . a:var_scope  . ":danvim = #{}"
+	elseif exists(a:var_scope . ":danvim." . a:key)
+		execute "return #{has_value: v:true, value: " . a:var_scope . ":danvim[a:key]}"
+	endif
+	execute "let " . a:var_scope . ":danvim." . a:key . " = " . a:value
+	return #{has_value: v:false, value: a:value}
+endfunction
+

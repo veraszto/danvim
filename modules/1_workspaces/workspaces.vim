@@ -70,9 +70,15 @@ function! <SID>BuildFileNameAndEditIt(line_number, line)
 
 endfunction
 
-function s:modules.workspaces.SmartReachWorkspace()
-	split
-	wincmd _
+let s:modules.workspaces.should_skip_higher_jumps = "should_skip_higher_jumps"
+
+function s:modules.workspaces.SmartReachWorkspace(start_splitting)
+	if a:start_splitting == v:true
+		split
+		wincmd _
+	else 
+		update
+	endif
 	let dir = s:configs.dirs.Workspaces
 	if s:libs_base.AreWeInAnWorkspaceFile() >= 0
 		let starting_from_this = expand("%:t")
@@ -90,14 +96,16 @@ function s:modules.workspaces.SmartReachWorkspace()
 
 	while 1
 		let searching = dir . "/" . build_file_name . ".workspaces"
-		if filereadable(searching ) 
+		if filereadable(searching) 
 			try | wa | catch | echo "Could not save all buffers! No worries!" | endtry
 			execute "vi " . searching
+			call s:libs_base.UpdateBufferDanVimObject(s:modules.workspaces.should_skip_higher_jumps, v:true)
 			break
 		endif
 		let one_dir_up = substitute(build_file_name, '\.[^\.]\{-}$', "", "")
 		if match(one_dir_up, '\.') < 0
 			call s:libs_base.ViInitialWorkspace()
+			call s:libs_base.UpdateBufferDanVimObject(s:modules.workspaces.should_skip_higher_jumps, v:true)
 			break
 		endif
 		let build_file_name = one_dir_up
@@ -354,4 +362,5 @@ endfunction
 
 
 
-map <Del> <Cmd>call g:danvim.modules.workspaces.SmartReachWorkspace()<CR>
+map <Del> <Cmd>call g:danvim.modules.workspaces.SmartReachWorkspace(v:false)<CR>
+map <S-Del> <Cmd>call g:danvim.modules.workspaces.SmartReachWorkspace(v:true)<CR>

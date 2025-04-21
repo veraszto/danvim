@@ -17,12 +17,12 @@ let choose_separator_color = 237
 let date_color = 21
 
 let highlights = [
-	\ [ "StatusLine", 239, 250, "NONE" ],
-	\ [ "StatusLineNC", 236, 243, "NONE" ],
-	\ [ "VertSplit", 236, 236, "NONE" ],
+	\ [ "StatusLine", 198, 255, "NONE" ],
+	\ [ "StatusLineNC", 240, 255, "NONE" ],
+	\ [ "VertSplit", 240, 240, "NONE" ],
 	\ [ "Visual", purple, 207, "NONE" ],
-	\ [ "TabLineSel", 239, 250, "NONE" ],
-	\ [ "TabLineFill", 236, 244, "NONE" ]
+	\ [ "TabLineSel", 198, 255, "NONE" ],
+	\ [ "TabLineFill", 240, 255, "NONE" ]
 \ ]
 
 execute "highlight DiaryDivisorDate ctermbg=197 ctermfg=" . date_color
