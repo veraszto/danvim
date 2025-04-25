@@ -15,7 +15,7 @@ function s:this.Main(back_or_forward)
 		let w:jump_diff_buff_jump_these_buffs = []
 		let w:jump_diff_buff_direction = 0
 	endif
-	if w:jump_diff_buff_direction != a:back_or_forward
+	if w:jump_diff_buff_direction != a:back_or_forward || current_jump == jump_list_length
 		let w:jump_diff_buff_jump_these_buffs = []
 	endif
 	let w:jump_diff_buff_direction = a:back_or_forward
@@ -42,7 +42,6 @@ function s:this.Main(back_or_forward)
 				update
 				"execute "bu " . this_jump_buffer
 				execute "normal " . (counter - next + 1) . "\<c-i>"
-				call add(w:jump_diff_buff_jump_these_buffs, this_jump_buffer)
 				break
 			endif
 			let counter += 1
@@ -60,7 +59,6 @@ function s:this.Main(back_or_forward)
 				update
 				"execute "bu " . this_jump_buffer
 				execute "normal " . (previous - counter + 1) . "\<c-o>"
-				call add(w:jump_diff_buff_jump_these_buffs, this_jump_buffer)
 				break
 			endif
 			let counter -= 1
