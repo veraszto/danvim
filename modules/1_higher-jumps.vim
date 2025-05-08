@@ -7,6 +7,22 @@ function <SID>ShouldSkip(bufnr)
 	return exists("bufvars.danvim") && bufvars.danvim[s:modules.workspaces.should_skip_higher_jumps] == v:true
 endfunction
 
+function <SID>PerformJump(jump_index, back_or_forward)
+	update
+	"execute "bu " . this_jump_buffer
+	normal mv
+	let direction = "\<c-i>"
+	if a:back_or_forward < 0
+		let direction = "\<c-o>"
+	endif
+	execute "normal " . a:jump_index . direction
+	let line = line("'v")
+	if line >= 1 && line <= line("$")
+		normal g'v
+	endif
+	normal zz
+endfunction
+
 function s:this.Main(back_or_forward)
 	let cur_bufnr = bufnr()
     const [list, current_jump] = getjumplist()
@@ -39,9 +55,7 @@ function s:this.Main(back_or_forward)
 					let same_buffer_counter += 1
 				endwhile
 				let counter = same_buffer_counter
-				update
-				"execute "bu " . this_jump_buffer
-				execute "normal " . (counter - next + 1) . "\<c-i>"
+				call <SID>PerformJump(counter - next + 1, a:back_or_forward)
 				break
 			endif
 			let counter += 1
@@ -56,9 +70,7 @@ function s:this.Main(back_or_forward)
 		while counter >= 0
 			let this_jump_buffer = get(list, counter)['bufnr']
 			if count(w:jump_diff_buff_jump_these_buffs, this_jump_buffer) <= 0  && !<SID>ShouldSkip(this_jump_buffer)
-				update
-				"execute "bu " . this_jump_buffer
-				execute "normal " . (previous - counter + 1) . "\<c-o>"
+				call <SID>PerformJump(previous - counter + 1, a:back_or_forward)
 				break
 			endif
 			let counter -= 1
