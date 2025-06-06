@@ -62,11 +62,11 @@ map P <Cmd>normal "pp<CR>
 
 map ;/ <Cmd>echo "Searching for >>>>>, <<<<<<, \|\|\|\|\|\|" <Bar> call search( '\(<\\|>\\|=\)\{6,}' )<CR>
 
-map ;hn :new<CR>
+map ;hn :new \| wincmd _<CR>
 map ;he :tabnew <Bar> help function-list <Bar> only<CR>
 map ;tn :tabnew<CR>
 map ;ju :jumps<CR>
-map ;hs :split<CR>
+map ;hs :split \| wincmd _<CR>
 map ;vn :vertical new<CR>
 map ;vs :vertical split<CR>
 map ;lc :lcd 

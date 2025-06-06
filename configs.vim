@@ -10,11 +10,11 @@ let s:overrides = {
 	\ "s:configs.clipboard_commands.paste": $DANVIM_CLIPBOARD_MANAGER_PASTE,
 \ }
 
-let s:configs.initial_workspace_tries = ["all", "root", "basic", "workspaces", "core", "source"]
+let s:configs.initial_workspace_tries = ["all", "root", "base", "workspaces", "core", "source"]
 
 let s:configs.initial_messages = ["danvim loaded"]
 
-let s:configs.extra_sources_places = [$DANVIM_SOURCE]
+let s:configs.extra_sources_places = [$DANVIM_SOURCE_MORE]
 
 for [variable, value] in items(s:overrides)
 	if (len(trim(value)))

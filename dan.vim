@@ -61,21 +61,22 @@ function s:libs.root.FilesCollector(dir_or_file_array)
 	return  <SID>FilesCollector(flatten([a:dir_or_file_array]))
 endfunction
 
-function <SID>FilesCollector(dir_or_file_array, init_array = [])
-	let list = a:init_array
-	for dir_or_file in a:dir_or_file_array
-		if isdirectory(dir_or_file)
-			call <SID>FilesCollector(s:libs.root.ReadDir(dir_or_file), list)
-		elseif filereadable(dir_or_file)
-			call add(list, dir_or_file)
+function <SID>FilesCollector(spots_collection)
+	let index = 0
+	while index < len(a:spots_collection)
+		let item = a:spots_collection[index]
+		if isdirectory(item)
+			call remove(a:spots_collection, index)
+			return <SID>FilesCollector(extendnew(a:spots_collection, s:libs.root.ReadDir(item)))
 		endif
-	endfor
-	return list
+		let index += 1
+	endwhile
+	return a:spots_collection
 endfunction
 
 function s:libs.root.ReadDir(dir)
 	try
-		let dir_content = readdir(a:dir)
+		let dir_content = readdir(a:dir, {n -> n !~ '^\.\|\~$'})
 	catch
 		echo "Could not readdir: " . a:dir
 		return []
