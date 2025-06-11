@@ -17,12 +17,12 @@ let choose_separator_color = 237
 let date_color = 21
 
 let highlights = [
-	\ [ "StatusLine", 198, 255, "NONE" ],
-	\ [ "StatusLineNC", 240, 255, "NONE" ],
+	\ [ "StatusLine", 235, 45, "NONE" ],
+	\ [ "StatusLineNC", 235, 246, "NONE" ],
 	\ [ "VertSplit", 240, 240, "NONE" ],
 	\ [ "Visual", purple, 207, "NONE" ],
-	\ [ "TabLineSel", 198, 255, "NONE" ],
-	\ [ "TabLineFill", 240, 255, "NONE" ]
+	\ [ "TabLineSel", 237, 45, "NONE" ],
+	\ [ "TabLineFill", 235, 246, "NONE" ]
 \ ]
 
 execute "highlight DiaryDivisorDate ctermbg=197 ctermfg=" . date_color
@@ -62,8 +62,8 @@ highligh WorkspacesMetaDataEnclosure ctermfg=45
 highligh WorkspacesMetaDataContainer ctermfg=81
 highligh WorkspacesMetaData ctermfg=84 
 highligh WorkspacesCurlyBraces ctermfg=45
-highlight Comment ctermfg=243 
-highlight LineNr ctermfg=239
+highlight Comment ctermfg=246 
+highlight LineNr ctermfg=45
 
 
 call <SID>MakeMarksPopupHiLight()

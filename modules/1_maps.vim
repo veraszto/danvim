@@ -54,6 +54,8 @@ map ;as <Cmd>args<CR>
 map B :bu<Space>
 map E :e!<CR>
 
+map ;sn <Cmd>set number!<CR>
+
 map ;pm :set paste! <Bar> 
 		\ if &paste == 0 <Bar> echo "Paste mode is OFF" 
 		\ <Bar> else <Bar> echo "Paste mode is ON" <Bar> endif <CR>
