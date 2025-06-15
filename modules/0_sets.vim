@@ -22,5 +22,6 @@ set wrap
 set comments=""
 set iskeyword+=-
 set shortmess+=A
+set mouse=
 filetype on
 filetype indent plugin off

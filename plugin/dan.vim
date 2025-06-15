@@ -1,7 +1,7 @@
-let g:danvim = #{configs: #{loaded_turns: 0, clipboard_commands: #{},
+let g:danvim = #{configs: #{loaded_turns: 0, should_inflate_viewports: v:true, clipboard_commands: #{},
 		\ dirs:#{
 			\ UserDataDefaultHome: $HOME . '/.danvim/app-data',
-			\ CodebaseHome: expand("<sfile>:h")
+			\ CodebaseHome: expand("<sfile>:h") . "/.."
 		\ },
 		\ files: #{
 			\ DanVim: expand("<sfile>"),
@@ -104,7 +104,6 @@ for lib_file in s:lib_files
 endfor
 
 let s:modules_files = s:libs.root.FilesCollector([s:constants.ModulesDir])
-
 for module_file in s:modules_files
 	try
 		execute s:SourceCmd . s:SpaceChar . module_file

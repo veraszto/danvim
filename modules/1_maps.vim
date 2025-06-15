@@ -37,10 +37,10 @@ map ;bu :bu<Space>
 map ;ch :changes<CR>
 map ;cj :clearjumps<CR>
 
-map <S-PageDown> <Cmd>wincmd l \| execute "normal \<C-F>" \| wincmd p<CR>
-map <S-PageUp> <Cmd>wincmd l \| execute "normal \<C-B>" \| wincmd p<CR>
-imap <S-PageDown> <Cmd>wincmd l \| execute "normal \<C-F>" \| wincmd p<CR>
-imap <S-PageUp> <Cmd>wincmd l \| execute "normal \<C-B>" \| wincmd p<CR>
+"map <S-PageDown> <Cmd>wincmd l \| execute "normal \<C-F>" \| wincmd p<CR>
+"map <S-PageUp> <Cmd>wincmd l \| execute "normal \<C-B>" \| wincmd p<CR>
+"imap <S-PageDown> <Cmd>wincmd l \| execute "normal \<C-F>" \| wincmd p<CR>
+"imap <S-PageUp> <Cmd>wincmd l \| execute "normal \<C-B>" \| wincmd p<CR>
 
 map <S-Down> <C-W>_
 imap <S-Down> <Cmd>wincmd _<CR>
@@ -85,3 +85,6 @@ map ;< <Cmd>tabm0<CR>
 map ;> <Cmd>tabm$<CR>
 noremap <expr> ;i ":vi " . getcwd() . "/"
 noremap <expr> ;I ":vi " . expand("%:h") . "/"
+map ;si <Cmd>let g:danvim.configs.should_inflate_viewports = !g:danvim.configs.should_inflate_viewports \| 
+	\ if g:danvim.configs.should_inflate_viewports \| echo "Viewport inflation: ON" \| 
+	\ else \| echo "Viewport inflation: OFF" \| endif<CR>
