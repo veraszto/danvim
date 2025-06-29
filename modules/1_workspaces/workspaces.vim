@@ -1,7 +1,7 @@
-const s:libs_base = g:danvim.libs.base
+let s:libs_base = g:danvim.libs.base
 let s:modules = g:danvim.modules
 let s:modules.workspaces = #{}
-const s:configs = g:danvim.configs
+let s:configs = g:danvim.configs
 let s:we_are_here = '^\[\(we.are.here\|base.dir\|context.dir\)\]'
 let s:tree_special_chars = '^\(\s\{-}\(\%u2500\|\%u2502\|\%u251C\|\%u2514\|\%xA0\)\+\s\+\)\+'
 let s:last_bar = '\(\\\|/\)\{-\}$'
@@ -359,8 +359,6 @@ function! <SID>WriteBasicStructure()
 	\)
 
 endfunction
-
-
 
 map <Del> <Cmd>call g:danvim.modules.workspaces.SmartReachWorkspace(v:false)<CR>
 map <S-Del> <Cmd>call g:danvim.modules.workspaces.SmartReachWorkspace(v:true)<CR>

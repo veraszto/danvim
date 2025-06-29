@@ -1,4 +1,4 @@
-const s:forePartRegex = '^.\+\(/\)\@='
+let s:forePartRegex = '^.\+\(/\)\@='
 
 function! <SID>BuildTabline()
 	let l:line = ""

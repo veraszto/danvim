@@ -1,5 +1,5 @@
-const s:libs_base = g:danvim.libs.base
-const s:module_utils = g:danvim.modules.utils
+let s:libs_base = g:danvim.libs.base
+let s:module_utils = g:danvim.modules.utils
 
 function! <SID>Decide()
 	if match( buffer_name(), g:danvim.broad_regexes.workspaces_file ) < 0

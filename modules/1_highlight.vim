@@ -68,6 +68,6 @@ highlight LineNr ctermfg=219
 
 call <SID>MakeMarksPopupHiLight()
 
-for a in highlights
-	call <SID>MakeHighlight( get(a, 0), get(a, 1), get(a, 2), get( a, 3 ) )	
+for highlight in highlights
+	call <SID>MakeHighlight(get(highlight, 0), get(highlight, 1), get(highlight, 2), get(highlight, 3))	
 endfor

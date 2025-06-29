@@ -89,7 +89,7 @@ function s:libs.root.ReadDir(dir)
 endfunction 
 
 function s:libs.root.InputLog(message_collection)
-	call input(join(a:message_collection, "\n") . "\nVim exception:\n" . v:exception . 
+	call input("\n" . join(a:message_collection, "\n") . "\nVim exception:\n" . v:exception . 
 		\ "\nPress any key to continue")
 endfunction
 

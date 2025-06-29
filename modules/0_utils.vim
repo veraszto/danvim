@@ -1,8 +1,8 @@
 let g:danvim.modules.utils = #{}
 let s:this = g:danvim.modules.utils
 let s:libs_base = g:danvim.libs.base
-const s:configs = g:danvim.configs
-const s:libs_root = g:danvim.libs.root 
+let s:configs = g:danvim.configs
+let s:libs_root = g:danvim.libs.root 
 
 let s:dictionaries_dir = s:configs.dirs.Dictionaries
 let s:bridge_file = s:configs.files.Clipboard

@@ -1,7 +1,7 @@
 "const s:extended =  "%mView:%{winnr()} Buf:%n %f%=%*Col:%c L:%l/%L Byte:%B"
-const s:available_formats = [
+let s:available_formats = [
 	\ "%-6.6(%m%n%) %-40.40(%t%) %c/%l/%L%= %r%h",
-	\ "%-6.6(%m%n%) %-50.50(%f%) Line:%l/%L%= Col:%-3.3c Byte:%2.2B %r%h"
+	\ "%-6.6(%m%n%) %-50.50(%f%) %c/%l/%L%= Col:%-3.3c Byte:%2.2B %r%h"
 \ ]
 let s:switcher = 0
 

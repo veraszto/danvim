@@ -1,4 +1,4 @@
-const s:module_utils = g:danvim.modules.utils
+let s:module_utils = g:danvim.modules.utils
 
 let s:implementations = #{}
 

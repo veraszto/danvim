@@ -1,16 +1,16 @@
-const s:constants = g:danvim.constants
-const s:configs = g:danvim.configs
+let s:constants = g:danvim.constants
+let s:configs = g:danvim.configs
 let s:modules = g:danvim.modules
 let s:libs_base = g:danvim.libs.base
 let s:modules.state_manager = #{}
 
-const s:tabs_var_name = "let g:danvim.app_data.state_manager"
-const s:viewport_pane_breaker = "let g:danvim.app_data.state_manager_pane_breaker"
-const s:highests_viewports = "let g:danvim.app_data.state_manager_highests_viewports"
-const s:tabs_titles = "let g:danvim.app_data.state_manager_tabs_titles"
-const s:tabs_buffers = "let g:danvim.app_data.state_manager_tabs_buffers"
+let s:tabs_var_name = "let g:danvim.app_data.state_manager"
+let s:viewport_pane_breaker = "let g:danvim.app_data.state_manager_pane_breaker"
+let s:highests_viewports = "let g:danvim.app_data.state_manager_highests_viewports"
+let s:tabs_titles = "let g:danvim.app_data.state_manager_tabs_titles"
+let s:tabs_buffers = "let g:danvim.app_data.state_manager_tabs_buffers"
 
-const s:tabs_vim = "tabs.vim"
+let s:tabs_vim = "tabs.vim"
 
 function <SID>LoaderPath()
 	return expand(s:loaders_dir_base . getcwd())
@@ -47,7 +47,7 @@ endfunction
 
 let s:loaders_dir_base = s:configs.dirs.StateManager
 
-function s:modules.state_manager.SaveState(by_viewport)
+function s:modules.state_manager.SaveState()
 	let tab_page_number = tabpagenr() 
     let all_args = []
 	let column_splitters = []
@@ -56,50 +56,44 @@ function s:modules.state_manager.SaveState(by_viewport)
 	let tabs_buffers = []
     for tab in range(tabpagenr("$"))
         execute (tab + 1) . "tabn"
-		if a:by_viewport == v:false
-			if argc()
-				call add(all_args, argv())
+		let viewport_args = []
+		call add(column_splitters, [])
+		let column_height_resolution = []
+		call add(highests, [])
+		let has_set_height = v:false
+		let views_amount = winnr("$")
+		for viewport in range(views_amount)
+			let current_viewport = viewport + 1
+			let bufnr = winbufnr(current_viewport)
+			let bufname = bufname(bufnr)
+			if len(getbufvar(bufnr, '&buftype')) <= 0 && buflisted(bufnr) > 0
+				let jumps = getjumplist()
+				call add(viewport_args, bufname)
+				let height = getwininfo(win_getid(current_viewport))[0].height
+				if win_screenpos(current_viewport)[1] > win_screenpos(viewport)[1]
+					call add(column_splitters[tab], current_viewport)
+					call add(highests[tab], <SID>ColumnHeightResolution(column_height_resolution))
+					let column_height_resolution = []
+				elseif current_viewport == views_amount
+					call add(column_height_resolution, [height, current_viewport])
+					call add(highests[tab], <SID>ColumnHeightResolution(column_height_resolution))
+				endif
+				call add(column_height_resolution, [height, current_viewport])						
 			endif
-		else
-			let viewport_args = []
-			call add(column_splitters, [])
-			let column_height_resolution = []
-			call add(highests, [])
-			let has_set_height = v:false
-			let views_amount = winnr("$")
-			for viewport in range(views_amount)
-				let current_viewport = viewport + 1
-				let bufnr = winbufnr(current_viewport)
-				let bufname = bufname(bufnr)
-
-				if len(getbufvar(bufnr, '&buftype')) <= 0 && buflisted(bufnr) > 0
-					call add(viewport_args, bufname)
-					let height = getwininfo(win_getid(current_viewport))[0].height
-					if win_screenpos(current_viewport)[1] > win_screenpos(viewport)[1]
-						call add(column_splitters[tab], current_viewport)
-						call add(highests[tab], <SID>ColumnHeightResolution(column_height_resolution))
-						let column_height_resolution = []
-					elseif current_viewport == views_amount
-						call add(column_height_resolution, [height, current_viewport])
-						call add(highests[tab], <SID>ColumnHeightResolution(column_height_resolution))
-					endif
-					call add(column_height_resolution, [height, current_viewport])						
-				endif
-			endfor
-			call filter(viewport_args, '!empty(v:val)')	
-			if !empty(viewport_args)
-				call add(all_args, viewport_args)
-				let tab_title = v:null
-				if exists("t:danvim.title")
-					let tab_title = t:danvim.title
-				endif
-				call add(tabs_titles, tab_title)
-				let tab_buffers = []
-				if exists("t:danvim.buffers")
-					let tab_buffers = t:danvim.buffers
-				endif
-				call add(tabs_buffers, tab_buffers)
+		endfor
+		call filter(viewport_args, '!empty(v:val)')	
+		if !empty(viewport_args)
+			call add(all_args, viewport_args)
+			let tab_title = v:null
+			if exists("t:danvim.title")
+				let tab_title = t:danvim.title
 			endif
+			call add(tabs_titles, tab_title)
+			let tab_buffers = []
+			if exists("t:danvim.buffers")
+				let tab_buffers = t:danvim.buffers
+			endif
+			call add(tabs_buffers, tab_buffers)
 		endif
     endfor    
 	call <SID>AssertOrCreateLoaderDir()
@@ -212,4 +206,4 @@ function s:modules.state_manager.InflateState()
 endfunction
 
 map <F11> <Cmd>call g:danvim.modules.state_manager.InflateState()<CR>
-map <F12> <Cmd>call g:danvim.modules.state_manager.SaveState(v:true)<CR>
+map <F12> <Cmd>call g:danvim.modules.state_manager.SaveState()<CR>
