@@ -29,7 +29,7 @@ let s:constants.ModulesDir = s:configs.dirs.CodebaseHome . s:BarChar . "modules"
 let s:cmds = g:danvim.cmds
 let s:cmds.source_danvim = s:SourceCmd . s:SpaceChar . s:configs.files.DanVim
 
-const s:UserDataDefaultHomeDir = s:configs.dirs.UserDataDefaultHome
+let s:UserDataDefaultHomeDir = s:configs.dirs.UserDataDefaultHome
 
 let s:configs.clipboard_commands.copy = "wl-copy"
 let s:configs.clipboard_commands.paste = "wl-paste"

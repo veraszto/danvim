@@ -1,4 +1,6 @@
-set term=xterm-256color
+if !has('nvim')
+	set term=xterm-256color
+endif
 set updatecount=0
 set autoindent	
 set smartindent

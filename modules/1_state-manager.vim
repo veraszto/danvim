@@ -9,6 +9,7 @@ let s:viewport_pane_breaker = "let g:danvim.app_data.state_manager_pane_breaker"
 let s:highests_viewports = "let g:danvim.app_data.state_manager_highests_viewports"
 let s:tabs_titles = "let g:danvim.app_data.state_manager_tabs_titles"
 let s:tabs_buffers = "let g:danvim.app_data.state_manager_tabs_buffers"
+let s:tabs_jumps = "let g:danvim.app_data.state_manager_jumps"
 
 let s:tabs_vim = "tabs.vim"
 
@@ -54,6 +55,7 @@ function s:modules.state_manager.SaveState()
 	let highests = []
 	let tabs_titles = []
 	let tabs_buffers = []
+	let tabs_jumps = []
     for tab in range(tabpagenr("$"))
         execute (tab + 1) . "tabn"
 		let viewport_args = []
@@ -66,8 +68,11 @@ function s:modules.state_manager.SaveState()
 			let current_viewport = viewport + 1
 			let bufnr = winbufnr(current_viewport)
 			let bufname = bufname(bufnr)
+			let viewport_jumps = []
+			call add(tabs_jumps, viewport_jumps)
 			if len(getbufvar(bufnr, '&buftype')) <= 0 && buflisted(bufnr) > 0
-				let jumps = getjumplist()
+				let jumps = reverse(getjumplist()[0])
+				call add(viewport_jumps, map(jumps, 'bufname(v:val["bufnr"])'))
 				call add(viewport_args, bufname)
 				let height = getwininfo(win_getid(current_viewport))[0].height
 				if win_screenpos(current_viewport)[1] > win_screenpos(viewport)[1]
@@ -104,10 +109,11 @@ function s:modules.state_manager.SaveState()
 	let highests_viewports = s:highests_viewports . " = " . string(highests)
 	let write_tabs_titles = s:tabs_titles . " = " . string(tabs_titles)
 	let write_tabs_buffers = s:tabs_buffers . " = " . string(tabs_buffers)
+	let write_jumps = s:tabs_jumps . " = " . string(tabs_jumps)
     call writefile(
 		\ [ 
 			\ tabs_viewports, pane_breaker, highests_viewports, 
-			\ write_tabs_titles, write_tabs_buffers
+			\ write_tabs_titles, write_tabs_buffers, write_jumps
 		\ ], save_to)
 	execute tab_page_number . "tabnext"
 	echo "Saved to " . save_to
