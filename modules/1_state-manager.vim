@@ -64,14 +64,14 @@ function s:modules.state_manager.SaveState()
 		call add(highests, [])
 		let has_set_height = v:false
 		let views_amount = winnr("$")
+		let viewport_jumps = []
+		call add(tabs_jumps, viewport_jumps)
 		for viewport in range(views_amount)
 			let current_viewport = viewport + 1
 			let bufnr = winbufnr(current_viewport)
 			let bufname = bufname(bufnr)
-			let viewport_jumps = []
-			call add(tabs_jumps, viewport_jumps)
 			if len(getbufvar(bufnr, '&buftype')) <= 0 && buflisted(bufnr) > 0
-				let jumps = reverse(getjumplist()[0])
+				let jumps = reverse(getjumplist(current_viewport)[0])
 				call add(viewport_jumps, map(jumps, 'bufname(v:val["bufnr"])'))
 				call add(viewport_args, bufname)
 				let height = getwininfo(win_getid(current_viewport))[0].height
@@ -119,34 +119,29 @@ function s:modules.state_manager.SaveState()
 	echo "Saved to " . save_to
 endfunction
 
-function <SID>DistributeArgsIntoViewports(tab, pane_breaker, highests_viewports)
+function <SID>DistributeArgsIntoViewports(tab, pane_breaker, highests_viewports, jumps)
 	only
 	let i = 2
 	const argc = argc()
 	const this_tab_pane_breaker = get(a:pane_breaker, a:tab, [])
 	const this_tab_highests_viewports = get(a:highests_viewports, a:tab, [])
-
-	if len(this_tab_pane_breaker)
-		while i <= argc
-			if count(this_tab_pane_breaker, i)
-				vertical split
-				wincmd p
-				wincmd L
-			else
-				split
-				wincmd w
-			endif
-			try | execute "argu" . i | catch | endtry
-			let i += 1
-		endwhile
-	else
-		while i <= argc
+	const tab_jumps = get(a:jumps, a:tab, [])
+	while i <= argc
+		if count(this_tab_pane_breaker, i)
+			vertical split
+			wincmd p
+			wincmd L
+		else
 			split
 			wincmd w
-			try | execute "argu" . i | catch | endtry
-			let i += 1
-		endwhile
-	endif
+		endif
+		let viewport_jumps = get(tab_jumps, i - 1, [])
+		for jump in viewport_jumps
+			execute "vi " . jump
+		endfor
+		execute "argu" . i
+		let i += 1
+	endwhile
 	for highest in this_tab_highests_viewports
 		execute highest . "wincmd w"
 		wincmd _
@@ -172,10 +167,8 @@ function s:modules.state_manager.InflateState()
 	const tabs_titles = g:danvim.app_data.state_manager_tabs_titles
 	const highests_viewports = g:danvim.app_data.state_manager_highests_viewports
 	const pane_breaker = g:danvim.app_data.state_manager_pane_breaker
-	let tabs_buffers = []
-	if exists("g:danvim.app_data.state_manager_tabs_buffers")
-		let tabs_buffers = g:danvim.app_data.state_manager_tabs_buffers
-	endif
+	const tabs_buffers = get(g:danvim.app_data, "state_manager_tabs_buffers", [])
+	const jumps = get(g:danvim.app_data, "state_manager_jumps", [])
 	
 	try
 		%bd
@@ -191,7 +184,7 @@ function s:modules.state_manager.InflateState()
 	while counter < tabs_length
 		let args = state_manager[counter]
 		execute "arglocal" . " " . join(args->map("escape(v:val, ' \')"), " ")
-		call <SID>DistributeArgsIntoViewports(counter, pane_breaker, highests_viewports)
+		call <SID>DistributeArgsIntoViewports(counter, pane_breaker, highests_viewports, jumps)
 		let title = get(tabs_titles, counter, v:null)
 		if title != v:null
 			call s:libs_base.UpdateTabDanVimObject("title", "\"" . title . "\"")
