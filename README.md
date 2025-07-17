@@ -1,9 +1,4 @@
-# This docs is currently ongoing
-
-<img src="/../master/images/vim-logo.png" alt="Vim logo" height="200" /> 
-
-# DanVim is a Vim editor framework written in Vim script
-an extra layer over Vim, with the intent to make its usage even better and faster.
+# DanVim is an extra layer with a set of features put onto Vim editor
 
 - [Introduction](#introduction)
 - [Modules](#modules)
@@ -32,7 +27,7 @@ DanVim started being developed in 2013 and later in around 2023 it got better or
 
 ## Modules
 
-#### state-manager
+### state-manager
 Have you ever wondered how it could be useful and efficient to restore different states of loaded/open buffers(files) back right after you open Vim. That is what `state-manager` proposes
 
 1. Enter Vim and go to any dir, of a project of yours for instance, by running this vim command, `:cd ~/git/my-project`
@@ -46,20 +41,20 @@ You can have as many different group of files loaded back as you wish, they are 
 
 It also accounts for tabs, create new tabs by entering this shortcut in normal mode `;tn` as many times you desire, open some buffers alike we have done above, save and load
 
-By default it loads with a 2 vertical panes layout for each tab and attempts to mimic the layout state by the time it has been saved besides bringing the state back
-#### popups 
-#### wavy-viewports 
-#### utils 
-#### sets 
-#### autocommands 
-#### hello 
-#### higher-jumps 
+### popups 
+### wavy-viewports 
+### utils 
+### sets 
+### autocommands 
+### hello 
+### higher-jumps 
 `higher-jumps` plays a similar role of what we have from Vim's default CTRL-O and CTRL-I, however `higher-jumps` navigation occur to and from different files, meaning if you have jumps which lead the cursor position to the same file these jumps are skipped up to the one that lands on a different file, hence the name `higher-jumps`, type in vim `:help jumps` for more info and context about this subject and perceive `danvim`'s approach alongside it
 
-#### highlight 
-#### maps 
-#### source-more 
-#### statusline 
-#### tabline 
+### highlight 
+### maps 
+### source-more 
+### statusline 
+### tabline 
 
 
+<img src="/../master/images/vim-logo.png" alt="Vim logo" height="200" /> 

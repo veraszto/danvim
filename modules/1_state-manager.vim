@@ -71,8 +71,8 @@ function s:modules.state_manager.SaveState()
 			let bufnr = winbufnr(current_viewport)
 			let bufname = bufname(bufnr)
 			if len(getbufvar(bufnr, '&buftype')) <= 0 && buflisted(bufnr) > 0
-				let jumps = reverse(getjumplist(current_viewport)[0])
-				call add(viewport_jumps, map(jumps, 'bufname(v:val["bufnr"])'))
+				let jumps = getjumplist(current_viewport)[0]
+				call add(viewport_jumps, filter(map(jumps, 'bufname(v:val["bufnr"])'), '!empty(v:val)'))
 				call add(viewport_args, bufname)
 				let height = getwininfo(win_getid(current_viewport))[0].height
 				if win_screenpos(current_viewport)[1] > win_screenpos(viewport)[1]
@@ -119,29 +119,41 @@ function s:modules.state_manager.SaveState()
 	echo "Saved to " . save_to
 endfunction
 
+function <SID>LoadJumpsAndExecArgu(arg_index, viewport_jumps)
+	clearjumps
+	for jump in a:viewport_jumps
+		execute "vi " . jump
+	endfor
+	execute "argu" . a:arg_index
+	execute "normal \<c-o>"
+endfunction
+
 function <SID>DistributeArgsIntoViewports(tab, pane_breaker, highests_viewports, jumps)
-	only
-	let i = 2
+
+	let i = 1
+
 	const argc = argc()
 	const this_tab_pane_breaker = get(a:pane_breaker, a:tab, [])
 	const this_tab_highests_viewports = get(a:highests_viewports, a:tab, [])
 	const tab_jumps = get(a:jumps, a:tab, [])
+
 	while i <= argc
+		let viewport_jumps = get(tab_jumps, i - 1, [])
 		if count(this_tab_pane_breaker, i)
 			vertical split
 			wincmd p
 			wincmd L
+			call <SID>LoadJumpsAndExecArgu(i, viewport_jumps)
 		else
-			split
-			wincmd w
+			if i > 1
+				split
+				wincmd w
+			endif
+			call <SID>LoadJumpsAndExecArgu(i, viewport_jumps)
 		endif
-		let viewport_jumps = get(tab_jumps, i - 1, [])
-		for jump in viewport_jumps
-			execute "vi " . jump
-		endfor
-		execute "argu" . i
 		let i += 1
 	endwhile
+
 	for highest in this_tab_highests_viewports
 		execute highest . "wincmd w"
 		wincmd _
@@ -177,13 +189,14 @@ function s:modules.state_manager.InflateState()
 		echo "Please save and resolve your buffers state"
 		return
 	endtry
-	let t:danvim = {}
-	clearjumps
 	const tabs_length = len(state_manager)
 	let counter = 0
+	let t:danvim = #{}
 	while counter < tabs_length
+		arglocal
+		%argd
 		let args = state_manager[counter]
-		execute "arglocal" . " " . join(args->map("escape(v:val, ' \')"), " ")
+		execute "argadd" . " " . join(args->map("escape(v:val, ' \')"), " ")
 		call <SID>DistributeArgsIntoViewports(counter, pane_breaker, highests_viewports, jumps)
 		let title = get(tabs_titles, counter, v:null)
 		if title != v:null
