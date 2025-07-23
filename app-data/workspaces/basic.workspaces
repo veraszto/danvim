@@ -1,21 +1,10 @@
-
-
-
-
 [we are here]
-/home/
+$HOME
 
 [search]
 -i ""
 
 [make tree]
--x -I "target|.git" -L 2 --filelimit 200
-
-
-
-
-
-
-
+-x -I "target|.git" -L 3 --filelimit 200
 
 

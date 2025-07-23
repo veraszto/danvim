@@ -1,11 +1,18 @@
 if !has('nvim')
 	set term=xterm-256color
 endif
+
 set updatecount=0
 set autoindent	
 set smartindent
+
 "set title
+
 set tabstop=4	
+set softtabstop=4
+set shiftwidth=0
+set expandtab
+
 set shiftwidth=0 
 set scrolloff=5
 set noloadplugins
@@ -25,5 +32,6 @@ set comments=""
 set iskeyword+=-
 set shortmess+=A
 set mouse=
+
 filetype on
 filetype indent plugin off

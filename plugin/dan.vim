@@ -44,7 +44,8 @@ call extend(s:configs.dirs, s:dirs)
 
 execute s:SourceCmd . s:constants.SpaceChar . s:constants.ConfigsFile
 
-for s:dir in values(s:configs.dirs)
+let s:create_dirs = extend(values(s:dirs), [s:configs.dirs.UserDataDefaultHome])
+for s:dir in s:create_dirs
 	if !isdirectory(s:dir)
 		try
 			call mkdir(s:dir, "p")
