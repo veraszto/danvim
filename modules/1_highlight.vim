@@ -1,73 +1,26 @@
-function! <SID>MakeMarksPopupHiLight()
-	highlight Pmenu ctermbg=232 ctermfg=246
-	highlight PmenuSel ctermbg=219 ctermfg=232
-	"highlight Pmenu ctermbg=24 ctermfg=214
-	"highlight PmenuSel ctermbg=red ctermfg=24
-endfunction
-
 function! <SID>MakeHighlight( highlight, ctermbg, ctermfg, cterm )
 	execute "highlight " . a:highlight . " ctermbg=" . a:ctermbg . " ctermfg=" . a:ctermfg . " cterm=" . a:cterm
 endfunction
 
 highlight clear
 
-let purple = 55
-let status_line_background = 237
-let choose_separator_color = 237 
-let date_color = 21
+highlight InitialMessage ctermfg=242
 
-let highlights = [
+highlight Comment ctermfg=246 
+highlight LineNr ctermfg=219
+
+highlight Pmenu ctermbg=232 ctermfg=246
+highlight PmenuSel ctermbg=219 ctermfg=232
+
+let s:highlights = [
 	\ [ "StatusLine", 237, 219, "NONE" ],
 	\ [ "StatusLineNC", 237, 246, "NONE" ],
 	\ [ "VertSplit", 237, 237, "NONE" ],
-	\ [ "Visual", purple, 207, "NONE" ],
+	\ [ "Visual", 55, 207, "NONE" ],
 	\ [ "TabLineSel", 178, 237, "NONE" ],
 	\ [ "TabLineFill", 237, 246, "NONE" ]
 \ ]
 
-execute "highlight DiaryDivisorDate ctermbg=197 ctermfg=" . date_color
-execute "highlight DiaryDivisor ctermbg=" . choose_separator_color . " ctermfg=" . choose_separator_color
-execute "highlight CallingAttention ctermbg=" . choose_separator_color . " ctermfg=197"
-highlight InitialMessage ctermfg=242
-highlight MyLightGray ctermfg=242
-highlight MyLightGrayForText ctermfg=246
-highlight MyActivities ctermfg=177
-highlight CompanyActivities ctermfg=165
-highlight BeAware ctermfg=219
-highlight link SubItemHelpers MyDone
-highlight TreeSticks ctermfg=241
-highlight MyDone ctermfg=46
-highlight MyStarted ctermfg=75
-highlight MyContinue ctermfg=75
-highlight MyContinued ctermfg=87
-
-highligh MyCategory ctermfg=201 ctermbg=234
-highligh MySubCategory ctermfg=198 ctermbg=234
-highligh MySeparator ctermfg=234 ctermbg=234
-highligh Bars ctermfg=99 
-highligh Extension ctermfg=198 
-execute "highligh SameAsExtensionToStatusLine ctermfg=250 ctermbg=" . status_line_background
-highligh WeAreHere cterm=underline,bold ctermfg=46
-highligh link SearchFromInside WeAreHere
-highligh Regex ctermfg=196
-highligh RegexWithIn ctermfg=141
-highligh Any ctermfg=57
-highligh Dirs ctermfg=111
-highligh FileNamePrefix ctermfg=201
-
-highligh DirsSaliented cterm=underline ctermfg=111
-highligh BarsSaliented cterm=underline ctermfg=99 
-
-highligh WorkspacesMetaDataEnclosure ctermfg=45
-highligh WorkspacesMetaDataContainer ctermfg=81
-highligh WorkspacesMetaData ctermfg=84 
-highligh WorkspacesCurlyBraces ctermfg=45
-highlight Comment ctermfg=246 
-highlight LineNr ctermfg=219
-
-
-call <SID>MakeMarksPopupHiLight()
-
-for highlight in highlights
+for highlight in s:highlights
 	call <SID>MakeHighlight(get(highlight, 0), get(highlight, 1), get(highlight, 2), get(highlight, 3))	
 endfor

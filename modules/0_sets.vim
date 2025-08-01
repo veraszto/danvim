@@ -1,19 +1,19 @@
 if !has('nvim')
-	set term=xterm-256color
+    set term=xterm-256color
 endif
 
 set updatecount=0
-set autoindent	
+set autoindent
 set smartindent
 
 "set title
 
-set tabstop=4	
+set tabstop=4
 set softtabstop=4
 set shiftwidth=0
 set expandtab
 
-set shiftwidth=0 
+set shiftwidth=0
 set scrolloff=5
 set noloadplugins
 set nohlsearch
@@ -32,6 +32,10 @@ set comments=""
 set iskeyword+=-
 set shortmess+=A
 set mouse=
+
+"Although by default, this library expects the terminal background to be dark, 
+"such as Gnome terminal Tango dark
+set background=light
 
 filetype on
 filetype indent plugin off

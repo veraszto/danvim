@@ -2,10 +2,23 @@ if exists("b:current_syntax")
 	finish
 endif
 
-syn region WorkspacesMetaDataContainer start=/^\[.\+\]/ end=/^.*$/ keepend contains=WorkspacesMetaDataEnclosure,DirsSaliented,BarsSaliented
+highlight WorkspacesMetaDataEnclosure ctermfg=45
+highlight WorkspacesMetaDataContainer ctermfg=81
+highlight WorkspacesMetaData ctermfg=84 
+highlight WorkspacesCurlyBraces ctermfg=45
+highlight Dirs ctermfg=111
+highlight FileNamePrefix ctermfg=201
+highlight DirsSaliented cterm=underline ctermfg=111
+highlight BarsSaliented cterm=underline ctermfg=99 
+highlight TreeSticks ctermfg=241
+highlight Extension ctermfg=198 
+highlight Bars ctermfg=99 
+
+syn region WorkspacesMetaDataContainer start=/^\[.\+\]/ end=/^.*$/ keepend 
+    \ contains=WorkspacesMetaDataEnclosure,DirsSaliented,BarsSaliented
+
 syn match WorkspacesMetaDataEnclosure /^\[.\+\].*/ contained contains=WorkspacesMetadata
 syn match WorkspacesMetaData /[^\[\]]\+/ contained contains=WeAreHere
-"syn match WeAreHere /\cwe.are.here/ contained 
 syn match WorkspacesCurlyBraces /^\s*\({\|}\)\s*$/
 
 
@@ -18,6 +31,5 @@ syn match Extension /\.[^./]\{-}$/ contained
 syn match Bars /\// 
 syn match BarsSaliented /\// contained
 
-syn match Salient /.\+/ contained
 
 let b:current_syntax = "workspaces"
