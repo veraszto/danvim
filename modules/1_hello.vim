@@ -1,3 +1,13 @@
+let s:libs_base = g:danvim.libs.base
+let s:messages = g:danvim.configs.initial_messages
+
+if s:libs_base.DoesNotHavePopupCreate()
+    for message in s:messages
+        echo message
+    endfor
+    finish
+endif
+
 function! <SID>SayHello( msg, time )
 	if len( a:msg ) <= 0
 		return
@@ -16,8 +26,6 @@ function! <SID>SayHello( msg, time )
 		\)
 endfunction
 
-let s:loaded_turns = g:danvim.configs.loaded_turns
-let s:messages = g:danvim.configs.initial_messages
 let s:time = 3000
 for message in s:messages
 	call <SID>SayHello(message, s:time)

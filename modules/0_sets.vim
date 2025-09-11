@@ -33,9 +33,5 @@ set iskeyword+=-
 set shortmess+=A
 set mouse=
 
-"Although by default, this library expects the terminal background to be dark, 
-"such as Gnome terminal Tango dark
-set background=light
-
 filetype on
 filetype indent plugin off

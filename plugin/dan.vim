@@ -56,7 +56,6 @@ for s:dir in s:create_dirs
     endif
 endfor
 
-
 function s:libs.root.FilesCollector(dir_or_file_array)
     return  <SID>FilesCollector(flatten([a:dir_or_file_array]))
 endfunction

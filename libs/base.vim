@@ -114,3 +114,7 @@ function! s:this.UpdateScopeDanVimObject(var_scope, key, value)
 	return #{has_value: v:false, value: a:value}
 endfunction
 
+function! s:this.DoesNotHavePopupCreate()
+    return !exists("*popup_create")
+endfunction
+

@@ -2,6 +2,10 @@ let g:danvim.modules.popups = #{}
 let s:libs_base = g:danvim.libs.base
 let s:this = g:danvim.modules.popups
 
+if has("nvim")
+    finish
+endif
+
 let s:common_popup_options = #{pos: 'botright', line: 1, col: 1, minheight: 1,
     \ filter: 'popup_filter_menu', cursorline: 1, padding: [0,0,0,0]}
 

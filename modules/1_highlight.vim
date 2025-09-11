@@ -1,3 +1,8 @@
+"ctermfg and ctermbg seemed to have no effect with NVim
+if has("nvim")
+    finish
+endif
+
 function! <SID>MakeHighlight( highlight, ctermbg, ctermfg, cterm )
 	execute "highlight " . a:highlight . " ctermbg=" . a:ctermbg . " ctermfg=" . a:ctermfg . " cterm=" . a:cterm
 endfunction
