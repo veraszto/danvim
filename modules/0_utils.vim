@@ -55,8 +55,8 @@ function! <SID>MoveUpDown(direction)
 		wincmd w
 	endif
 	"wincmd _
-    execute "wincmd ="
-    let t:danvim_is_viewport_inflated = v:false
+    "execute "wincmd ="
+    "let t:danvim_is_viewport_inflated = v:false
 endfunction
 
 function! <SID>MoveLeftRight(direction)
@@ -70,8 +70,8 @@ function! <SID>MoveLeftRight(direction)
 		"execute t:danvim.column_viewport[column] . "wincmd w"
 	"endif
 	"wincmd _
-    execute "wincmd ="
-    let t:danvim_is_viewport_inflated = v:false
+    "execute "wincmd ="
+    "let t:danvim_is_viewport_inflated = v:false
 endfunction
 
 function! <SID>CopyRegisterToFileAndClipboard()
