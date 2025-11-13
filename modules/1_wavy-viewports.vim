@@ -13,7 +13,7 @@ function s:implementations.up(bufnr, winnr)
 	2wincmd j
 	quit
 	execute go_back . "wincmd w"
-	wincmd _
+	"wincmd _
 endfunction
 
 function s:implementations.down(bufnr, winnr)
@@ -27,7 +27,7 @@ function s:implementations.down(bufnr, winnr)
 	2wincmd k
 	quit
 	wincmd j
-	wincmd _
+	"wincmd _
 endfunction
 
 function s:implementations.left(bufnr, winnr)
@@ -42,7 +42,7 @@ function s:implementations.left(bufnr, winnr)
 	execute a:winnr + 1 . "wincmd w"
 	quit
 	execute go_back . "wincmd w"
-	call s:module_utils.InflateViewports()
+	"call s:module_utils.InflateViewports()
 
 endfunction
 
@@ -58,7 +58,7 @@ function s:implementations.right(bufnr, winnr)
 	execute a:winnr . "wincmd w"
 	quit
 	execute go_back . "wincmd w"
-	call s:module_utils.InflateViewports()
+	"call s:module_utils.InflateViewports()
 endfunction
 
 function! <SID>TranslateViewport(direction)

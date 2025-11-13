@@ -7,27 +7,45 @@ let s:libs_root = g:danvim.libs.root
 let s:dictionaries_dir = s:configs.dirs.Dictionaries
 let s:bridge_file = s:configs.files.Clipboard
 
-function s:this.InflateViewports()
-	let winnr_current = winnr()
-	const vertical_panes_length = len(s:libs_base.StudyViewportsLayoutWithVerticalGroups()) - 1
-	if exists("t:danvim.column_viewport")
-		let last_viewport = winnr("$")
-		let column_viewport_values = values(t:danvim.column_viewport)->filter('v:val <= ' . last_viewport)
-	endif
-	wincmd t
-	wincmd _
-	for column in range(vertical_panes_length)
-		wincmd l
-		wincmd _
-	endfor
-	if exists("t:danvim.column_viewport")
-		for column_viewport in column_viewport_values 
-			execute column_viewport . "wincmd w"
-			wincmd _
-		endfor
-	endif
-	execute winnr_current . "wincmd w"
-	wincmd _
+"function s:this.InflateViewports()
+"	let winnr_current = winnr()
+"	const vertical_panes_length = len(s:libs_base.StudyViewportsLayoutWithVerticalGroups()) - 1
+"	if exists("t:danvim.column_viewport")
+"		let last_viewport = winnr("$")
+"		let column_viewport_values = values(t:danvim.column_viewport)->filter('v:val <= ' . last_viewport)
+"	endif
+"	wincmd t
+"	wincmd _
+"	for column in range(vertical_panes_length)
+"		wincmd l
+"		wincmd _
+"	endfor
+"	if exists("t:danvim.column_viewport")
+"		for column_viewport in column_viewport_values 
+"			execute column_viewport . "wincmd w"
+"			wincmd _
+"		endfor
+"	endif
+"	execute winnr_current . "wincmd w"
+"	wincmd _
+"endfunction
+
+function s:this.SimplerInflateViewports()
+    if !exists("t:danvim_is_viewport_inflated")
+        let t:danvim_is_viewport_inflated = v:true
+        wincmd |
+        wincmd _
+        call s:this.SimplerInflateViewports()
+        return
+    endif
+    if (t:danvim_is_viewport_inflated == v:true) 
+        let t:danvim_is_viewport_inflated = v:false
+        execute "wincmd ="
+    else
+        let t:danvim_is_viewport_inflated = v:true
+        wincmd |
+        wincmd _
+    endif
 endfunction
 
 function! <SID>MoveUpDown(direction)
@@ -36,7 +54,9 @@ function! <SID>MoveUpDown(direction)
 	else
 		wincmd w
 	endif
-	wincmd _
+	"wincmd _
+    execute "wincmd ="
+    let t:danvim_is_viewport_inflated = v:false
 endfunction
 
 function! <SID>MoveLeftRight(direction)
@@ -45,11 +65,13 @@ function! <SID>MoveLeftRight(direction)
 	else
 		wincmd l
 	endif
-	let column = win_screenpos(winnr())[1]
-	if exists("t:danvim.column_viewport[column]")
-		execute t:danvim.column_viewport[column] . "wincmd w"
-	endif
-	wincmd _
+	"let column = win_screenpos(winnr())[1]
+	"if exists("t:danvim.column_viewport[column]")
+		"execute t:danvim.column_viewport[column] . "wincmd w"
+	"endif
+	"wincmd _
+    execute "wincmd ="
+    let t:danvim_is_viewport_inflated = v:false
 endfunction
 
 function! <SID>CopyRegisterToFileAndClipboard()

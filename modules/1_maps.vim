@@ -8,12 +8,6 @@ imap jk <C-X><C-K>
 imap jv <C-X><C-V>
 imap jf <C-X><C-F>
 
-"   Viewport Navigation
-map <C-Left> <C-W>h
-map <C-Right> <C-W>l
-imap <C-Left> <Cmd>wincmd h<CR>
-imap <C-Right> <Cmd>wincmd l<CR>
-
 "Alternate buffer navigation
 map <S-Tab> :up <Bar> :e#<CR>
 
