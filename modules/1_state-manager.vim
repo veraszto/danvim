@@ -154,10 +154,11 @@ function <SID>DistributeArgsIntoViewports(tab, pane_breaker, highests_viewports,
         let i += 1
     endwhile
 
-    for highest in this_tab_highests_viewports
-        execute highest . "wincmd w"
-        wincmd _
-    endfor
+"    for highest in this_tab_highests_viewports
+"        execute highest . "wincmd w"
+"        wincmd _
+"    endfor
+    wincmd = 
 
 endfunction
 
