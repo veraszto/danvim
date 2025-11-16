@@ -69,7 +69,8 @@ map ;vn :vertical new<CR>
 map ;vs :vertical split<CR>
 map ;lc :lcd 
 map ;pw :pwd<CR>
-map ;q <Cmd>quit <Bar> wincmd _<CR>
+"map ;q <Cmd>quit <Bar> wincmd _<CR>
+map ;q <Cmd>quit<CR>
 map ;Q :tabclose<CR>
 map ;rg :reg<CR>
 map ;sm :marks<CR>

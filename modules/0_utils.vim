@@ -30,27 +30,28 @@ let s:bridge_file = s:configs.files.Clipboard
 "	wincmd _
 "endfunction
 
-function s:this.SimplerInflateViewports()
-    if !exists("t:danvim_is_viewport_inflated")
-        let t:danvim_is_viewport_inflated = v:true
-        wincmd |
-        wincmd _
-        call s:this.SimplerInflateViewports()
-        return
-    endif
-    if (t:danvim_is_viewport_inflated == v:true) 
-        let t:danvim_is_viewport_inflated = v:false
-        execute "wincmd ="
-    else
-        let t:danvim_is_viewport_inflated = v:true
-        wincmd |
-        wincmd _
-    endif
-endfunction
+"function s:this.SimplerInflateViewports()
+"    if !exists("t:danvim_is_viewport_inflated")
+"        let t:danvim_is_viewport_inflated = v:true
+"        wincmd |
+"        wincmd _
+"        call s:this.SimplerInflateViewports()
+"        return
+"    endif
+"    if (t:danvim_is_viewport_inflated == v:true) 
+"        let t:danvim_is_viewport_inflated = v:false
+"        execute "wincmd ="
+"    else
+"        let t:danvim_is_viewport_inflated = v:true
+"        wincmd |
+"        wincmd _
+"    endif
+"endfunction
 
 function s:this.InflateViewportsWithTabs()
     let bufnr = bufnr()
     if winnr("$") <= 1 
+        call s:libs_base.UpdateScopeDanVimObject("t", "title", "\"" . "s" . bufnr . "\"")
         let has_found_counter_part = <SID>ReachToNextViewportWithSameBuffer(bufnr, 0)
         if !has_found_counter_part
             echo "Counterpart viewport of buffer " . bufnr . 
@@ -59,9 +60,10 @@ function s:this.InflateViewportsWithTabs()
     else
         let has_found_counter_part = <SID>ReachToNextViewportWithSameBuffer(bufnr, 1)
         if !has_found_counter_part
-           $tabnew
-           execute "bu " . bufnr
+            $tabnew
+            execute "bu " . bufnr
         endif
+        call s:libs_base.UpdateScopeDanVimObject("t", "title", "\"" . "s" . bufnr . "\"")
     endif
 endfunction
 
