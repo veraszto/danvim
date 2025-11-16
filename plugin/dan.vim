@@ -43,6 +43,11 @@ call extend(s:configs.dirs, s:dirs)
 
 execute s:SourceCmd . s:constants.SpaceChar . s:constants.ConfigsFile
 
+try
+    execute s:SourceCmd . s:constants.SpaceChar . "$VIMRUNTIME/defaults.vim"
+catch
+endtry
+
 let s:create_dirs = extend(values(s:dirs), [s:configs.dirs.UserDataDefaultHome])
 for s:dir in s:create_dirs
     if !isdirectory(s:dir)

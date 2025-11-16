@@ -1,9 +1,7 @@
 [we are here]
 $HOME
-
 [search]
--i ""
-
+-maxdepth 2 -iname "hello"
 [make tree]
 -x -I "target|.git" -L 3 --filelimit 200
 

@@ -1,6 +1,8 @@
 let s:configs = g:danvim.configs
 let s:constants = g:danvim.constants
 
+let s:fixed_source_place_filename = "then-consider-this.vim"
+
 let s:overrides = {
 	\ "s:configs.dirs.Dictionaries": $DANVIM_DICTIONARIES_DIR,
 	\ "s:configs.dirs.Workspaces": $DANVIM_WORKSPACES_DIR,
@@ -14,7 +16,8 @@ let s:configs.initial_workspace_tries = ["all", "root", "base", "workspaces", "c
 
 let s:configs.initial_messages = ["danvim loaded"]
 
-let s:configs.extra_sources_places = [$DANVIM_SOURCE_MORE]
+let s:configs.extra_sources_places = 
+    \ [$DANVIM_SOURCE_MORE, s:configs.dirs.CodebaseHome . "/" . s:fixed_source_place_filename]
 
 for [variable, value] in items(s:overrides)
 	if (len(trim(value)))

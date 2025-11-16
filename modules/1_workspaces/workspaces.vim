@@ -206,7 +206,7 @@ function! <SID>SpaceBarAction_search(line_number, line)
 	let build_find = 
 			\ "find " 
 			\ . roof . 
-			\ " | grep " . this_line
+			\ " " . this_line
 
 	echo build_find
 

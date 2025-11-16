@@ -18,7 +18,7 @@ syn region WorkspacesMetaDataContainer start=/^\[.\+\]/ end=/^.*$/ keepend
     \ contains=WorkspacesMetaDataEnclosure,DirsSaliented,BarsSaliented
 
 syn match WorkspacesMetaDataEnclosure /^\[.\+\].*/ contained contains=WorkspacesMetadata
-syn match WorkspacesMetaData /[^\[\]]\+/ contained contains=WeAreHere
+syn match WorkspacesMetaData /[^\[\]]\+/ contained
 syn match WorkspacesCurlyBraces /^\s*\({\|}\)\s*$/
 
 

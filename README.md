@@ -40,19 +40,27 @@ Have you ever wondered how it could be useful and efficient to restore different
 
 1. Enter Vim and go to any dir, of a project of yours for instance, by running this vim command, `:cd ~/git/my-project`
 2. Open some files, `:argadd myfile myfile2 myfile3 myfile4 | argdo split`
-3. Press &lt;F12&gt;, a message confirms the action of saving the state
+3. Press `<F12>`, a message confirms the action of saving the state
 4. Exit Vim
-5. Enter Vim again, navigate to the directory you were and just saved, `:cd my-project`, press &lt;F11&gt;
+5. Enter Vim again, navigate to the directory you were and just saved, `:cd my-project`, press `<F11>`
 6. You have back your buffers loaded
 
 You can have as many different group of files loaded back as you wish, they are saved and loaded referenced by the current directory you are by the time you save or load.
 
 It also accounts for tabs, create new tabs by entering this shortcut in normal mode `;tn` as many times you desire, open some buffers alike we have done above, save and load
 
+### Tree
+
+With `Tree` we draw a tree of dirs and files respecting the location of the line adjacent to the first `[we are here]` entry above the line that triggers tha action,
+to display the exact output of the GNU/Tree command, allowing each file entry listed by the tree command to be loaded by pressing `<Space_Bar>` over any of them
+
+1. Press `<Del>` to reach to the first encountered workspace file, it looks like this, check the picture after these items
+2. Specify the dir of interest below `[we are here]`, usually it is the same dir we navigate to using `:cd`, just like instructed on `state-manager` module above
+3. Toggle the files' list by pressing `<Space_Bar>` over the line below `[make_tree]`, which also passes customizable parameters to the `GNU/Tree` command
+4. Spot a pertinent file and press `<Space_Bar>` over it and have it loaded on the current viewport
+
 ### popups 
-
 `Shift-End` triggers a popup menu to select buffers from the buffers list, a similar list we would have by `:buffers` since it is filtered
-
 `Shift-PgUp` triggers a popup menu to select buffers from the jumps list, a similar list we would have by `:jumps` as it is filtered
 
 ### wavy-viewports 
@@ -65,10 +73,15 @@ Move viewports themselves by using `CTRL-Shit-ArrowUp`, `CTRL-Shit-ArrowRight`, 
 ### hello 
 ### higher-jumps 
 `higher-jumps` plays a similar role of what we have from Vim's default jumps CTRL-O and CTRL-I, however `higher-jumps` navigation occur to and from different files, meaning if you have jumps which lead the cursor position to the same file these jumps are skipped up to the one that lands on a different file, hence the name `higher-jumps`, type in vim `:help jumps` for more info and context about this subject and perceive `danvim`'s approach alongside it
-
 ### highlight 
 ### maps 
 ### source-more 
+
+There may be interest of further customizing the default parameters that ship with `danvim`.
+You could just `source` and extra vim script after `danvim` loads in your `vimrc`,
+or you may do so by editing the `then-consider-this.vim` file on the root of the instalation of this lib.
+You can also achieve the same results by using a environment variable named `DANVIM_SOURCE_MORE` pointing to a vim file
+
 ### statusline 
 ### tabline 
 

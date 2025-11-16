@@ -51,7 +51,7 @@ let s:bridge_file = s:configs.files.Clipboard
 function s:this.InflateViewportsWithTabs()
     let bufnr = bufnr()
     if winnr("$") <= 1 
-        call s:libs_base.UpdateScopeDanVimObject("t", "title", "\"" . "s" . bufnr . "\"")
+        "call s:libs_base.UpdateScopeDanVimObject("t", "title", "\"" . "s" . bufnr . "\"")
         let has_found_counter_part = <SID>ReachToNextViewportWithSameBuffer(bufnr, 0)
         if !has_found_counter_part
             echo "Counterpart viewport of buffer " . bufnr . 
@@ -63,7 +63,7 @@ function s:this.InflateViewportsWithTabs()
             $tabnew
             execute "bu " . bufnr
         endif
-        call s:libs_base.UpdateScopeDanVimObject("t", "title", "\"" . "s" . bufnr . "\"")
+        "call s:libs_base.UpdateScopeDanVimObject("t", "title", "\"" . "s" . bufnr . "\"")
     endif
 endfunction
 
