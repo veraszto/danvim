@@ -48,6 +48,39 @@ function s:this.SimplerInflateViewports()
     endif
 endfunction
 
+function s:this.InflateViewportsWithTabs()
+    let bufnr = bufnr()
+    if winnr("$") <= 1 
+        let has_found_counter_part = <SID>ReachToNextViewportWithSameBuffer(bufnr, 0)
+        if !has_found_counter_part
+            echo "Counterpart viewport of buffer " . bufnr . 
+                \ " is not present in any other tab besides this tab"
+        endif
+    else
+        let has_found_counter_part = <SID>ReachToNextViewportWithSameBuffer(bufnr, 1)
+        if !has_found_counter_part
+           $tabnew
+           execute "bu " . bufnr
+        endif
+    endif
+endfunction
+
+function! <SID>ReachToNextViewportWithSameBuffer(context_bufnr, must_be_sole)
+    for tab in range(tabpagenr("$"))
+        let cur_tab = tab + 1
+        let buffers = tabpagebuflist(cur_tab)
+        if len(buffers) > 1 && a:must_be_sole == v:true
+            continue
+        endif
+        if count(buffers, a:context_bufnr) && cur_tab != tabpagenr()
+            let winnr = indexof(buffers, "v:val == " . a:context_bufnr)
+            execute cur_tab . "tabn | " . (winnr + 1)  . "wincmd w"
+            return 1
+        endif
+    endfor
+    return 0
+endfunction
+
 function! <SID>MoveUpDown(direction)
 	if a:direction =~ '^up$'
 		wincmd W

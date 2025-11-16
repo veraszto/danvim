@@ -91,13 +91,7 @@ function s:this.VieportWidthAndHeight()
 endfunction
 
 function! s:this.UpdateTabDanVimObject(key, value)
-	if !exists("t:danvim")
-		let t:danvim = #{}
-	elseif exists("t:danvim." . a:key)
-		return #{has_value: v:true, value: t:danvim[a:key]}
-	endif
-	execute "let t:danvim." . a:key . " = " . a:value
-	return #{has_value: v:false, value: a:value}
+	return s:this.UpdateScopeDanVimObject("t", a:key, a:value)
 endfunction
 
 function! s:this.UpdateBufferDanVimObject(key, value)
@@ -105,13 +99,14 @@ function! s:this.UpdateBufferDanVimObject(key, value)
 endfunction
 
 function! s:this.UpdateScopeDanVimObject(var_scope, key, value)
+    let value = v:null
 	if !exists(a:var_scope . ":danvim")
 		execute "let " . a:var_scope  . ":danvim = #{}"
-	elseif exists(a:var_scope . ":danvim." . a:key)
-		execute "return #{has_value: v:true, value: " . a:var_scope . ":danvim[a:key]}"
-	endif
+    elseif exists(a:var_scope . ":danvim[a:key]")
+        execute "let value = " . a:var_scope . ":danvim[a:key]"
+    endif
 	execute "let " . a:var_scope . ":danvim." . a:key . " = " . a:value
-	return #{has_value: v:false, value: a:value}
+	return #{ex_value: value, value: a:value}
 endfunction
 
 function! s:this.DoesNotHavePopupCreate()

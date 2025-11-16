@@ -3,7 +3,7 @@ let s:module_utils = g:danvim.modules.utils
 
 function! <SID>Decide()
 	if match( buffer_name(), g:danvim.broad_regexes.workspaces_file ) < 0
-		call s:module_utils.SimplerInflateViewports()
+		call s:module_utils.InflateViewportsWithTabs()
         normal m'
 	else
 		call g:danvim.modules.workspaces.Main()
