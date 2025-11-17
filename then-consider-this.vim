@@ -16,8 +16,8 @@ let s:workspace_colors = s:configs.colors.workspaces
 
 " Explore the available colors by the shortcut `;sc` on normal mode, type semicolon, letter s, letter c 
 
-        let s:workspace_colors[0] = 225
-        let s:workspace_colors[1] = 163
-        let s:workspace_colors[2] = 40
+        let s:workspace_colors[0] = 200
+        let s:workspace_colors[1] = 15
+        let s:workspace_colors[2] = 69
 
 " This is ongoing..
