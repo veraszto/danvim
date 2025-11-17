@@ -7,6 +7,7 @@ let g:danvim = #{configs: #{loaded_turns: 0, should_inflate_viewports: v:true, c
             \ DanVim: expand("<sfile>"),
             \ Clipboard: "/tmp/danvim.clipboard"
         \ },
+        \ colors: #{workspaces:[225,39,45]},
     \ }, libs: #{root: {}},
     \ modules: #{},
     \ app_data: #{state_manager: []},
