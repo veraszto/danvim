@@ -54,7 +54,7 @@ It also accounts for tabs, create new tabs by entering this shortcut in normal m
 With `Tree` we draw a tree of dirs and files respecting the location of the line adjacent to the first `[we are here]` entry above the line that triggers tha action,
 to display the exact output of the GNU/Tree command, allowing each file entry listed by the tree command to be loaded by pressing `<Space_Bar>` over any of them
 
-1. Press `<Del>` to reach to the first encountered workspace file, it looks like this, check the picture after these items
+1. Press `<Del>` to reach to the first encountered workspace file
 2. Specify the dir of interest below `[we are here]`, usually it is the same dir we navigate to using `:cd`, just like instructed on `state-manager` module above
 3. Toggle the files' list by pressing `<Space_Bar>` over the line below `[make_tree]`, which also passes customizable parameters to the `GNU/Tree` command
 4. Spot a pertinent file and press `<Space_Bar>` over it and have it loaded on the current viewport

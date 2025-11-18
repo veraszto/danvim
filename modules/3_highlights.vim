@@ -20,7 +20,7 @@ highlight PmenuSel ctermbg=219 ctermfg=232
 let s:highlights = [
 	\ [ "StatusLine", 200, 15, "NONE" ],
 	\ [ "StatusLineNC", 56, 15, "NONE" ],
-	\ [ "VertSplit", 235, 235, "NONE" ],
+	\ [ "VertSplit", 56, 56, "NONE" ],
 	\ [ "Visual", 55, 207, "NONE" ],
 	\ [ "TabLineSel", 56, 15, "NONE" ],
 	\ [ "TabLineFill", 237, 246, "NONE" ]
