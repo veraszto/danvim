@@ -75,7 +75,7 @@ function! <SID>ReachToNextViewportWithSameBuffer(context_bufnr, must_be_sole)
             continue
         endif
         if count(buffers, a:context_bufnr) && cur_tab != tabpagenr()
-            let winnr = indexof(buffers, "v:val == " . a:context_bufnr)
+            let winnr = index(buffers, a:context_bufnr)
             execute cur_tab . "tabn | " . (winnr + 1)  . "wincmd w"
             return 1
         endif
