@@ -48,38 +48,51 @@ let s:bridge_file = s:configs.files.Clipboard
 "    endif
 "endfunction
 
-function s:this.InflateViewportsWithTabs()
+function! s:this.InflateViewportsWithTabs()
     let bufnr = bufnr()
-    if winnr("$") <= 1 
-        "call s:libs_base.UpdateScopeDanVimObject("t", "title", "\"" . "s" . bufnr . "\"")
-        let has_found_counter_part = <SID>ReachToNextViewportWithSameBuffer(bufnr, 0)
-        if !has_found_counter_part
-            echo "Counterpart viewport of buffer " . bufnr . 
-                \ " is not present in any other tab besides this tab"
-        endif
-    else
-        let has_found_counter_part = <SID>ReachToNextViewportWithSameBuffer(bufnr, 1)
-        if !has_found_counter_part
-            $tabnew
-            execute "bu " . bufnr
-        endif
-        "call s:libs_base.UpdateScopeDanVimObject("t", "title", "\"" . "s" . bufnr . "\"")
+    let has_found_counter_part = <SID>ReachToNextViewportWithSameBuffer(bufnr, 0)
+    if winnr("$") > 1 && has_found_counter_part == v:false
+        execute "$tabnew | bu " . bufnr
+        return
     endif
+    echo "This is the only instance of buffer " . bufnr()
+
 endfunction
 
 function! <SID>ReachToNextViewportWithSameBuffer(context_bufnr, must_be_sole)
-    for tab in range(tabpagenr("$"))
-        let cur_tab = tab + 1
-        let buffers = tabpagebuflist(cur_tab)
-        if len(buffers) > 1 && a:must_be_sole == v:true
-            continue
-        endif
-        if count(buffers, a:context_bufnr) && cur_tab != tabpagenr()
-            let winnr = index(buffers, a:context_bufnr)
-            execute cur_tab . "tabn | " . (winnr + 1)  . "wincmd w"
-            return 1
-        endif
-    endfor
+
+    let cur_tabpage_number = tabpagenr()
+    let total_tabs = tabpagenr("$")
+
+    if cur_tabpage_number < total_tabs
+        for tab in range(cur_tabpage_number + 1, total_tabs)
+            let has_found = <SID>CoreReachToNextViewportWithSameBuffer(tab, a:context_bufnr, a:must_be_sole, cur_tabpage_number)
+            if has_found
+                return has_found
+            endif
+        endfor
+    endif
+    if cur_tabpage_number > 1
+        for tab in range(1, cur_tabpage_number - 1)
+            let has_found = <SID>CoreReachToNextViewportWithSameBuffer(tab, a:context_bufnr, a:must_be_sole, cur_tabpage_number)
+            if has_found
+                return has_found
+            endif
+        endfor
+    endif
+    return 0
+endfunction
+
+function! <SID>CoreReachToNextViewportWithSameBuffer(tab, context_bufnr, must_be_sole, cur_tabpage_number)
+    let buffers = tabpagebuflist(a:tab)
+    if len(buffers) > 1 && a:must_be_sole == v:true
+        continue
+    endif
+    if count(buffers, a:context_bufnr) && a:tab != a:cur_tabpage_number
+        let winnr = index(buffers, a:context_bufnr)
+        execute a:tab . "tabn | " . (winnr + 1)  . "wincmd w"
+        return 1
+    endif
     return 0
 endfunction
 
@@ -169,11 +182,11 @@ function! <SID>RefreshAll()
 	for tab_index in range(tabpagenr('$'))
 		let tab = tab_index + 1
 		execute "tabn" . tab
-		let heights = []
+		"let heights = []
 		for viewport_index in range(winnr('$'))
 			let viewport = viewport_index + 1
 			execute viewport . "wincmd w"
-			call add(heights, [winheight(0), viewport])
+			"call add(heights, [winheight(0), viewport])
 			try
 				if term_getstatus(bufnr()) != running
 					silent edit!
@@ -182,15 +195,15 @@ function! <SID>RefreshAll()
 				echo "Tab:" . tabpagenr() . ", Buf:" . bufnr() . ") [" . bufname() . "], " . v:exception
 			endtry
 		endfor
-		call sort(heights, '<SID>CompareHeightsWithinArrayWithBufferNumber')
-		let vertical_panes_length = len(s:libs_base.StudyViewportsLayoutWithVerticalGroups())
-		let len_heights = len(heights)
-		let column_counter = 0
-		while column_counter < vertical_panes_length
-			execute heights[len_heights - column_counter - 1][1] . "wincmd w"
-			wincmd _
-			let column_counter += 1
-		endwhile
+		"call sort(heights, '<SID>CompareHeightsWithinArrayWithBufferNumber')
+		"let vertical_panes_length = len(s:libs_base.StudyViewportsLayoutWithVerticalGroups())
+		"let len_heights = len(heights)
+		"let column_counter = 0
+"		while column_counter < vertical_panes_length
+"			execute heights[len_heights - column_counter - 1][1] . "wincmd w"
+"			wincmd _
+"			let column_counter += 1
+"		endwhile
 	endfor
 	execute this_tab . "tabn"
 	echon "Executed force edit(:e!) for each of the all " . len(getbufinfo(#{buflisted: v:true})) . 
@@ -226,14 +239,15 @@ function <SID>ArgsToViewports()
 	endwhile
 endfunction
 
-function <SID>CurrentProjectToTmuxViewportName()
-	const this_project = getcwd()
-	call system("tmux rename-window " . matchstr(this_project, '\(/\)\@<=[^/]\+$'))
-endfunction
+"I am using #{b:pane_current_path} from tmux as it saves the effort to calling this everytime
+"function <SID>CurrentProjectToTmuxViewportName()
+"	const this_project = getcwd()
+"	call system("tmux rename-window " . matchstr(this_project, '\(/\)\@<=[^/]\+$'))
+"endfunction
 
 map ;ja <Cmd>call <SID>AddToDictionary()<CR>
 map <F9> <Cmd>call <SID>ArgsToViewports()<CR>
-map <F8> <Cmd>call <SID>CurrentProjectToTmuxViewportName()<CR>
+"map <F8> <Cmd>call <SID>CurrentProjectToTmuxViewportName()<CR>
 
 map <C-Up> <Cmd>call <SID>MoveUpDown("up")<CR>
 map <C-Down> <Cmd>call <SID>MoveUpDown("down")<CR>
@@ -244,6 +258,8 @@ map <C-Left> <Cmd>call <SID>MoveLeftRight("left")<CR>
 map <C-Right> <Cmd>call <SID>MoveLeftRight("right")<CR>
 imap <C-Left> <Cmd>call <SID>MoveLeftRight("left")<CR>
 imap <C-Right> <Cmd>call <SID>MoveLeftRight("right")<CR>
+
+map ;ht <Cmd>call <SID>MakeHTMLTags()<CR>
 
 map ;ea <Cmd>call <SID>RefreshAll()<CR>
 map ;sc <Cmd>call <SID>ShowColors()<CR>

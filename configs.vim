@@ -17,7 +17,7 @@ let s:configs.initial_workspace_tries = ["all", "root", "base", "workspaces", "c
 let s:configs.initial_messages = ["danvim loaded"]
 
 let s:configs.extra_sources_places = 
-    \ [$DANVIM_SOURCE_MORE, s:configs.dirs.CodebaseHome . "/" . s:fixed_source_place_filename]
+    \ [$DANVIM_SOURCE_MORE, "$HOME/danrc.vim", "$HOME/.danvim/danrc.vim"]
 
 for [variable, value] in items(s:overrides)
 	if (len(trim(value)))

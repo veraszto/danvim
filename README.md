@@ -79,7 +79,7 @@ Move viewports themselves by using `CTRL-Shit-ArrowUp`, `CTRL-Shit-ArrowRight`, 
 
 There may be interest of further customizing the default parameters that ship with `danvim`.
 You could just `source` and extra vim script after `danvim` loads in your `vimrc`,
-or you may do so by editing the `then-consider-this.vim` file on the root of the instalation of this lib.
+or you may do so by copying the `danrc.vim` file in the root of the instalation of this lib to your $HOME or $HOME/.danvim.
 You can also achieve the same results by using a environment variable named `DANVIM_SOURCE_MORE` pointing to a vim file
 
 ### statusline 

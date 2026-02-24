@@ -1,4 +1,4 @@
-let g:danvim = #{configs: #{loaded_turns: 0, should_inflate_viewports: v:true, clipboard_commands: #{},
+let g:danvim = #{configs: #{loaded_turns: 0, clipboard_commands: #{},
         \ dirs:#{
             \ UserDataDefaultHome: $HOME . '/.danvim/app-data',
             \ CodebaseHome: expand("<sfile>:h") . "/.."

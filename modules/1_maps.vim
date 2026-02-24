@@ -82,6 +82,8 @@ map ;< <Cmd>tabm0<CR>
 map ;> <Cmd>tabm$<CR>
 noremap <expr> ;i ":vi " . getcwd() . "/"
 noremap <expr> ;I ":vi " . expand("%:h") . "/"
-map ;si <Cmd>let g:danvim.configs.should_inflate_viewports = !g:danvim.configs.should_inflate_viewports \| 
+
+"Do not recall of what I was trying to achieve with this
+"map ;si <Cmd>let g:danvim.configs.should_inflate_viewports = !g:danvim.configs.should_inflate_viewports \| 
 	\ if g:danvim.configs.should_inflate_viewports \| echo "Viewport inflation: ON" \| 
 	\ else \| echo "Viewport inflation: OFF" \| endif<CR>

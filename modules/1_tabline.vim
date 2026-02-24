@@ -1,4 +1,4 @@
-let s:forePartRegex = '^.\+\(/\)\@='
+"let s:forePartRegex = '^.\+\(/\)\@='
 
 function! <SID>BuildTabline()
 	let l:line = ""
@@ -14,14 +14,16 @@ function! <SID>BuildTabline()
 "			let title = bufname
 "		endif
 		let title = nr2char(0x41 + i)
+        let viewport_count = tabpagewinnr(added_one, "$")
 		let tab_danvim = gettabvar(added_one, "danvim", #{title: title})
 		if exists("tab_danvim.title") 
 			let title = tab_danvim.title
 		endif
+        let built_title = title . viewport_count
 		if added_one == tabpagenr()
-			let focused = "%#TabLineSel# " .  ( title ) . " %0*"
+			let focused = "%#TabLineSel# " .  ( built_title  ) . " %0*"
 		else
-			let focused = " " . ( title ) . " "
+			let focused = " " . ( built_title ) . " "
 		endif
 		let block = l:line . focused
 		let l:line = block
