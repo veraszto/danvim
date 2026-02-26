@@ -212,13 +212,13 @@ endfunction
 
 function <SID>AddToDictionary()
 	const word = expand("<cword>")
-	if len(word) <= 0
-		echo "Not added, the subject is zero length"
-	else
-		let path = s:dictionaries_dir . "/default"
-		call writefile([word], path, "a")
-		echo "Added " . word . " to dictionary " . path
-	endif
+	if len(word) <= 0 || empty(&filetype)
+		echo "Not added, the subject is zero length or filetype is not defined"
+        return
+    endif
+    let path = s:dictionaries_dir . "/" . &filetype
+    call writefile([word], path, "a")
+    echo "Added " . word . " to dictionary " . path
 endfunction
 
 function <SID>ArgsToViewports()
@@ -264,10 +264,4 @@ map ;ht <Cmd>call <SID>MakeHTMLTags()<CR>
 map ;ea <Cmd>call <SID>RefreshAll()<CR>
 map ;sc <Cmd>call <SID>ShowColors()<CR>
 
-let s:dictionaries_files = s:libs_root.FilesCollector([s:dictionaries_dir])
-if len(s:dictionaries_files)
-	execute "set dictionary=" . join(s:dictionaries_files, ",")
-else
-	execute "set dictionary=" . s:dictionaries_dir . "/default"
-endif
 
