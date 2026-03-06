@@ -4,7 +4,7 @@ let s:dictionaries_dir = s:configs.dirs.Dictionaries
 
 function! <SID>SetDictionary()
     if !empty(&filetype)
-        execute "set dictionary=" . s:dictionaries_dir . "/" . &filetype 
+        execute "setlocal dictionary=" . s:dictionaries_dir . "/" . &filetype 
     endif
 endfunction
 
