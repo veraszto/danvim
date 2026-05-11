@@ -77,9 +77,19 @@ function! <SID>UniteLonelyAndSmallGroups(upto)
         execute "tabc" . tab
     endfor
     tabnew
+    let each_column_buffers_amount = len(bufs) / 3
+    let counter = 1
     for buf in bufs
         execute "sb " . buf
+        wincmd w
+        if counter >= each_column_buffers_amount
+            let counter = 1
+            wincmd L
+        endif
+        let counter += 1
     endfor
+    quit
+    wincmd t
 endfunction
 
 map <S-Down> <Cmd>call <SID>UniteLonelyAndSmallGroups(3)<CR>
