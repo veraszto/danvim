@@ -42,7 +42,7 @@ endfunction
 function! <SID>CoreReachToNextViewportWithSameBuffer(tab, context_bufnr, must_be_sole, cur_tabpage_number)
     let buffers = tabpagebuflist(a:tab)
     if len(buffers) > 1 && a:must_be_sole == v:true
-        continue
+        return 0
     endif
     if count(buffers, a:context_bufnr) && a:tab != a:cur_tabpage_number
         let winnr = index(buffers, a:context_bufnr)
@@ -53,20 +53,27 @@ function! <SID>CoreReachToNextViewportWithSameBuffer(tab, context_bufnr, must_be
 endfunction
 
 function! <SID>UniteLonelyAndSmallGroups(upto)
+    const tab_amount = tabpagenr("$")
+    if tab_amount <= 1
+        echo "Cannot reduce only one tab as it is united already.."
+        return
+    endif
     try
         wa
     catch
         echo "Please save any unsaved buffer before trying to unite buffers"
         return
     endtry
-
-    let bufs = []
+    let all_grouped_buffs = []
+    let buffs_to_unite = []
     let remove_tabs = []
-    for tab in range(1, tabpagenr("$"))
+    for tab in range(1, tab_amount)
         let viewport_count = tabpagewinnr(tab, "$")
-        if  viewport_count <= a:upto
-            call extend(bufs, tabpagebuflist(tab))
+        if  viewport_count < a:upto
+            call extend(buffs_to_unite, tabpagebuflist(tab))
             call add(remove_tabs, tab)
+        else
+            call extend(all_grouped_buffs, tabpagebuflist(tab))
         endif
     endfor
     if len(remove_tabs) <= 0
@@ -76,10 +83,24 @@ function! <SID>UniteLonelyAndSmallGroups(upto)
     for tab in reverse(remove_tabs)
         execute "tabc" . tab
     endfor
+    let index = 0
+    let remove_these = []
+    call uniq(sort(buffs_to_unite))
+    while index <  len(buffs_to_unite)
+        if count(all_grouped_buffs, buffs_to_unite[index]) > 0
+            call add(remove_these, index)
+        endif
+        let index += 1
+    endwhile
+    let index = len(remove_these) - 1
+    while index >= 0
+        call remove(buffs_to_unite, remove_these[index]) 
+        let index -= 1
+    endwhile
     tabnew
-    let each_column_buffers_amount = len(bufs) / 3
+    let each_column_buffers_amount = len(buffs_to_unite) / 3
     let counter = 0
-    for buf in bufs
+    for buf in buffs_to_unite
         execute "sb " . buf
         wincmd w
         if counter >= each_column_buffers_amount
@@ -94,4 +115,4 @@ function! <SID>UniteLonelyAndSmallGroups(upto)
     wincmd =
 endfunction
 
-map <S-Down> <Cmd>call <SID>UniteLonelyAndSmallGroups(3)<CR>
+map <S-Down> <Cmd>call <SID>UniteLonelyAndSmallGroups(4)<CR>
