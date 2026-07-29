@@ -12,7 +12,7 @@ highlight clear
 highlight InitialMessage ctermfg=242
 
 highlight Comment ctermfg=246 
-highlight LineNr ctermfg=219
+highlight LineNr ctermfg=241
 
 highlight Pmenu ctermbg=232 ctermfg=246
 highlight PmenuSel ctermbg=219 ctermfg=232
