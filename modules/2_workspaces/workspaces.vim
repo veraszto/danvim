@@ -77,7 +77,12 @@ function s:modules.workspaces.SmartReachWorkspace(start_splitting)
 		split
 		wincmd _
 	else 
-		update
+        try
+		    update
+        catch
+            echo "Please consider saving this file first: " . v:exception
+            return
+        endtry
 	endif
 	let dir = s:configs.dirs.Workspaces
 	if s:libs_base.AreWeInAnWorkspaceFile() >= 0
@@ -360,5 +365,5 @@ function! <SID>WriteBasicStructure()
 
 endfunction
 
-map <Del> <Cmd>call g:danvim.modules.workspaces.SmartReachWorkspace(v:false)<CR>
-map <S-Del> <Cmd>call g:danvim.modules.workspaces.SmartReachWorkspace(v:true)<CR>
+nmap <Del> <Cmd>call g:danvim.modules.workspaces.SmartReachWorkspace(v:false)<CR>
+nmap <S-Del> <Cmd>call g:danvim.modules.workspaces.SmartReachWorkspace(v:true)<CR>

@@ -115,4 +115,4 @@ function! <SID>UniteLonelyAndSmallGroups(upto)
     wincmd =
 endfunction
 
-map <S-Down> <Cmd>call <SID>UniteLonelyAndSmallGroups(4)<CR>
+map ;ul <Cmd>call <SID>UniteLonelyAndSmallGroups(4)<CR>

@@ -36,8 +36,8 @@ map ;cj :clearjumps<CR>
 "imap <S-PageDown> <Cmd>wincmd l \| execute "normal \<C-F>" \| wincmd p<CR>
 "imap <S-PageUp> <Cmd>wincmd l \| execute "normal \<C-B>" \| wincmd p<CR>
 
-map <S-Down> <C-W>_
-imap <S-Down> <Cmd>wincmd _<CR>
+"map <S-Down> <C-W>_
+"imap <S-Down> <Cmd>wincmd _<CR>
 
 map ;aa <Cmd>0argadd <Bar> argu1 <Bar> argdedupe<CR>
 map ;ad <Cmd>argdelete<CR>
