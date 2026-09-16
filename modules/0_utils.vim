@@ -52,30 +52,26 @@ endfunction
 
 function! <SID>FosterEnterPress()
     let full_path = expand("%:p")
-    if empty(@d)
-        let @d = expand("<cword>")
-        let @/ = @d
-        echo "<cword>: " . matchstr(@d, '^.\{,50\}') . 
-            \ "...\nbufname: " . full_path . 
-            \ "\ncurrent_dir: " . getcwd() . 
-            \ "\n<cword> added to search register \"/". 
-            \ "\n<cword> added to register \"d" .
-            \ "\n<cword> added tmux buffer" .
-            \ "\nbufname added tmux buffer"
-        try
-           call system("tmux setb " . full_path)
-           call system("tmux setb " . @d)
-        endtry
-    else
-        normal viw"dp
-    endif
+    let @d = expand("<cword>")
+    let @/ = @d
+    echo "<cword>: " . matchstr(@d, '^.\{,50\}') . 
+        \ "...\nbufname: " . full_path . 
+        \ "\ncurrent_dir: " . getcwd() . 
+        \ "\n<cword> added to search register \"/". 
+        \ "\n<cword> added to register \"d" .
+        \ "\n<cword> added tmux buffer" .
+        \ "\nbufname added tmux buffer"
+    try
+       call system("tmux setb " . full_path)
+       call system("tmux setb " . @d)
+    endtry
 endfunction
 
 map <F1> <Cmd>call <SID>CopyRegisterToFileAndClipboard()<CR>
 map <F2> <Cmd>call <SID>PasteFromClipboard(v:false)<CR>
 map ;pr  <Cmd>call <SID>PasteFromClipboard(v:true)<CR>
 nmap <Return> <Cmd>call <SID>FosterEnterPress()<CR>
-nmap <S-Down> <Cmd>let @d=""<Bar>echo "Register \"d has been released"<CR>
+nmap P <Cmd>normal viw"dp<CR>
 
 function! <SID>TabJump()
 	let l:count = tabpagenr("$")	

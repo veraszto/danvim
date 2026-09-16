@@ -54,8 +54,6 @@ map ;pm :set paste! <Bar>
 		\ if &paste == 0 <Bar> echo "Paste mode is OFF" 
 		\ <Bar> else <Bar> echo "Paste mode is ON" <Bar> endif <CR>
 
-map P <Cmd>normal "pp<CR>
-
 map ;/ <Cmd>echo "Searching for >>>>>, <<<<<<, \|\|\|\|\|\|" <Bar> call search( '\(<\\|>\\|=\)\{6,}' )<CR>
 
 "map ;hn :new \| wincmd _<CR>
