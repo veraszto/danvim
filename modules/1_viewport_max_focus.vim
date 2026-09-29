@@ -19,7 +19,6 @@ function! <SID>ReachToNextViewportWithSameBuffer(context_bufnr, must_be_sole)
 
     let cur_tabpage_number = tabpagenr()
     let total_tabs = tabpagenr("$")
-
     if cur_tabpage_number < total_tabs
         for tab in range(cur_tabpage_number + 1, total_tabs)
             let has_found = <SID>CoreReachToNextViewportWithSameBuffer(tab, a:context_bufnr, a:must_be_sole, cur_tabpage_number)

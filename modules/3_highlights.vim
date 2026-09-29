@@ -23,7 +23,8 @@ let s:highlights = [
 	\ [ "VertSplit", 56, 56, "NONE" ],
 	\ [ "Visual", 55, 207, "NONE" ],
 	\ [ "TabLineSel", 56, 15, "NONE" ],
-	\ [ "TabLineFill", 237, 246, "NONE" ]
+	\ [ "TabLineFill", 237, 246, "NONE" ],
+	\ [ "TabLineBufferRef", 237, 200, "underline" ]
 \ ]
 
 for highlight in s:highlights

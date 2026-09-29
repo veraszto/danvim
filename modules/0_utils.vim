@@ -52,18 +52,21 @@ endfunction
 
 function! <SID>FosterEnterPress()
     let full_path = expand("%:p")
+    let current_dir = getcwd()
     let @d = expand("<cword>")
     let @/ = @d
     echo "<cword>: " . matchstr(@d, '^.\{,50\}') . 
         \ "...\nbufname: " . full_path . 
-        \ "\ncurrent_dir: " . getcwd() . 
+        \ "\ncurrent_dir: " . current_dir . 
         \ "\n<cword> added to search register \"/". 
         \ "\n<cword> added to register \"d" .
         \ "\n<cword> added tmux buffer" .
-        \ "\nbufname added tmux buffer"
+        \ "\nbufname added tmux buffer" .
+        \ "\ncurrent_dir added tmux buffer"
     try
-       call system("tmux setb " . full_path)
        call system("tmux setb " . @d)
+       call system("tmux setb " . full_path)
+       call system("tmux setb " . current_dir)
     endtry
 endfunction
 

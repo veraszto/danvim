@@ -1,4 +1,3 @@
-let s:libs_base = g:danvim.libs.base
 let s:module_viewport_max_focus = g:danvim.modules.viewport_max_focus
 
 function! <SID>Decide()
