@@ -6,49 +6,66 @@ let s:libs_root = g:danvim.libs.root
 
 function! s:this.InflateViewportsWithTabs()
     let bufnr = bufnr()
-    let has_found_counter_part = <SID>ReachToNextViewportWithSameBuffer(bufnr, 0)
-    if winnr("$") > 1 && has_found_counter_part == v:false
-        execute "$tabnew | bu " . bufnr
+    let inflate_buffer = "$tabnew | bu " . bufnr
+    let cur_tabpage_number = tabpagenr()
+    let collected_found = <SID>ReachToNextViewportWithSameBuffer(bufnr, cur_tabpage_number, 0)
+    call filter(collected_found, {idx, val -> val[0] > -1 && val[1] > -1})
+    let amount_of_viewports_on_this_tab = winnr("$")
+    if empty(collected_found) && amount_of_viewports_on_this_tab <= 1
+        echo "This is the only instance of buffer " . bufnr()
         return
     endif
-    echo "This is the only instance of buffer " . bufnr()
+
+    if empty(collected_found) && amount_of_viewports_on_this_tab > 1
+        execute inflate_buffer
+        return
+    endif
+
+    if collected_found[0][0] > cur_tabpage_number
+        execute collected_found[0][0] . "tabn | " . collected_found[0][1]  . "wincmd w"
+        return
+    endif
+    
+    if collected_found[0][0] < cur_tabpage_number
+       let [tab, winnr, buffers_amount_next] = collected_found[0]
+       call filter(collected_found, {idx, val -> val[2] <= 1})
+       if !empty(collected_found) || amount_of_viewports_on_this_tab <= 1
+            execute tab . "tabn | " . winnr  . "wincmd w"
+        else
+            execute inflate_buffer
+       endif
+    endif
 
 endfunction
 
-function! <SID>ReachToNextViewportWithSameBuffer(context_bufnr, must_be_sole)
+function! <SID>ReachToNextViewportWithSameBuffer(context_bufnr, cur_tabpage_number, must_be_sole)
 
-    let cur_tabpage_number = tabpagenr()
     let total_tabs = tabpagenr("$")
-    if cur_tabpage_number < total_tabs
-        for tab in range(cur_tabpage_number + 1, total_tabs)
-            let has_found = <SID>CoreReachToNextViewportWithSameBuffer(tab, a:context_bufnr, a:must_be_sole, cur_tabpage_number)
-            if has_found
-                return has_found
-            endif
+    let collected_found = []
+    if a:cur_tabpage_number < total_tabs
+        for tab in range(a:cur_tabpage_number + 1, total_tabs)
+            call add(collected_found, <SID>CoreReachToNextViewportWithSameBuffer(tab, a:context_bufnr, a:must_be_sole, a:cur_tabpage_number))
         endfor
     endif
-    if cur_tabpage_number > 1
-        for tab in range(1, cur_tabpage_number - 1)
-            let has_found = <SID>CoreReachToNextViewportWithSameBuffer(tab, a:context_bufnr, a:must_be_sole, cur_tabpage_number)
-            if has_found
-                return has_found
-            endif
+    if a:cur_tabpage_number > 1
+        for tab in range(1, a:cur_tabpage_number - 1)
+            call add(collected_found, <SID>CoreReachToNextViewportWithSameBuffer(tab, a:context_bufnr, a:must_be_sole, a:cur_tabpage_number))
         endfor
     endif
-    return 0
+    return collected_found
 endfunction
 
 function! <SID>CoreReachToNextViewportWithSameBuffer(tab, context_bufnr, must_be_sole, cur_tabpage_number)
     let buffers = tabpagebuflist(a:tab)
     if len(buffers) > 1 && a:must_be_sole == v:true
-        return 0
+        return [-1, -1]
     endif
-    if count(buffers, a:context_bufnr) && a:tab != a:cur_tabpage_number
+    if count(buffers, a:context_bufnr)
         let winnr = index(buffers, a:context_bufnr)
-        execute a:tab . "tabn | " . (winnr + 1)  . "wincmd w"
-        return 1
+        "execute a:tab . "tabn | " . (winnr + 1)  . "wincmd w"
+        return [a:tab, winnr + 1, len(buffers)]
     endif
-    return 0
+    return [-1, -1]
 endfunction
 
 function! <SID>UniteLonelyAndSmallGroups(upto)
