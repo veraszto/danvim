@@ -3,11 +3,10 @@ if exists("b:current_syntax")
 endif
 
 syn region WorkspacesMetaDataContainer start=/^\[.\+\]/ end=/^.*$/ keepend 
-    \ contains=WorkspacesMetaDataEnclosure,DirOnMetadata,BarMetadata
-syn match WorkspacesMetaDataEnclosure /^\[.\+\].*/ contained contains=WorkspacesMetadata
-syn match WorkspacesMetaData /[^\[\]]\+/ contained 
-syn match DirOnMetadata /.\{-}\//me=e-1 contained
-syn match BarMetadata /\// contained
+syn match WorkspacesMetaDataEnclosure /^\[.\+\].*/ 
+syn match WorkspacesMetaData /[^\[\]]\+/ 
+syn match DirOnMetadata /.\{-}\//me=e-1 
+syn match BarMetadata /\// 
 
 "
 "

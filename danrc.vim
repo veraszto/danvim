@@ -19,5 +19,7 @@ let s:workspace_colors = s:configs.colors.workspaces
         let s:workspace_colors[0] = 200
         let s:workspace_colors[1] = 15
         let s:workspace_colors[2] = 69
+        let s:workspace_colors[3] = 160
+        let s:workspace_colors[4] = 45
 
 " This is ongoing..

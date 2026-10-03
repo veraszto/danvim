@@ -7,7 +7,7 @@ let g:danvim = #{configs: #{loaded_turns: 0, clipboard_commands: #{},
             \ DanVim: expand("<sfile>"),
             \ Clipboard: "/tmp/danvim.clipboard"
         \ },
-        \ colors: #{workspaces:[225,39,45]},
+        \ colors: #{workspaces:[225,39,45,160,69]},
     \ }, libs: #{root: {}},
     \ modules: #{},
     \ app_data: #{state_manager: []},
@@ -37,6 +37,7 @@ let s:configs.clipboard_commands.paste = "wl-paste"
 let s:dirs = #{
     \ Dictionaries: s:UserDataDefaultHomeDir . "/dictionaries",
     \ Workspaces: s:UserDataDefaultHomeDir . "/workspaces",
+    \ EagleEye: s:UserDataDefaultHomeDir . "/eagle-eye",
     \ StateManager: s:UserDataDefaultHomeDir . "/state-manager"
 \ }
 

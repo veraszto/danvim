@@ -38,6 +38,7 @@ function <SID>AssertOrCreateLoaderDir()
                 \ s:tabs_buffers . ' = []'
             \ ], loader_path . "/" . s:tabs_vim)
     endif
+    return loader_path
 endfunction
 
 function <SID>ColumnHeightResolution(column_height_resolution)
@@ -49,6 +50,9 @@ endfunction
 let s:loaders_dir_base = s:configs.dirs.StateManager
 
 function s:modules.state_manager.SaveState()
+    const loader_path = <SID>AssertOrCreateLoaderDir()
+    const save_to = loader_path . "/" . s:tabs_vim
+    const reference_dir = getcwd()
     let tab_page_number = tabpagenr()
     let all_args = []
     let column_splitters = []
@@ -57,6 +61,7 @@ function s:modules.state_manager.SaveState()
     let tabs_buffers = []
     let tabs_jumps = []
     for tab in range(tabpagenr("$"))
+        cd /
         execute (tab + 1) . "tabn"
         let viewport_args = []
         call add(column_splitters, [])
@@ -101,9 +106,8 @@ function s:modules.state_manager.SaveState()
             call add(tabs_buffers, tab_buffers)
         endif
     endfor
-    call <SID>AssertOrCreateLoaderDir()
-    const loader_path = <SID>LoaderPath()
-    const save_to = loader_path . "/" . s:tabs_vim
+    execute tab_page_number . "tabnext"
+    execute "cd " . reference_dir
     let tabs_viewports = s:tabs_var_name . " = " . string(all_args)
     let pane_breaker = s:viewport_pane_breaker . " = " . string(column_splitters)
     let highests_viewports = s:highests_viewports . " = " . string(highests)
@@ -115,7 +119,6 @@ function s:modules.state_manager.SaveState()
             \ tabs_viewports, pane_breaker, highests_viewports,
             \ write_tabs_titles, write_tabs_buffers, write_jumps
         \ ], save_to)
-    execute tab_page_number . "tabnext"
     echo "Saved to " . save_to
 endfunction
 

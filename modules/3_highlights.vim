@@ -34,6 +34,8 @@ endfor
 let s:first_color = g:danvim.configs.colors.workspaces[0]
 let s:second_color = g:danvim.configs.colors.workspaces[1]
 let s:third_color = g:danvim.configs.colors.workspaces[2]
+let s:fourth_color = g:danvim.configs.colors.workspaces[3]
+let s:fifth_color = g:danvim.configs.colors.workspaces[4]
 
 "[<category>], the curly brackets
 execute "highlight WorkspacesMetaDataEnclosure ctermfg=" . s:third_color
@@ -43,9 +45,9 @@ execute "highlight WorkspacesMetaDataContainer ctermfg=" . s:first_color
 "[<category>], the category
 execute "highlight WorkspacesMetaData ctermfg=" . s:second_color
 execute "highlight DirOnMetadata ctermfg=" . s:first_color
-execute "highlight BarMetadata ctermfg=" . s:first_color
+execute "highlight BarMetadata ctermfg=" . s:third_color
 
-execute "highlight Dirs ctermfg=" . s:first_color
+execute "highlight Dirs ctermfg=" . s:third_color
 execute "highlight FileNamePrefix ctermfg=" . s:first_color
-execute "highlight TreeSticks ctermfg=" . s:second_color
+execute "highlight TreeSticks ctermfg=" . s:fifth_color
 execute "highlight Extension ctermfg=" . s:third_color
