@@ -4,7 +4,7 @@ let s:libs_base = g:danvim.libs.base
 let s:configs = g:danvim.configs
 let s:libs_root = g:danvim.libs.root
 
-function! s:this.InflateViewportsWithTabs()
+function! <SID>InflateViewportsWithTabs()
     let bufnr = bufnr()
     let inflate_buffer = "$tabnew | bu " . bufnr
     let cur_tabpage_number = tabpagenr()
@@ -69,6 +69,7 @@ function! <SID>CoreReachToNextViewportWithSameBuffer(tab, context_bufnr, must_be
 endfunction
 
 function! <SID>UniteLonelyAndSmallGroups(upto)
+    call g:danvim.modules.eagleeye.RemoveEagleEye()
     const tab_amount = tabpagenr("$")
     if tab_amount <= 1
         echo "Cannot reduce only one tab as it is united already.."
@@ -131,4 +132,5 @@ function! <SID>UniteLonelyAndSmallGroups(upto)
     wincmd =
 endfunction
 
-map ;ul <Cmd>call <SID>UniteLonelyAndSmallGroups(4)<CR>
+map <Space> <Cmd>call <SID>InflateViewportsWithTabs()<CR>
+map <C-S-Del> <Cmd>call <SID>UniteLonelyAndSmallGroups(4)<CR>

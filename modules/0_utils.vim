@@ -4,6 +4,7 @@ let s:libs_base = g:danvim.libs.base
 let s:configs = g:danvim.configs
 let s:libs_root = g:danvim.libs.root 
 
+
 let s:dictionaries_dir = s:configs.dirs.Dictionaries
 let s:bridge_file = s:configs.files.Clipboard
 
@@ -50,7 +51,7 @@ function! <SID>PasteFromClipboard(only_to_main_register)
 	endif
 endfunction
 
-function! <SID>FosterEnterPress()
+function! s:this.FosterEnterPress()
     let full_path = expand("%:p")
     let current_dir = getcwd()
     let @d = expand("<cword>")
@@ -73,7 +74,7 @@ endfunction
 map <F1> <Cmd>call <SID>CopyRegisterToFileAndClipboard()<CR>
 map <F2> <Cmd>call <SID>PasteFromClipboard(v:false)<CR>
 map ;pr  <Cmd>call <SID>PasteFromClipboard(v:true)<CR>
-nmap <Return> <Cmd>call <SID>FosterEnterPress()<CR>
+nmap <Return> <Cmd>call g:danvim.modules.eagleeye.ActionKey()<CR>
 nmap P <Cmd>normal viw"dp<CR>
 
 function! <SID>TabJump()
