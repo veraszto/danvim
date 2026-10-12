@@ -24,6 +24,10 @@ function! s:this.ActionKey()
     endif
     if t:danvim.title =~ 'TREE\d'
 		const file = escape(<SID>BuFromGNUTree(), '#% ')
+        if !filereadable(file)
+            echo file . " is not a readable file"
+            return
+        endif
         call s:this.RemoveEagleEye()
         tabnew
         try
@@ -81,6 +85,7 @@ function! <SID>AuCheckEagleEyeFileOnTabEnter()
     elseif (exists("tabvars.danvim.eagleeye") && tabvars.danvim.eagleeye == v:true)
         let s:this.last_visited_eagleeye_tab = t:danvim.title
     endif
+    execute current_tab . "tabn"
 endfunction
 
 function! s:this.OpenTabs(search_last_visited = v:false)
@@ -209,13 +214,7 @@ function! <SID>BuFromGNUTree()
 		let counter -= 1
 	endwhile
 	call add(wrap, target_file)
-	let joined_target = join(wrap, "/")
-	if filereadable(joined_target)
-		return joined_target
-	else
-		echo joined_target . " not readable"
-	endif
-
+	return join(wrap, "/")
 endfunction
 
 
