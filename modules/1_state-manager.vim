@@ -211,9 +211,9 @@ function s:modules.state_manager.InflateState()
         if title != v:null
             call s:libs_base.UpdateTabDanVimObject("title", "\"" . title . "\"")
         endif
-        let tab_buffers = tabs_buffers->get(counter, [])
-        call s:libs_base.UpdateTabDanVimObject("buffers", string(tab_buffers))
-        execute "argadd" . " " . join(tab_buffers->map("escape(v:val, ' \')"), " ")
+        "let tab_buffers = tabs_buffers->get(counter, [])
+        "call s:libs_base.UpdateTabDanVimObject("buffers", string(tab_buffers))
+        "execute "argadd" . " " . join(tab_buffers->map("escape(v:val, ' \')"), " ")
         tabnew
         let counter += 1
     endwhile
