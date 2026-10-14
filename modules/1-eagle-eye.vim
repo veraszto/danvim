@@ -166,7 +166,7 @@ endfunction
 
 
 function! s:this.Tree(tree)
-    let to_tree = "tree -a -I 'target|.git|node_modules|build|target' --filelimit 50 -L 5 " . a:tree
+    let to_tree = "tree -a -I 'target|.git|node_modules|build|target' --filelimit 50 " . a:tree
 	try
 		call append(0, systemlist(to_tree))
 	catch
