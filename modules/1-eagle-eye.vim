@@ -1,4 +1,4 @@
-let g:danvim.modules.eagleeye = #{}
+let g:danvim.modules.eagleeye = #{collected_last_visited_lines: #{}}
 let s:this = g:danvim.modules.eagleeye
 let s:libs_base = g:danvim.libs.base
 let s:eagleeye_dir = g:danvim.configs.dirs.EagleEye
@@ -16,6 +16,8 @@ function! s:this.ActionKey()
         return
     endif
 
+    let s:this.collected_last_visited_lines[t:danvim.title] = getline(".")
+
     if t:danvim.title == "LS"
         execute "let tab_and_viewport = " . matchstr(getline("."), '\[[^\]]\{-}\]')
         call s:this.RemoveEagleEye()
@@ -29,7 +31,7 @@ function! s:this.ActionKey()
             return
         endif
         call s:this.RemoveEagleEye()
-        tabnew
+        $tabnew
         try
             execute "bu " . file
         catch
@@ -88,6 +90,15 @@ function! <SID>AuCheckEagleEyeFileOnTabEnter()
     execute current_tab . "tabn"
 endfunction
 
+"function! <SID>AuCheckEagleEyeFileOnTabLeave()
+function! <SID>SaveLastVisitedLine()
+    let tabvars = gettabvar(tabpagenr(), "")
+    if !exists("tabvars.danvim.eagleeye") || !tabvars.danvim.eagleeye == v:true
+        return
+    endif
+    let s:this.collected_last_visited_lines[t:danvim.title] = getline(".")
+endfunction
+
 function! s:this.OpenTabs(search_last_visited = v:false)
     call s:this.RemoveEagleEye()
     let ls = s:this.ListActiveBuffers()
@@ -101,9 +112,11 @@ function! s:this.OpenTabs(search_last_visited = v:false)
     setlocal nobuflisted
     "setlocal nomodifiable
     call append(0, ls)
+    normal gg
     call s:this.TreeThese()
     if !a:search_last_visited || !exists("s:this.last_visited_eagleeye_tab")
         execute lstab . "tabn"
+        normal gg
     else
         let counter = tabpagenr("$")
         while counter >= 1
@@ -123,8 +136,11 @@ function! s:this.OpenTabs(search_last_visited = v:false)
     aug danvim_eagleeye
        autocmd!
        autocmd TabEnter * call <SID>AuCheckEagleEyeFileOnTabEnter()
+       "autocmd TabLeave * call <SID>AuCheckEagleEyeFileOnTabLeave()
     aug END
 endfunction
+
+let s:tree_config = '-a -I "target|.git|node_modules|build|target" --filelimit 50'
 
 function! s:this.TreeThese()
     tabnew
@@ -138,26 +154,30 @@ function! s:this.TreeThese()
     let tree_these_file_name = s:eagleeye_dir . "/" . build_tree_these_file_name
     execute "vi " . tree_these_file_name
     setf workspaces
+    const default_tree = #{tree_path: global_dir, tree_params: s:tree_config}
+    const if_it_is_first_entry = string(default_tree)
     try
         let tree_these = readfile(tree_these_file_name)->filter({_, value -> !empty(trim(value))})
         if empty(tree_these) || len(trim(tree_these[0])) <= 0
-            let tree_these = [global_dir]
-            call append(0, global_dir)
+            call append(0, if_it_is_first_entry)
+            let tree_these = [if_it_is_first_entry]
         endif
     catch
-        let tree_these = [global_dir]
-        call append(0, global_dir)
+        call append(0, if_it_is_first_entry)
+        let tree_these = [if_it_is_first_entry]
     endtry
+    normal gg
     let counter = 0
-    for tree in tree_these->filter({_, value -> !empty(value)})
+    for tree in tree_these
         tabnew
         setf workspaces
         setlocal buftype=nofile
         setlocal bufhidden=delete
         setlocal nobuflisted
-        call s:libs_base.UpdateTabDanVimObject("title", "'TREE" . counter . "'")
+        let title = "TREE" . counter
+        call s:libs_base.UpdateTabDanVimObject("title", '"' . title . '"')
         call s:libs_base.UpdateTabDanVimObject("eagleeye", "v:true")
-        call s:this.Tree(tree)
+        call s:this.Tree(tree, title)
         let counter += 1
     endfor
     execute trees_tab . "tabn"
@@ -165,13 +185,25 @@ function! s:this.TreeThese()
 endfunction
 
 
-function! s:this.Tree(tree)
-    let to_tree = "tree -a -I 'target|.git|node_modules|build|target' --filelimit 50 " . a:tree
+function! s:this.Tree(tree, title)
+    try
+        execute "const to_tree_pack = " . a:tree
+        let to_tree = "tree " . trim(to_tree_pack.tree_params) . " " . expand(trim(to_tree_pack.tree_path))
+    catch
+        let to_tree = "tree " . s:tree_config . " " . expand(trim(a:tree))
+    endtry
 	try
 		call append(0, systemlist(to_tree))
 	catch
-		echo "Could not draw tree, vim says: " . v:exception
+		echo "Could not draw tree, Vim says: " . v:exception
 	endtry
+    normal gg
+    if exists("s:this.collected_last_visited_lines[a:title]")
+        try
+           call search(s:this.collected_last_visited_lines[a:title], "w") 
+        catch
+        endtry
+    endif
 endfunction
 
 function! <SID>BuFromGNUTree()
@@ -219,4 +251,4 @@ endfunction
 
 
 nmap <Del> <Cmd>call g:danvim.modules.eagleeye.OpenTabs()<CR>
-nmap <S-Del> <Cmd>call g:danvim.modules.eagleeye.OpenTabs(v:true)<CR>
+"nmap <S-Del> <Cmd>call g:danvim.modules.eagleeye.OpenTabs(v:true)<CR>

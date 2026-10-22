@@ -132,5 +132,5 @@ function! <SID>UniteLonelyAndSmallGroups(upto)
     wincmd =
 endfunction
 
-map <Space> <Cmd>call <SID>InflateViewportsWithTabs()<CR>
-map <C-S-Del> <Cmd>call <SID>UniteLonelyAndSmallGroups(4)<CR>
+nmap <Space> <Cmd>call <SID>InflateViewportsWithTabs()<CR>
+nmap <BS> <Cmd>call <SID>UniteLonelyAndSmallGroups(4)<CR>
