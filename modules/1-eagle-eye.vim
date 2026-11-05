@@ -250,5 +250,5 @@ function! <SID>BuFromGNUTree()
 endfunction
 
 
-nmap <Del> <Cmd>call g:danvim.modules.eagleeye.OpenTabs()<CR>
+nmap <Del> <Cmd>call g:danvim.modules.eagleeye.OpenTabs(v:true)<CR>
 "nmap <S-Del> <Cmd>call g:danvim.modules.eagleeye.OpenTabs(v:true)<CR>
