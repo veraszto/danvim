@@ -133,4 +133,4 @@ function! <SID>UniteLonelyAndSmallGroups(upto)
 endfunction
 
 nmap <Space> <Cmd>call <SID>InflateViewportsWithTabs()<CR>
-nmap <BS> <Cmd>call <SID>UniteLonelyAndSmallGroups(4)<CR>
+nmap <BS> <Cmd>call <SID>UniteLonelyAndSmallGroups(2)<CR>
